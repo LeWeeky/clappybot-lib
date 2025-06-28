@@ -1,0 +1,34 @@
+{
+	"name": "clappybot",
+	"version": "0.1.0",
+	"description": "A powerful framework for bot developers",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/LeWeeky/clappybot-lib.git"
+	},
+	"license": "GPL-3.0-or-later",
+	"author": "LeWeeky",
+	"type": "commonjs",
+	"main": "index.js",
+	"scripts": {},
+	"dependencies": {
+		"better-sqlite3": "^11.10.0",
+		"cron": "^3.1.8",
+		"discord.js": "^14.16.3",
+		"dotenv": "^16.4.5",
+		"fs": "^0.0.1-security",
+		"he": "^1.2.0",
+		"jsonfile": "^6.1.0",
+		"mysql2": "^3.11.3",
+		"quick.db": "^9.1.7"
+	},
+	"keywords": [
+		"discord-js",
+		"bot",
+		"framework"
+	],
+	"bugs": {
+		"url": "https://github.com/LeWeeky/clappybot-lib/issues"
+	},
+	"homepage": "https://github.com/LeWeeky/clappybot-lib#readme"
+}
