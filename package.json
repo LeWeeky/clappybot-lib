@@ -1,6 +1,6 @@
 {
 	"name": "clappybot",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "A powerful framework for bot developers",
 	"repository": {
 		"type": "git",
@@ -19,8 +19,7 @@
 		"fs": "^0.0.1-security",
 		"he": "^1.2.0",
 		"jsonfile": "^6.1.0",
-		"mysql2": "^3.11.3",
-		"quick.db": "^9.1.7"
+		"mysql2": "^3.11.3"
 	},
 	"keywords": [
 		"discord-js",
