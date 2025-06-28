@@ -16,12 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { interactions } = require('../systems/interactions');
+const { system } = require('../systems/system');
 
 async function listen(member)
-
 {
-	interactions.members_add.scan(member)
+	system.members_add.scan(member)
 }
 
 module.exports = { name: "guildMemberAdd", listen }

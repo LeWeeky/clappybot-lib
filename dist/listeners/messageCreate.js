@@ -21,7 +21,7 @@ const { clappybot } = require('../main');
 
 const { isStaff } = require('../libraries/permissions/guild_staff');
 const { Message } = require('discord.js');
-const { interactions } = require('../systems/interactions');
+const { system } = require('../systems/system');
 
 const name = "messageCreate";
 /**
@@ -45,8 +45,8 @@ async function listen(message)
     }
 
 	if (cmd)
-		interactions.commands.scan(message, cmd, args);
-	interactions.messageCreate.scan(message);
+		system.commands.scan(message, cmd, args);
+	system.messageCreate.scan(message);
 
     if (message.member && message.guild && message.guild.id == globalThis.guild_id)
     {

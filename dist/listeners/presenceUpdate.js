@@ -16,15 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { interactions } = require("../systems/interactions");
+const { system } = require("../systems/system");
 
 async function listen(old_presence, new_presence)
-
 {
     if (!(new_presence.guild.id) || new_presence.guild.id != globalThis.guild_id
 		|| new_presence.user.bot) return;
 
-	interactions.presencesUpdate.scan(old_presence, new_presence)
+	system.presencesUpdate.scan(old_presence, new_presence)
 }
 
 module.exports = { name: "presenceUpdate", listen }

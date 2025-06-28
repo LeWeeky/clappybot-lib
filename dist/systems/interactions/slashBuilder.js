@@ -18,7 +18,7 @@
 
 const { REST, Routes } = require("discord.js");
 const { clappybot } = require("../../main");
-const { interactions } = require("../interactions");
+const { system } = require("../system");
 
 /**
  * 
@@ -30,11 +30,11 @@ async function buildGlobalCommands(rest = null)
 		rest = new REST().setToken(process.env.TOKEN);
 
 	try {
-		console.log(`Rechargement des ${interactions.commands.commands_builder.global_cmds.length} (/) commandes globales.`);
+		console.log(`Rechargement des ${system.commands.commands_builder.global_cmds.length} (/) commandes globales.`);
 
 		const data = await rest.put(
 			Routes.applicationCommands(clappybot.bot.user.id),
-			{ body: interactions.commands.commands_builder.global_cmds },
+			{ body: system.commands.commands_builder.global_cmds },
 		);
 
 		console.log(`${data.length} (/) commandes globales ont bien été rechargée.`);
@@ -53,11 +53,11 @@ async function buildGuildCommands(rest = null)
 		rest = new REST().setToken(process.env.TOKEN);
 
 	try {
-		console.log(`Rechargement des ${interactions.commands.commands_builder.guild_cmds.length} (/) commandes privées.`);
+		console.log(`Rechargement des ${system.commands.commands_builder.guild_cmds.length} (/) commandes privées.`);
 
 		const data = await rest.put(
 			Routes.applicationGuildCommands(clappybot.bot.user.id, globalThis.guild_id),
-			{ body: interactions.commands.commands_builder.guild_cmds },
+			{ body: system.commands.commands_builder.guild_cmds },
 		);
 
 		console.log(`${data.length} (/) commandes privées ont bien été rechargée.`);

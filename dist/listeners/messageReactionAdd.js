@@ -16,13 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { interactions } = require("../systems/interactions");
+const { system } = require("../systems/system");
 
 const name = "messageReactionAdd";
 async function listen(reaction, user)
-
 {
-	interactions.reactions_add.scan(reaction, user);
+	system.reactions_add.scan(reaction, user);
 }
 
 module.exports = { name, listen }

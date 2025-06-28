@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { interactions } = require("../systems/interactions");
+const { system } = require("../systems/system");
 
 const name = "channelDelete";
 
 async function listen(channel)
 {
-	interactions.channelsDelete.scan(channel)
+	system.channelsDelete.scan(channel)
 }
 
 module.exports = { name, listen }

@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { interactions } = require("../systems/interactions");
+const { system } = require("../systems/system");
 
 const name = "channelUpdate";
 
 async function listen(old_channel, new_channel)
 {
-	interactions.channelsUpdate.scan(old_channel, new_channel)
+	system.channelsUpdate.scan(old_channel, new_channel)
 }
 
 module.exports = { name, listen }

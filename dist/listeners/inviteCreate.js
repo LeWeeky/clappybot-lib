@@ -23,7 +23,6 @@ async function listen(invite)
 
 {
     if (invite.guild && invite.guild.id == globalThis.guild_id)
-
     {
         clappybot.swap["invites"] = get_invites_data(invite.guild);
     }

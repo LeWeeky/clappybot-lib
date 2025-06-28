@@ -234,7 +234,7 @@ class ClappyBot
 		}
 		this.databases.add(
 			new SqliteDriver({
-				path: "data/cache.db",
+				path: "data/cache.sqlite",
 			}),
 			"cache"
 		);

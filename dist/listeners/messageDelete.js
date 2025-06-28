@@ -17,7 +17,7 @@
  */
 
 const { Message } = require('discord.js');
-const { interactions } = require('../systems/interactions');
+const { system } = require('../systems/system');
 
 const name = "messageDelete";
 /**
@@ -26,9 +26,8 @@ const name = "messageDelete";
  * @returns 
  */
 async function listen(message)
-
 {
-	interactions.messageDelete.scan(message);
+	system.messageDelete.scan(message);
 }
  
 module.exports = { name, listen }

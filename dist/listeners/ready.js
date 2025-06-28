@@ -17,7 +17,7 @@
  */
 
 const { clappybot } = require("../main");
-const { interactions } = require("../systems/interactions");
+const { system } = require("../systems/system");
 const { build_commands } = require("../systems/interactions/slashBuilder");
 const { get_invites_data } = require("../libraries/fetching/invites");
 const { RebootMessage } = require("clappybot/dist/models/RebootMessage");
@@ -55,7 +55,7 @@ async function listen(bot)
 
 {
     await clappybot.new(bot);
-	await interactions.init();
+	await system.init();
 	await build_commands();
 
     {

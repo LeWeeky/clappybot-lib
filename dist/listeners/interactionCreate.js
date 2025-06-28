@@ -17,7 +17,7 @@
  */
 
 const { MessageFlags } = require('discord.js');
-const { interactions } = require('../systems/interactions')
+const { system } = require('../systems/system')
 
 const name = "interactionCreate";
 /**
@@ -31,15 +31,15 @@ async function listen(interaction)
     if (interaction.isCommand())
     {
         const { commandName } = interaction;
-		if (!(await interactions.commands.scan(interaction, commandName, [])))
+		if (!(await system.commands.scan(interaction, commandName, [])))
             interaction.reply({content: "Désolé mais, cette commande a été désactivée.", flags: [MessageFlags.Ephemeral]})
     }
     if (interaction.isButton())
-		interactions.buttons.scan(interaction);
+		system.buttons.scan(interaction);
     if (interaction.isAnySelectMenu())
-        interactions.menus.scan(interaction);
+        system.menus.scan(interaction);
 	else if (interaction.isModalSubmit())
-		interactions.modals.scan(interaction);
+		system.modals.scan(interaction);
 }
 
 module.exports = { name, listen }
