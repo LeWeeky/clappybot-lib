@@ -18,7 +18,6 @@
 
 const { readdirSync, existsSync } = require("fs");
 const { clappybot } = require("../main");
-const { interactions } = require("clappybot/dist/systems/system");
 const { isEnable } = require("../libraries/informations/is_enable");
 const { isRent } = require("../libraries/informations/is_rent");
 const { isAllow } = require("../libraries/informations/is_allow");
@@ -66,50 +65,6 @@ class Modules
 	init()
 	{
 		this.#getList();
-	}
-
-	/**
-	 * 
-	 * @param {string} module 
-	 */
-	async allow(module)
-	{
-		await clappybot.allow_modules(module);
-		await clappybot.reload_modules();
-		await interactions.reload();
-	}
-
-	/**
-	 * 
-	 * @param {string} module 
-	 */
-	async deny(module)
-	{
-		await clappybot.deny_modules(module);
-		await clappybot.reload_modules();
-		await interactions.reload();
-	}
-
-	/**
-	 * 
-	 * @param {string} module 
-	 */
-	async enable(module)
-	{
-		await clappybot.enable_modules(module);
-		await clappybot.reload_modules();
-		await interactions.reload();
-	}
-
-	/**
-	 * 
-	 * @param {string} module 
-	 */
-	async disable(module)
-	{
-		await clappybot.disable_modules(module);
-		await clappybot.reload_modules();
-		await interactions.reload();
 	}
 
 	/**
