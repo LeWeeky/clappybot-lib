@@ -99,8 +99,7 @@ class Messages
  * 	}
  * }}
  */
-function get_message_data(target_message)
-    
+function getMessageData(target_message)
 {
     let data = {
         text: undefined,
@@ -162,7 +161,7 @@ function get_message_data(target_message)
 }
 
 /**
- * 
+ * Create new message from message data
  * @param {{
  *  text?: string,
  * 	content?: string
@@ -177,7 +176,7 @@ function get_message_data(target_message)
  * 	}}} data 
  * @returns 
  */
-function new_message(data)
+function newMessage(data)
 
 {
 	const message_data = {};
@@ -256,4 +255,4 @@ function new_message(data)
 	return (message_data);
 }
 
-module.exports = { Messages, get_message_data, new_message }
+module.exports = { Messages, getMessageData, newMessage }

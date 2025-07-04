@@ -18,7 +18,7 @@
 
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 
-function loading_button()
+function getLoadingButton()
 {
 	return (
 		new ActionRowBuilder()
@@ -34,5 +34,5 @@ function loading_button()
 }
 
 module.exports = {
-	loading_button
+	getLoadingButton
 }

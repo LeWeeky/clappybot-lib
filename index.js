@@ -22,6 +22,10 @@ const { isImage, isDomainName } = require("clappybot/dist/libraries/informations
 const { isSendable } = require("clappybot/dist/libraries/informations/is_sendable")
 const { isOwner } = require("clappybot/dist/libraries/permissions/bot_owner")
 const { system } = require("clappybot/dist/systems/system")
+const { User } = require("clappybot/dist/libraries/fetching/users")
+const { Messages, getMessageData, newMessage } = require("clappybot/dist/libraries/fetching/message")
+const { getLoadingButton } = require("clappybot/dist/libraries/templates/loading_button")
+const { Random } = require("clappybot/dist/libraries/random_numbers")
 
 module.exports = {
 	clappybot,
@@ -49,5 +53,11 @@ module.exports = {
 	isDomainName,
 	isSendable,
 	isOwner,
-	system
+	system,
+	User,
+	Messages,
+	getMessageData,
+	newMessage,
+	getLoadingButton,
+	Random
 }
