@@ -1,5 +1,5 @@
 const { AModel } = require("clappybot/dist/libraries/models/AModel");
-const { CBPermissions } = require("clappybot/dist/libraries/permissions/permissions");
+const { PermissionsBits } = require("clappybot/dist/libraries/permissions/bits");
 
 class APermissions extends AModel
 {
@@ -32,13 +32,13 @@ class APermissions extends AModel
 	has(permission_bit)
 	{
 		return (
-			this.bits & CBPermissions.Owner
+			this.bits & PermissionsBits.Owner
 			|| this.bits & permission_bit
 		);
 	}
 	isAdmin()
 	{
-		return (this.bits & CBPermissions.Admin);
+		return (this.bits & PermissionsBits.Admin);
 	}
 }
 

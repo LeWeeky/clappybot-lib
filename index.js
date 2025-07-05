@@ -26,7 +26,8 @@ const { User } = require("clappybot/dist/libraries/fetching/users")
 const { Messages, getMessageData, newMessage } = require("clappybot/dist/libraries/fetching/message")
 const { getLoadingButton } = require("clappybot/dist/libraries/templates/loading_button")
 const { Random } = require("clappybot/dist/libraries/random_numbers")
-const { CBPermissions } = require("clappybot/dist/libraries/permissions/permissions")
+const { UserPermissions } = require("clappybot/dist/libraries/permissions/permissions")
+const { PermissionsBits } = require("clappybot/dist/libraries/permissions/bits")
 const { GlobalPermissions, GuildPermissions } = require("clappybot/dist/models/Permissions")
 
 module.exports = {
@@ -62,7 +63,8 @@ module.exports = {
 	newMessage,
 	getLoadingButton,
 	Random,
-	CBPermissions,
+	PermissionsBits,
 	GlobalPermissions,
-	GuildPermissions
+	GuildPermissions,
+	UserPermissions
 }
