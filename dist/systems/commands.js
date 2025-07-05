@@ -98,7 +98,7 @@ class Commands extends AActions
 		{
 			if (file.endsWith(".js"))
 			{
-				const file_path = `../.${path}/${file}`;
+				const file_path = `../../../.${path}/${file}`;
 				const command = require(file_path.slice(0, file_path.length - 3));
 				if (command.parse)
 				{
