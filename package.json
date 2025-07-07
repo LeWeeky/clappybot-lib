@@ -1,6 +1,6 @@
 {
 	"name": "clappybot",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"description": "A powerful framework for bot developers",
 	"repository": {
 		"type": "git",

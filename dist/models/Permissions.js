@@ -1,5 +1,5 @@
 const { AModel } = require("clappybot/dist/libraries/models/AModel");
-const { CBPermissions } = require("clappybot/dist/libraries/permissions/permissions");
+const { PermissionsBits } = require("clappybot/dist/libraries/permissions/bits");
 
 class APermissions extends AModel
 {
@@ -7,24 +7,38 @@ class APermissions extends AModel
 		user_id: 'string',
 		bits: 'integer'
 	};
+
+	/**
+	 * 
+	 * @param {number} permission_bit 
+	 */
 	add(permission_bit)
 	{
-		this.bits = this.bits | permission_bit;
+		this.bits |= permission_bit;
 	}
+
+	/**
+	 * 
+	 * @param {number} permission_bit 
+	 */
 	remove(permission_bit)
 	{
-		this.bits = this.bits - permission_bit;
+		this.bits &= ~permission_bit;
+	}
+	reset()
+	{
+		this.bits = 0;
 	}
 	has(permission_bit)
 	{
 		return (
-			this.bits && CBPermissions.Owner
-			|| this.bits && permission_bit
+			this.bits & PermissionsBits.Owner
+			|| this.bits & permission_bit
 		);
 	}
 	isAdmin()
 	{
-		return (this.bits && CBPermissions.Admin);
+		return (this.bits & PermissionsBits.Admin);
 	}
 }
 

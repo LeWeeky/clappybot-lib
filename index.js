@@ -42,6 +42,9 @@ const { sqlite_insert } = require("clappybot/dist/libraries/sql/sqlite/insert")
 const { sqlite_request } = require("clappybot/dist/libraries/sql/sqlite/request")
 const { sqlite_select } = require("clappybot/dist/libraries/sql/sqlite/select")
 const { sqlite_update } = require("clappybot/dist/libraries/sql/sqlite/update")
+const { UserPermissions } = require("clappybot/dist/libraries/permissions/permissions")
+const { PermissionsBits } = require("clappybot/dist/libraries/permissions/bits")
+const { GlobalPermissions, GuildPermissions } = require("clappybot/dist/models/Permissions")
 
 module.exports = {
 	clappybot,
@@ -91,5 +94,9 @@ module.exports = {
 	sqlite_insert,
 	sqlite_request,
 	sqlite_select,
-	sqlite_update
+	sqlite_update,
+	PermissionsBits,
+	GlobalPermissions,
+	GuildPermissions,
+	UserPermissions
 }

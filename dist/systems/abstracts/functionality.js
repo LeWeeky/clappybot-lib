@@ -94,7 +94,7 @@ class AFunctionalities
 		{
 			if (file.endsWith(extention))
 			{
-				const file_path = `../../.${path}/${file}`;
+				const file_path = `../../../../.${path}/${file}`;
 				const handler = require(file_path.slice(0, file_path.length - 3));
 				this.add(handler, file_path);	
 			}
@@ -129,18 +129,18 @@ class AFunctionalities
 			{
 				if (module.endsWith(".js"))
 				{
-					const file_path = `../../../${addons_path}/${this._config.addons}/${module}`;
+					const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}`;
 					const handler = require(file_path.slice(0, file_path.length - 3));
 					this.add(handler, file_path);
 				}
 				else if (statSync(`${addons_path}${this._config.addons}/${module}`).isDirectory())
 				{
-					readdirSync(`../../${addons_path}/${this._config.addons}/${module}`)
+					readdirSync(`../../../../${addons_path}/${this._config.addons}/${module}`)
 					.forEach(file =>
 					{
 						if (file.endsWith(".js"))
 						{
-							const file_path =`../../../${addons_path}/${this._config.addons}/${module}/${file}`;
+							const file_path =`../../../../../${addons_path}/${this._config.addons}/${module}/${file}`;
 							const handler = require(file_path.slice(0, file_path.length - 3));
 							this.add(handler, file_path);
 						}
@@ -167,7 +167,7 @@ class AFunctionalities
 					}
 					else if (this.isDirectFile(file))
 					{
-						const file_path = `../../../sources/modules/${module}/${file}`;
+						const file_path = `../../../../../sources/modules/${module}/${file}`;
 						const handler  = require(file_path.slice(0, file_path.length - 3));
 						this.add(handler, file_path);
 					}
