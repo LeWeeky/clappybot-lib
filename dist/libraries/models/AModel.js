@@ -30,11 +30,11 @@ class AModel {
 	 */
 	static belongs_to = [];
 	/**
-	 * @type {AModel[]}
+	 * @type {Array<typeof AModel>}
 	 */
 	static has_one = [];
 	/**
-	 * @type {AModel[]}
+	 * @type {Array<typeof AModel>}
 	 */
 	static has_many = [];
 	/**
