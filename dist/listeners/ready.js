@@ -46,7 +46,7 @@ function printReadyMessage(bot)
     )
 }
 
-const name = "ready";
+const name = "clientReady";
 /**
  * 
  * @param {Client} bot 
