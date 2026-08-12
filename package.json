@@ -15,19 +15,15 @@
 		"dist"
 	],
 	"scripts": {
-		"build": "tsc",
 		"clean": "rm -rf dist",
-		"test": ""
+		"build": "npm run clean && tsc && copyfiles -u 1 \"src/**/*.json\" dist"
 	},
 	"dependencies": {
 		"better-sqlite3": "^13.0.3",
-		"cron": "^3.1.8",
 		"discord.js": "^14.26.4",
 		"dotenv": "^16.4.5",
-		"fs": "^0.0.1-security",
-		"he": "^1.2.0",
-		"jsonfile": "^6.1.0",
-		"mysql2": "^3.11.3"
+		"mysql2": "^3.11.3",
+		"pg": "^8.23.0"
 	},
 	"keywords": [
 		"discord-js",
@@ -39,6 +35,7 @@
 	},
 	"homepage": "https://github.com/LeWeeky/clappybot-lib#readme",
 	"devDependencies": {
+		"copyfiles": "^2.4.1",
 		"typescript": "^7.0.2"
 	},
 	"allowScripts": {

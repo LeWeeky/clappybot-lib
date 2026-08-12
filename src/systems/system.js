@@ -35,6 +35,7 @@ const { ReactionsAdd } = require("./reactions/add");
 const { ReactionsRemove } = require("./reactions/remove");
 const { Tasks } = require("./tasks");
 const { VoicesStateUpdate } = require("./voicesStateUpdate");
+const fs = require("fs");
 
 class System
 
@@ -120,6 +121,11 @@ class System
 	channelsCreate;
 
 	/**
+	 * @type {ChannelsUpdate}
+	 */
+	channelsUpdate;
+
+	/**
 	 * @type {ChannelsDelete}
 	 */
 	channelsDelete;
@@ -155,6 +161,11 @@ class System
 	async init()
 	{
 		try {
+			if (!fs.existsSync("./sources/modules")) {
+				console.warn("Directory './sources/modules' does not exist, skipping system initialisation");
+				return ;
+			}
+
 			await this.initialisers.load();
 			await this.commands.load();
 			await this.messageCreate.load();

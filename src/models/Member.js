@@ -9,6 +9,7 @@ class Member extends AModel
 		user_id: 'string',
 		mute: 'boolean'
 	};
+	/** @type {Array<typeof AModel>} */
 	static has_many = [
         HistoryPage
     ]

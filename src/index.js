@@ -9,9 +9,8 @@ const { ban } = require("./libraries/sanctions/ban")
 const { History } = require("./libraries/sanctions/history")
 const { kick } = require("./libraries/sanctions/kick")
 const { mute } = require("./libraries/sanctions/mute")
-const { modules } = require("./systems/modules")
 const { binarySearch } = require("./libraries/fetching/binary_search")
-const { apiCall } = require("./libraries/fetching/call_api")
+const { apiCall } = require("./libraries/api/call_api")
 const { getDomain } = require("./libraries/fetching/get_domain")
 const { getTargetUser } = require("./libraries/fetching/target_user")
 const { replaceByVariables } = require("./libraries/formating/replace")
@@ -34,6 +33,14 @@ const { mysql_insert } = require("./libraries/sql/mysql/insert")
 const { mysql_request } = require("./libraries/sql/mysql/request")
 const { mysql_select } = require("./libraries/sql/mysql/select")
 const { mysql_update } = require("./libraries/sql/mysql/update")
+const { postgresql_count } = require("./libraries/sql/postgresql/count")
+const { postgresql_create_table } = require("./libraries/sql/postgresql/create")
+const { postgresql_delete } = require("./libraries/sql/postgresql/delete")
+const { postgresql_exists } = require("./libraries/sql/postgresql/exists")
+const { postgresql_insert } = require("./libraries/sql/postgresql/insert")
+const { postgresql_request } = require("./libraries/sql/postgresql/request")
+const { postgresql_select } = require("./libraries/sql/postgresql/select")
+const { postgresql_update } = require("./libraries/sql/postgresql/update")
 const { sqlite_count } = require("./libraries/sql/sqlite/count")
 const { sqlite_create_table } = require("./libraries/sql/sqlite/create")
 const { sqlite_delete } = require("./libraries/sql/sqlite/delete")
@@ -46,57 +53,74 @@ const { UserPermissions } = require("./libraries/permissions/permissions")
 const { PermissionsBits } = require("./libraries/permissions/bits")
 const { GlobalPermissions, GuildPermissions } = require("./models/Permissions")
 
-module.exports = {
-	clappybot,
-	Colors,
-	AModel,
-	MySQLDriver,
-	SqliteDriver,
-	DataBaseWrapper,
-	ban,
-	kick,
-	mute,
-	History,
-	DiscordClient,
-	modules,
-	binarySearch,
-	apiCall,
-	getDomain,
-	getTargetUser,
-	replaceByVariables,
-	split,
-	subString,
-	charIsNumber,
-	stringIsNumber,
-	isImage,
-	isDomainName,
-	isSendable,
-	isOwner,
-	system,
-	User,
-	Messages,
-	getMessageData,
-	newMessage,
-	getLoadingButton,
-	Random,
-	mysql_count,
-	mysql_create_table,
-	mysql_delete,
-	mysql_exists,
-	mysql_insert,
-	mysql_request,
-	mysql_select,
-	mysql_update,
-	sqlite_count,
-	sqlite_create_table,
-	sqlite_delete,
-	sqlite_exists,
-	sqlite_insert,
-	sqlite_request,
-	sqlite_select,
-	sqlite_update,
-	PermissionsBits,
-	GlobalPermissions,
-	GuildPermissions,
-	UserPermissions
-}
+exports.clappybot = clappybot;
+exports.Colors = Colors;
+exports.AModel = AModel;
+exports.MySQLDriver = MySQLDriver;
+exports.SqliteDriver = SqliteDriver;
+exports.DataBaseWrapper = DataBaseWrapper;
+
+exports.ban = ban;
+exports.kick = kick;
+exports.mute = mute;
+exports.History = History;
+
+exports.DiscordClient = DiscordClient;
+
+exports.binarySearch = binarySearch;
+exports.apiCall = apiCall;
+exports.getDomain = getDomain;
+exports.getTargetUser = getTargetUser;
+
+exports.replaceByVariables = replaceByVariables;
+exports.split = split;
+exports.subString = subString;
+
+exports.charIsNumber = charIsNumber;
+exports.stringIsNumber = stringIsNumber;
+exports.isImage = isImage;
+exports.isDomainName = isDomainName;
+exports.isSendable = isSendable;
+exports.isOwner = isOwner;
+
+exports.system = system;
+
+exports.User = User;
+exports.Messages = Messages;
+exports.getMessageData = getMessageData;
+exports.newMessage = newMessage;
+
+exports.getLoadingButton = getLoadingButton;
+exports.Random = Random;
+
+exports.mysql_count = mysql_count;
+exports.mysql_create_table = mysql_create_table;
+exports.mysql_delete = mysql_delete;
+exports.mysql_exists = mysql_exists;
+exports.mysql_insert = mysql_insert;
+exports.mysql_request = mysql_request;
+exports.mysql_select = mysql_select;
+exports.mysql_update = mysql_update;
+
+exports.postgresql_count = postgresql_count;
+exports.postgresql_create_table = postgresql_create_table;
+exports.postgresql_delete = postgresql_delete;
+exports.postgresql_exists = postgresql_exists;
+exports.postgresql_insert = postgresql_insert;
+exports.postgresql_request = postgresql_request;
+exports.postgresql_select = postgresql_select;
+exports.postgresql_update = postgresql_update;
+
+exports.sqlite_count = sqlite_count;
+exports.sqlite_create_table = sqlite_create_table;
+exports.sqlite_delete = sqlite_delete;
+exports.sqlite_exists = sqlite_exists;
+exports.sqlite_insert = sqlite_insert;
+exports.sqlite_request = sqlite_request;
+exports.sqlite_select = sqlite_select;
+exports.sqlite_update = sqlite_update;
+
+exports.PermissionsBits = PermissionsBits;
+exports.GlobalPermissions = GlobalPermissions;
+exports.GuildPermissions = GuildPermissions;
+exports.UserPermissions = UserPermissions;

@@ -17,7 +17,6 @@
  */
 
 const { readdirSync, statSync } = require("fs");
-const { isEnable } = require("../../libraries/informations/is_enable");
 const { clappybot } = require("../../main");
 
 class Initialisers
@@ -41,15 +40,14 @@ class Initialisers
 		readdirSync("./sources/modules")
 		.forEach(module => 
 		{
-			if (statSync(`./sources/modules/${module}`).isDirectory()
-				&& isEnable(module))
+			if (!module.startsWith(".") && statSync(`./sources/modules/${module}`).isDirectory())
 			{
 				readdirSync(`./sources/modules/${module}`)
 				.forEach(file =>
 				{
 					if (file == "init.js")
 					{
-						const file_path = `../../../../../sources/modules/${module}/${file}`;
+						const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
 						const initialiser = require(file_path.slice(0, file_path.length - 3));
 						if (initialiser.init_module)
 							list.push(initialiser.init_module(connection));

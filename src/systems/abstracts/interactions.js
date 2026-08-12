@@ -17,7 +17,6 @@
  */
 
 const { MessageFlags } = require("discord.js");
-const { isEnable } = require("../../libraries/informations/is_enable");
 const { AActions, AAction } = require("./actions");
 
 class AInteractions extends AActions
@@ -117,21 +116,14 @@ class AInteractions extends AActions
 				}
 			}
 		}
-		if (isEnable(interaction.customId.split("-")[0]))
-		{
-			console.error(`${this._config.title}:`, interaction.customId, "doesn't work or doesn't exist!")
-			interaction.reply(
-				{
-					content:
-						"Désolé mais, une erreur est survenue, contactez le développeur !",
-					flags: [MessageFlags.Ephemeral]
-				}
-			)
-		}
-		else
-		{
-			interaction.reply({content: "Désolé mais, cette fonctionnalitée a été désactivée !", flags: [MessageFlags.Ephemeral]})
-		}
+		console.error(`${this._config.title}:`, interaction.customId, "doesn't work or doesn't exist!")
+		interaction.reply(
+			{
+				content:
+					"Désolé mais, une erreur est survenue, contactez le développeur !",
+				flags: [MessageFlags.Ephemeral]
+			}
+		)
 	}
 }
 

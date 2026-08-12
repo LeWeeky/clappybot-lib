@@ -17,7 +17,6 @@
  */
 
 const { readdirSync, existsSync, statSync } = require("fs");
-const { isEnable } = require("../../libraries/informations/is_enable");
 
 class AFunctionalities
 {
@@ -75,6 +74,10 @@ class AFunctionalities
 		this._list = [];
 	}
 
+	/**
+	 * 
+	 * @returns {string}
+	 */
 	#getExtension()
 	{
 		if (this._config.shared_folder)
@@ -94,7 +97,7 @@ class AFunctionalities
 		{
 			if (file.endsWith(extention))
 			{
-				const file_path = `../../../../.${path}/${file}`;
+				const file_path = `${path}/${file}`;
 				const handler = require(file_path.slice(0, file_path.length - 3));
 				this.add(handler, file_path);	
 			}
@@ -155,19 +158,19 @@ class AFunctionalities
 		readdirSync("./sources/modules")
 		.forEach(module => 
 		{
-			if (statSync(`./sources/modules/${module}`).isDirectory()
-				&& isEnable(module))
+			if (!module.startsWith(".") && statSync(`./sources/modules/${module}`).isDirectory())
 			{
 				readdirSync(`./sources/modules/${module}`)
 				.forEach(file =>
 				{
 					if (file == this._config.folder)
 					{
-						this.load_dir(`./sources/modules/${module}/${file}`)
+						this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`)
 					}
 					else if (this.isDirectFile(file))
 					{
-						const file_path = `../../../../../sources/modules/${module}/${file}`;
+						const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
+						console.log("file_path", file_path)
 						const handler  = require(file_path.slice(0, file_path.length - 3));
 						this.add(handler, file_path);
 					}

@@ -16,10 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { apiCall } = require("./call_api");
+const { apiCall } = require("../api/call_api");
 
-async function get_owner_id(service_id)
+async function getOwnerId(service_id)
 {
+	if (!process.env.API_URI)
+		return (null);
 	const response = await apiCall(`service/${service_id}/owner/`);
 
 	if (!response || !response.ok)
@@ -33,5 +35,5 @@ async function get_owner_id(service_id)
 }
 
 module.exports = {
-	get_owner_id
+	getOwnerId
 }

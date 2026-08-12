@@ -3,3 +3,6 @@ tmp
 node_modules
 package-lock.json
 dist
+db
+*.tgz
+.env

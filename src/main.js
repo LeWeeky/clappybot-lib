@@ -20,80 +20,16 @@
 /////////////////////////////////////////    CLAPPYBOTS ~ MAIN     //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const { Random } = require('./libraries/random_numbers');
-const { Client } = require('discord.js');
+const { DiscordClient }  = require('./libraries/client');
 const { readdirSync } = require('fs');
-const dotenv = require("dotenv");
-const { exit } = require('process');
-const { get_owner_id } = require('./libraries/fetching/owner');
-// const { version } = require("package.json");
-const version = "alpha";
+const dotenv = require("dotenv"); 
+const { getOwnerId } = require('./libraries/api/owner');
+const { version } = require("../package.json");
 const { DataBaseWrapper } = require('./libraries/models/DataBaseWrapper');
 const { MySQLDriver } = require('./libraries/models/MySQLDriver');
 const { SqliteDriver } = require('./libraries/models/SqliteDriver');
-const { ADriver } = require('./libraries/models/ADriver');
 const { Config } = require('./models/Config');
 const { RebootMessage } = require('./models/RebootMessage');
-
-function getAscii()
-
-{
-    const ASCII =
-
-    [
-`
-.__                        
-/  | _  _  _   |__| _  _|_ 
-\\__|(_||_)|_)\\/|  |(_)_)|_ 
-    |  |  /             
-`.trim()
-
-        ,
-
-`-------- ปรบมือโฮสติ้ง --------`
-
-        ,
-
-`-------- paʻipaʻi hoʻokipa --------`
-        ,
-
-`
--.-. .-.. .- .--. .--. -.-- .... --- ... -
-`.trim(),
-`-------- クラッピークルー --------`
-        ,
-
-`
-.---..-.   .---..---..---..-..-..-. .-..----..---..---.
-| |  | |__ | | || |-'| |-' >  / | |=| || || | \\ \\ \`| |'
-\`---'\`----'\`-^-'\`-'  \`-'   \`-'  \`-' \`-'\`----'\`---' \`-' 
-`.trim()
-
-        ,
-
-`
-.  ,___ _                       __             
-  /   ///                      ( /  /       _/_
- /    // __,   ,_    ,_   __  , /--/ __ (   /  
-(___/(/_(_/(__/|_)__/|_)_/ (_/_/  /_(_)/_)_(__ 
-            /|    /|      /                  
-            (/    (/      '                  
-`.trim()
-        ,
-
-`
-.  ____ _                         _   _           _   
-  / ___| | __ _ _ __  _ __  _   _| | | | ___  ___| |_ 
- | |   | |/ _\` | '_ \\| '_ \\| | | | |_| |/ _ \\/ __| __|
- | |___| | (_| | |_) | |_) | |_| |  _  | (_) \__ \ |_ 
- \\____|_|\\__,_| .__/| .__/ \\__, |_| |_|\\___/|___/\\__|
-            |_|   |_|    |___/                                   
-`.trim()
-    ]
-
-    const i = new Random(0, ASCII.length).next();
-    return (ASCII[i])
-}
 
 function showMissingParameters()
 {
@@ -109,11 +45,11 @@ function showMissingParameters()
 	if (!process.env.DB_HOST)
 		warn("DB_HOST");
 	if (!process.env.DB_USER)
-		warn("DB_HOST");
+		warn("DB_USER");
 	if (!process.env.DB_PASSWORD)
-		warn("DB_HOST");
+		warn("DB_PASSWORD");
 	if (!process.env.DB_NAME)
-		warn("DB_HOST");
+		warn("DB_NAME");
 }
 
 class ClappyBot
@@ -133,13 +69,6 @@ class ClappyBot
 	owner_id;
 
 	/**
-	 * This class is deprecated and will be
-	 * removed in few updates
-	 * @type {ADriver}
-	 */
-	database;
-
-	/**
 	 * Envelops several databases, for example if you want
 	 * a faster local database for small items and a larger
 	 * remote one linked to your panel
@@ -150,8 +79,8 @@ class ClappyBot
     constructor ()
 
     {
-		dotenv.config({path: "./data/.env", override: true});
-        this.bot = new Client({intents: 3276799});
+		dotenv.config({path: ".env", override: true});
+        this.bot = new DiscordClient();
 		this.databases = new DataBaseWrapper();
         this.guild_id = null;
         this.owner_id = null;
@@ -159,30 +88,24 @@ class ClappyBot
         this.ready = false;
         this.version = version
         this.modules = {};
-		this.tmp_modules = {};
-        this.disabled_modules = {};
         this.prefix = "+";
-        this.dolphin = false;
-        this.swap = {
-            ram_log: [],
-            invives: {},
-            antiraid: {
-                members: {},
-                channels: {},
-                guild: {}
-            },
-            mutex: {},
-            tmp: {}
-        };
+        this.swap = {};
     }
 
     /**
      * 
-     * @param {Client} bot 
+     * @param {Client} bot?
      */
     async init (bot)
 
     {
+		if (!bot)
+			bot = this.bot;
+		if (!process.env.DB_FOLDER_PATH || process.env.DB_FOLDER_PATH.length == 0)
+			process.env.DB_FOLDER_PATH = "./"
+		if (!process.env.DB_FOLDER_PATH.endsWith("/"))
+			process.env.DB_FOLDER_PATH = process.env.DB_FOLDER_PATH + "/"
+
 		switch (process.env.DB_DRIVER)
 		{
 			case "mysql":
@@ -209,19 +132,43 @@ class ClappyBot
 				}	
 				break;
 
-			case "sqlite":
-				if (process.env.DB_PATH)
+			case "postgres":
+				if (process.env.DB_HOST && process.env.DB_USER
+					&& process.env.DB_PASSWORD && process.env.DB_NAME)
 				{
 					this.databases.add(
-						new SqliteDriver({
-							path: process.env.DB_PATH,
+						new PostgreSQLDriver({
+							host: process.env.DB_HOST,
+							user: process.env.DB_USER,
+							password: process.env.DB_PASSWORD,
+							database: process.env.DB_NAME,
+							supportBigNumbers: true,
+							bigNumberStrings: true
 						}),
 						"main"
 					);
 				}
 				else
 				{
-					this.critical("You have to set DB_PATH when DB_DRIVER=sqlite");
+					this.critical("some database parameters are missing");
+					showMissingParameters();
+					process.exit(78);
+				}	
+				break;
+
+			case "sqlite":
+				if (process.env.DB_NAME)
+				{
+					this.databases.add(
+						new SqliteDriver({
+							path: process.env.DB_FOLDER_PATH + process.env.DB_NAME,
+						}),
+						"main"
+					);
+				}
+				else
+				{
+					this.critical("DB_NAME is missing");
 					process.exit(78);
 				}
 				break;
@@ -235,24 +182,25 @@ class ClappyBot
 		}
 		this.databases.add(
 			new SqliteDriver({
-				path: "data/cache.sqlite",
+				path: process.env.DB_FOLDER_PATH + "cache.sqlite",
 			}),
 			"cache"
 		);
 		if (!process.env.TOKEN || process.env.TOKEN.length == 0)
         {
 			this.critical("Token not found ...");
-			exit(2);
+			process.exit(2);
 		}
         if (!process.env.TOKEN || process.env.TOKEN.length == 0)
         {
 			console.error("Token not found ...");
-			exit(2);
+			process.exit(2);
 		}
         bot.login(process.env.TOKEN);
-        readdirSync("./node_modules/./listeners/")
-        .forEach(file => 
-        {
+        readdirSync(__dirname + '/listeners')
+        .forEach(file => {
+			if (!file.endsWith(".js"))
+				return ;
             const event = require(`./listeners/${file}`);
             bot.on(event.name, (...args) => {
                 if (event.name == "ready")
@@ -308,7 +256,7 @@ class ClappyBot
 			process.exit(127);
 		}
 
-       	this.owner_id = await get_owner_id(process.env.SERVICE_ID);
+       	this.owner_id = await getOwnerId(process.env.SERVICE_ID);
 
         this.ready = true;
 
@@ -395,60 +343,8 @@ class ClappyBot
 
         return (members);
     }
-
-    ram_debug()
-
-    {
-        const ram_now = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 10) / 10;
-        let i = 0;
-        let total = ram_now;
-
-        this.swap['ram_log'].push(ram_now)
-
-        while (this.swap['ram_log'][i])
-        {
-            total+= this.swap['ram_log'][i]
-            i++;
-        }
-
-        const avarage = Math.round(total / i * 10) / 10;
-        console.log(
-            `---------------\n`+
-            `   RAM USAGE\n`+
-            `---------------\n`+
-            `Now: ${ram_now}Mb\n`+
-            `Avarage: ${avarage}Mb\n`+
-            `---------------`
-        )
-
-        return (
-            ` -------------------\n`+
-            `   Actuel: ${ram_now}Mb\n`+
-            `   Moyenne: ${avarage}Mb\n`+
-            ` -------------------`
-        );
-    }
-
-	// depreciate, will be deleted
-    async last_version(data = "version")
-    {
-        const version_page = await fetch("https://clappycrew.com/clappybots/last_version");
-        if (version_page)
-
-        {
-            const version_to_json = await version_page.json();
-            if (version_to_json)
-
-            {
-                if (data == "all")
-                    return (version_to_json);
-                return (version_to_json[data])
-            }
-        }
-        return (version);
-    }
 }
 
 const clappybot = new ClappyBot();
 
-module.exports = { clappybot, version, getAscii }
+module.exports = { clappybot }

@@ -18,7 +18,6 @@
 
 const { readdirSync, existsSync, statSync } = require("fs");
 const { Message, ChannelType, ChatInputCommandInteraction, SlashCommandBuilder, MessageFlags } = require("discord.js");
-const { isEnable } = require("../libraries/informations/is_enable");
 const { SlashCommands } = require("./interactions/slashCmd");
 // const cmdCreator = require("../modules/cmdcreator/cmd_listener");
 // const { get_commands } = require("../modules/cmdcreator/functions/get_commands");
@@ -98,7 +97,7 @@ class Commands extends AActions
 		{
 			if (file.endsWith(".js"))
 			{
-				const file_path = `../../../.${path}/${file}`;
+				const file_path = `${path}/${file}`;
 				const command = require(file_path.slice(0, file_path.length - 3));
 				if (command.parse)
 				{
@@ -151,7 +150,7 @@ class Commands extends AActions
 			{
 				if (module.endsWith(config.extension))
 				{
-					const file_path = `../../add-on/${config.addons}/${module}`;
+					const file_path = `${process.cwd()}/add-on/${config.addons}/${module}`;
 					const command = require(file_path.slice(0, file_path.length - 3));
 					if (command.parse)
 					{
@@ -168,7 +167,7 @@ class Commands extends AActions
 					{
 						if (file.endsWith(config.extension))
 						{
-							const file_path = `../../add-on/${config.addons}/${module}/${file}`;
+							const file_path = `${process.cwd()}/add-on/${config.addons}/${module}/${file}`;
 							const command = require(file_path.slice(0, file_path.length - 3));
 							if (command.parse)
 							{
@@ -189,19 +188,18 @@ class Commands extends AActions
 		readdirSync("./sources/modules")
 		.forEach(module => 
 		{
-			if (statSync(`./sources/modules/${module}`).isDirectory()
-				&& isEnable(module))
+			if (!module.startsWith(".") && statSync(`./sources/modules/${module}`).isDirectory())
 			{
 				readdirSync(`./sources/modules/${module}`)
 				.forEach(file =>
 				{
 					if (file == config.folder)
 					{
-						this.#load_dir(`./sources/modules/${module}/${config.folder}`)
+						this.#load_dir(`${process.cwd()}/sources/modules/${module}/${config.folder}`)
 					}
 					else if (file.endsWith(config.extension) || this.isDirectFile(file))
 					{
-						const file_path = `../../../../sources/modules/${module}/${file}`;
+						const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
 						const command = require(file_path.slice(0, file_path.length - 3));
 						if (command.parse)
 						{

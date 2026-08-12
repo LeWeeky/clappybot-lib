@@ -28,6 +28,11 @@ class History
 	 */
 	member;
 
+    
+    /**
+     * @param {*} user
+     * @param {string} guild_id
+     */
     constructor(user, guild_id)
     {
         this.user = user;
@@ -36,6 +41,9 @@ class History
 		console.log(this.member)
     }
 
+    /**
+     * @returns {Promise<HistoryPage[]>}
+     */
     async get()
     {
 		if (!this.member)
@@ -46,6 +54,12 @@ class History
         return (this.member.history);
     }
 
+    /**
+     * @param {*} sanction
+     * @param {string} reason
+     * @param {*} author
+     * @returns {Promise<HistoryPage>}
+     */
     async add(sanction, reason, author)
     {
 		if (!this.member)
