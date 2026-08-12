@@ -30,10 +30,10 @@ async function postgresql_exists(connection, table, where, data = null) {
         let rows;
 
         if (data) {
-            const [resRows, fields] = await connection.promise().execute(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`, data);
+            const [resRows, fields] = await connection.execute(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`, data);
             rows = resRows;
         } else {
-            const [resRows, fields] = await connection.promise().query(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`);
+            const [resRows, fields] = await connection.query(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`);
             rows = resRows;
         }
         

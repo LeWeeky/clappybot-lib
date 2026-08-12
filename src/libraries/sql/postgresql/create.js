@@ -28,9 +28,9 @@
 async function postgresql_create_table(connection, name, content, more = null) {
     try {
         if (more) {
-            await connection.promise().query(`CREATE TABLE IF NOT EXISTS ${name} (${content}) ${more}`);
+            await connection.query(`CREATE TABLE IF NOT EXISTS ${name} (${content}) ${more}`);
         } else {
-            await connection.promise().query(`CREATE TABLE IF NOT EXISTS ${name} (${content})`);
+            await connection.query(`CREATE TABLE IF NOT EXISTS ${name} (${content})`);
         }
         
         if (process.env.DEBUG_INFO == "true")

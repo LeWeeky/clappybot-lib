@@ -20,8 +20,8 @@
 /**
  * 
  * @param {*} connection 
- * @param {*} table 
- * @param {*} where 
+ * @param {string} table 
+ * @param {string | null} where 
  * @param {any[] | null} data 
  * @returns {Promise<number>}
  */
@@ -30,14 +30,14 @@ async function postgresql_count(connection, table, where = null, data = null) {
         let rows;
 
         if (!where) {
-            const [resRows, fields] = await connection.promise().query(`SELECT COUNT(*) AS occurrences FROM ${table}`);
-            rows = resRows;
+            const { rows: rows_ } = await connection.query(`SELECT COUNT(*) AS occurrences FROM ${table}`);
+            rows = rows_;
         } else if (data) {
-            const [resRows, fields] = await connection.promise().execute(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`, data);
-            rows = resRows;
+            const { rows: rows_ } = await connection.query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`, data);
+            rows = rows_;
         } else {
-            const [resRows, fields] = await connection.promise().query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`);
-            rows = resRows;
+            const { rows: rows_ } = await connection.query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`);
+            rows = rows_;
         }
 
         if (process.env.DEBUG_INFO == "true")

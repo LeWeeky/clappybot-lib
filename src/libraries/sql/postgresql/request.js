@@ -31,14 +31,12 @@ async function postgresql_request(connection, request, data = null)
 
 		if (data)
 		{
-			const [rows_, fields] = await connection.promise()
-			.query(request, data);
+			const [rows_, fields] = await connection.query(request, data);
 			rows = rows_;
 		}
 		else
 		{
-			const [rows_, fields] = await connection.promise()
-			.query(request);
+			const [rows_, fields] = await connection.query(request);
 			rows = rows_;
 		}
 

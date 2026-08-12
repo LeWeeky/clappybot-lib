@@ -16,7 +16,9 @@
 	],
 	"scripts": {
 		"clean": "rm -rf dist",
-		"build": "npm run clean && tsc && copyfiles -u 1 \"src/**/*.json\" dist"
+		"build": "npm run clean && tsc && copyfiles -u 1 \"src/**/*.json\" dist",
+		"prepack": "npm run build",
+		"prepublish": "npm run build"
 	},
 	"dependencies": {
 		"better-sqlite3": "^13.0.3",

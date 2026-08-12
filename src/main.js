@@ -28,8 +28,11 @@ const { version } = require("../package.json");
 const { DataBaseWrapper } = require('./libraries/models/DataBaseWrapper');
 const { MySQLDriver } = require('./libraries/models/MySQLDriver');
 const { SqliteDriver } = require('./libraries/models/SqliteDriver');
+const { PostgreSQLDriver } = require('./libraries/models/PostgreSQLDriver');
+
 const { Config } = require('./models/Config');
 const { RebootMessage } = require('./models/RebootMessage');
+const { Client }  = require('discord.js');
 
 function showMissingParameters()
 {
@@ -142,8 +145,6 @@ class ClappyBot
 							user: process.env.DB_USER,
 							password: process.env.DB_PASSWORD,
 							database: process.env.DB_NAME,
-							supportBigNumbers: true,
-							bigNumberStrings: true
 						}),
 						"main"
 					);

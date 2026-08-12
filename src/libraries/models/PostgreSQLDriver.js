@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+const pg = require('pg');
 const { ADriver } = require('./ADriver');
 const { postgresql_request } = require('../sql/postgresql/request');
 const { postgresql_create_table } = require('../sql/postgresql/create');
-const { postgresql_insert, postgresql_last_insert_id } = require('../sql/postgresql/insert');
+const { postgresql_insert } = require('../sql/postgresql/insert');
 const { postgresql_update } = require('../sql/postgresql/update');
 const { postgresql_select } = require('../sql/postgresql/select');
 const { postgresql_delete } = require('../sql/postgresql/delete');
@@ -30,9 +30,16 @@ const { postgresql_count } = require('../sql/postgresql/count');
 class PostgreSQLDriver extends ADriver
 {
    /**
-    * @type {typeof import('pg').Client}
+    * 
+    * @param {{
+    * 	host: string,
+    * 	user: string,
+    * 	password: string,
+    * 	database: string,
+    * }} parameters 
+    * @return {typeof pg.Client}
     */
-   static _create = require('pg').Client;
+   static _create = (parameters) => new pg.Pool({...parameters, max: 10});
 
    /**
     * 
@@ -41,13 +48,25 @@ class PostgreSQLDriver extends ADriver
     * 	user: string,
     * 	password: string,
     * 	database: string,
-    * 	supportBigNumbers?: boolean,
-    * 	bigNumberStrings?: boolean
     * }} parameters 
     */
    constructor(parameters)
    {
    	super(parameters);
+   }
+
+   connect()
+   {
+      super.connect();
+      if (this._connection && !this._connection._connecting && !this._connection._connected)
+         void this._connection.connect().catch((error) => {
+            if (process.env.DEBUG_ERROR != "false")
+            {
+               console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : connexion PostgreSQL`);
+               console.error(error);
+            }
+         });
+      return (this._connection);
    }
 
    break()
@@ -78,7 +97,7 @@ class PostgreSQLDriver extends ADriver
    /**
     * Replaces the "friendly type" with the type in PostgreSQL
     * @param {string} field 
-    * @param {{}} fields
+    * @param {Record<string, string>} fields
     * @returns 
     */
    static toQueryType(field, fields)
@@ -151,9 +170,7 @@ class PostgreSQLDriver extends ADriver
    {
    	let last_id = 0;
    	const connect = this.connect();
-   	await postgresql_insert(connect, table, element, data);
-   	if (get_last_id)
-   		last_id = await postgresql_last_insert_id(connect);
+   	last_id = await postgresql_insert(connect, table, element, data);
    	this.break();
    	return (last_id);
    }

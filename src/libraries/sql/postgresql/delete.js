@@ -28,9 +28,9 @@
 async function postgresql_delete(connection, table, where, data = null) {
     try {
         if (data) {
-            await connection.promise().execute(`DELETE FROM ${table} WHERE ${where}`, data);
+            await connection.query(`DELETE FROM ${table} WHERE ${where}`, data);
         } else {
-            await connection.promise().query(`DELETE FROM ${table} WHERE ${where}`);
+            await connection.query(`DELETE FROM ${table} WHERE ${where}`);
         }
         
         if (process.env.DEBUG_INFO == "true")

@@ -22,7 +22,7 @@
  * @param {string} table 
  * @param {string | false} target 
  * @param {any[]} data 
- * @returns 
+ * @returns {Promise<number | null>} 
  */
 async function postgresql_insert(connection, table, target, data)
 {
@@ -34,21 +34,24 @@ async function postgresql_insert(connection, table, target, data)
     }
 
     try {
+        let rowId;
         if (target)
         {
-            await connection.promise().execute(
-                `INSERT INTO ${table} (${target}) VALUES (${targets})`, data
+            const { rows } = await connection.query(
+                `INSERT INTO ${table} (${target}) VALUES (${targets}) RETURNING id;`, data
             );
+            rowId = rows[0]?.id || 0;
         }
         else
         {
-            await connection.promise().execute(
-                `INSERT INTO ${table} VALUES (${targets})`, data
+            const { rows } = await connection.query(
+                `INSERT INTO ${table} VALUES (${targets}) RETURNING id;`, data
             );
+            rowId = rows[0]?.id || 0;
         }
 		if (process.env.DEBUG_INFO == "true")
         	console.info('\x1b[32m%s\x1b[0m', `✅ Table ${table} mise à jour (insert)`);
-		return (null);
+		return (rowId);
     }
     catch (error) {
 		if (process.env.DEBUG_ERROR != "false")
@@ -56,39 +59,10 @@ async function postgresql_insert(connection, table, target, data)
 			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : mise à jour de la Table ${table} (insert)`);
        		console.error(error);
 		}
-        return (error);
-    }
-}
-
-
-/**
- * 
- * @param {*} connection 
- * @returns 
- */
-async function postgresql_last_insert_id(connection)
-{
-    try {
-		const [row, field] = await connection.promise().query(
-			'SELECT LASTVAL() as id'
-		);
-		if (process.env.DEBUG_INFO == "true")
-        	console.info('\x1b[32m%s\x1b[0m', `✅ ID de la dernière insertion`);
-		if (!row || row.length == 0)
-			return (0);
-		return (row[0].id)
-    }
-    catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : impossible de récupérer l'ID de la dernière insertion`);
-       		console.error(error);
-		}
         return (0);
     }
 }
 
 module.exports = {
-    postgresql_insert,
-    postgresql_last_insert_id
+    postgresql_insert
 }

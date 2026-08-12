@@ -30,11 +30,11 @@ async function postgresql_update(connection, table, target, where, data = null)
     try {
 		if (!data)
 		{
-			 await connection.promise().query(`UPDATE ${table} SET ${target} WHERE ${where}`);
+			 await connection.query(`UPDATE ${table} SET ${target} WHERE ${where}`);
 		}
 		else
 		{
-			 await connection.promise().query(`UPDATE ${table} SET ${target} WHERE ${where}`, data);
+			 await connection.query(`UPDATE ${table} SET ${target} WHERE ${where}`, data);
 		}
 		if (process.env.DEBUG_INFO == "true")
 	    	console.log('\x1b[32m%s\x1b[0m', `✅ Table ${table} mise à jour`);

@@ -40,13 +40,13 @@ async function postgresql_select(connection, table, target, where = null, data =
 		{
 			if (data)
 			{
-				const [rows_, fields] = await connection.promise()
+				const { rows: rows_} = await connection
 				.query(`SELECT ${target} FROM ${table} WHERE ${where} ${limit_query}`, data);
 				rows = rows_;
 			}
 			else
 			{
-				const [rows_, fields] = await connection.promise()
+				const { rows: rows_} = await connection
 				.query(`SELECT ${target} FROM ${table} WHERE ${where} ${limit_query}`);
 				rows = rows_;
 			}
@@ -55,13 +55,13 @@ async function postgresql_select(connection, table, target, where = null, data =
 		{
 			if (data)
 				{
-					const [rows_, fields] = await connection.promise()
+					const {rows: rows_} = await connection
 					.query(`SELECT ${target} FROM ${table}`, data);
 					rows = rows_;
 				}
 				else
 				{
-					const [rows_, fields] = await connection.promise()
+					const {rows: rows_} = await connection
 					.query(`SELECT ${target} FROM ${table}`);
 					rows = rows_;
 				}
