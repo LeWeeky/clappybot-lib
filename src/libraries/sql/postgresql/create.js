@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
 
 /**
  * 
@@ -26,6 +27,8 @@
  * @returns 
  */
 async function postgresql_create_table(connection, name, content, more = null) {
+    more = prepareQuery(more);
+
     try {
         if (more) {
             await connection.query(`CREATE TABLE IF NOT EXISTS ${name} (${content}) ${more}`);

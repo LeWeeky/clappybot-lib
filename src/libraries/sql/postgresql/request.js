@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
 
 /**
  * 
@@ -26,6 +27,8 @@
  */
 async function postgresql_request(connection, request, data = null)
 {
+	request = prepareQuery(request);
+
 	try {
 		let rows;
 

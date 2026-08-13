@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
 
 /**
  * 
@@ -26,6 +27,8 @@
  * @returns 
  */
 async function postgresql_delete(connection, table, where, data = null) {
+    where = prepareQuery(where);
+
     try {
         if (data) {
             await connection.query(`DELETE FROM ${table} WHERE ${where}`, data);

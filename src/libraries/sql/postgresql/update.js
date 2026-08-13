@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
+
 /**
  * 
  * @param {*} connection 
@@ -30,11 +32,11 @@ async function postgresql_update(connection, table, target, where, data = null)
     try {
 		if (!data)
 		{
-			 await connection.query(`UPDATE ${table} SET ${target} WHERE ${where}`);
+			 await connection.query(prepareQuery(`UPDATE ${table} SET ${target} WHERE ${where}`));
 		}
 		else
 		{
-			 await connection.query(`UPDATE ${table} SET ${target} WHERE ${where}`, data);
+			 await connection.query(prepareQuery(`UPDATE ${table} SET ${target} WHERE ${where}`), data);
 		}
 		if (process.env.DEBUG_INFO == "true")
 	    	console.log('\x1b[32m%s\x1b[0m', `✅ Table ${table} mise à jour`);

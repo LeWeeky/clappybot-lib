@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
 
 /**
  * 
@@ -26,6 +27,8 @@
  */
 async function postgresql_insert(connection, table, target, data)
 {
+    target = prepareQuery(target);
+
     let targets = "$1";
 
     for (let i = 2; i <= data.length; i++)

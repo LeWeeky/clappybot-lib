@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
 
 /**
  * 
@@ -26,6 +27,8 @@
  * @returns {Promise<number>}
  */
 async function postgresql_count(connection, table, where = null, data = null) {
+    where = prepareQuery(where);
+
     try {
         let rows;
 

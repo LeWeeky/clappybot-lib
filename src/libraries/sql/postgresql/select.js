@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const { prepareQuery } = require("./prepare_query");
 
 /**
  * 
@@ -29,6 +30,8 @@
  */
 async function postgresql_select(connection, table, target, where = null, data = null, limit = 0)
 {
+	where = prepareQuery(where);
+
 	try {
 		let rows;
 		let limit_query = '';
