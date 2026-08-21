@@ -16,40 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AMessages, AMessage } = require("../abstracts/messages");
+import { AMessages, AMessage } from "../abstracts/messages.js";
 
 const config = {
-	"title": "messageDelete",
-	"descriptior": undefined,
-	"direct_names": ["messageDelete", "messagesDelete"],
-	"shared_folder": true,
-	"extension": "delete.js",
-	"folder": "messages",
-	"addons": "messages/delete"
+  title: "messageDelete",
+  descriptior: undefined,
+  direct_names: ["messageDelete", "messagesDelete"],
+  shared_folder: true,
+  extension: "delete.js",
+  folder: "messages",
+  addons: "messages/delete",
+};
+
+export class MessagesDelete extends AMessages {
+  constructor() {
+    super(MessageDelete, config);
+  }
 }
 
-class MessagesDelete extends AMessages
-{
-	constructor()
-	{
-		super(MessageDelete, config)
-	}
+export class MessageDelete extends AMessage {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * }} message Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(message, file_path) {
+    super(message, file_path);
+  }
 }
-
-class MessageDelete extends AMessage
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-	 * }} message Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(message, file_path)
-	{
-		super(message, file_path)
-	}
-}
-
-module.exports = { MessageDelete, MessagesDelete }

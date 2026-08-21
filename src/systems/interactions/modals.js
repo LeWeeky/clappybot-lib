@@ -16,39 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AInteraction, AInteractions } = require("../abstracts/interactions");
+import { AInteractions, AInteraction } from "../abstracts/interactions.js";
 
 const config = {
-	"title": "modal",
-	"descriptior": "ce formulaire",
-	"extension": "modal.js",
-	"folder": "modals",
-	"addons": "interactions/modals"
+  title: "modal",
+  descriptior: "ce formulaire",
+  extension: "modal.js",
+  folder: "modals",
+  addons: "interactions/modals",
+};
+
+export class Modals extends AInteractions {
+  constructor() {
+    super(Modal, config);
+  }
 }
 
-class Modals extends AInteractions
-{
-	constructor()
-	{
-		super(Modal, config)
-	}
+export class Modal extends AInteraction {
+  /**
+   *
+   * @param {{
+   * 	customId: string | undefined, conditions: Function[] | undefined, permissions: Function[]
+   * | undefined, dm: boolean | undefined , any_guild: boolean
+   * | undefined , parse: Function
+   * }} interaction Informations e la nouvelle interaction
+   * @param {string} file_path
+   */
+  constructor(interaction, file_path) {
+    super(interaction, file_path);
+  }
 }
-
-class Modal extends AInteraction
-{
-	/**
-	 * 
-	 * @param {{
-	* 	customId: string | undefined, conditions: Function[] | undefined, permissions: Function[]
-	* | undefined, dm: boolean | undefined , any_guild: boolean 
-	* | undefined , parse: Function
-	* }} interaction Informations e la nouvelle interaction
-	* @param {string} file_path
-	*/
-   constructor(interaction, file_path)
-   {
-	   super(interaction, file_path)
-   }
-}
-
-module.exports = { Modal, Modals }

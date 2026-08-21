@@ -16,45 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { isSpace } = require("../fetching/is_space");
+import isSpace from "../fetching/is_space.js";
 
 /**
  * Split tool to create command arguments from messsage.content
- * @param {string} content 
+ * @param {string} content
  * @returns {string[]}
  */
-function split(content)
-{
-    const args = []
-    const len = content.length;
-    let word = "";
-    let i = 0;
+export default function split(content) {
+  const args = [];
+  const len = content.length;
+  let word = "";
+  let i = 0;
 
-    while (i < len && isSpace(content[i])) i++;
-    while (i < len)
-    {
-        if (isSpace(content[i]))
-        {
-            args.push(word);
-            word = "";
-            while (i < len && isSpace(content[i])) i++;
-        }
-
-        else
-
-        if (i+1 == len)
-        {
-            args.push(`${word}${content[i]}`);
-            break;
-        }
-            else
-        {
-            word = `${word}${content[i]}`;
-            i++;
-        }
+  while (i < len && isSpace(content[i])) i++;
+  while (i < len) {
+    if (isSpace(content[i])) {
+      args.push(word);
+      word = "";
+      while (i < len && isSpace(content[i])) i++;
+    } else if (i + 1 == len) {
+      args.push(`${word}${content[i]}`);
+      break;
+    } else {
+      word = `${word}${content[i]}`;
+      i++;
     }
+  }
 
-    return (args);
+  return (args);
 }
-
-module.exports = { split }

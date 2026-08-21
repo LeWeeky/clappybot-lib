@@ -16,23 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+import { ButtonBuilder, ButtonStyle, ActionRowBuilder } from "discord.js";
 
-function getLoadingButton()
-{
-	return (
-		new ActionRowBuilder()
-		.addComponents(
-			new ButtonBuilder()
-			.setCustomId("loading")
-			.setDisabled(true)
-			.setLabel("Chargement en cours ...")
-			.setEmoji("⏳")
-			.setStyle(ButtonStyle.Secondary)
-		)
-	);
-}
-
-module.exports = {
-	getLoadingButton
+export default function getLoadingButton() {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("loading")
+      .setDisabled(true)
+      .setLabel("Loading ...")
+      .setEmoji("⏳")
+      .setStyle(ButtonStyle.Secondary),
+  );
 }

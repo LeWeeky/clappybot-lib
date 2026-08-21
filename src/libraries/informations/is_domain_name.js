@@ -16,29 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-function char_is_alpha(char)
-{
-    return ((char >= 'A' && char <= 'Z') ||
-        (char >= 'a' && char <= 'z'));
+/**
+ * 
+ * @param {string} domain 
+ * @returns 
+ */
+export default function isDomainName(domain) {
+  const pattern = /^(?!-)(?:[a-zA-Z0-9-]{0,62}[a-zA-Z0-9]\.)+[a-zA-Z]{2,}$/;
+
+  return pattern.test(domain);
 }
-
-function str_is_alpha(string)
-{
-	let i = 0;
-
-	if (!string)
-		return (false);
-	while (i < string.length)
-	{
-		if (!char_is_alpha(string[i]))
-			return (false);
-		i++;
-	}
-	return (true);
-}
-
-module.exports = {
-	char_is_alpha, str_is_alpha
-}
-
-

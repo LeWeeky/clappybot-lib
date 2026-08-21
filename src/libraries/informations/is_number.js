@@ -16,16 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-function charIsNumber(char)
-{
-   return /^[0-9]$/.test(char);
+export function charIsNumber(char) {
+  return /^[0-9]$/.test(char);
 }
 
-function stringIsNumber(string)
-{
-	return /^[0-9]+$/.test(string);
-}
-
-module.exports = {
-	charIsNumber, stringIsNumber
+export function stringIsNumber(string) {
+  return /^[0-9]+$/.test(string);
 }

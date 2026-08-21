@@ -23,7 +23,7 @@
  * @param {any[] | null | false} data 
  * @returns 
  */
-async function sqlite_request(connection, request, data = null)
+export default async function sqlite_request(connection, request, data = null)
 // TODO set callback method
 {
 	try {
@@ -46,8 +46,4 @@ async function sqlite_request(connection, request, data = null)
 		}
 		return (false);
 	}
-}
-
-module.exports = {
-	sqlite_request
 }

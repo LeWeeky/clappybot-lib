@@ -16,109 +16,77 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { GuildEmoji } = require("discord.js");
-const { clappybot } = require("../../main");
+import { clappybot } from "../../main.js";
 
-class Emoji
-{
-	/**
-	 * 
-	 * @param {{name: string, id?: string}} emote 
-	 */
-    constructor(emote = {name: "inconnu"})
+export default class Emoji {
+  constructor() {}
 
-    {
+  get_data() {
+    if (this.id) return { name: this.name, id: this.id };
+    return { name: this.name };
+  }
 
+  display() {
+    if (this.name) return this.name;
+    return "inconnu";
+  }
+
+  /**
+   *
+   * @param {string} id
+   * @returns {import("discord.js").GuildEmoji | undefined | false}
+   */
+  #fetch(id = String()) {
+    const emoji = clappybot.bot.emojis.cache.get(id);
+
+    if (emoji) {
+      this.id = emoji.id;
+      if (emoji.animated) this.name = `<a:${emoji.name}:${emoji.id}>`;
+      else this.name = `<:${emoji.name}:${emoji.id}>`;
+      return clappybot.bot.emojis.cache.get(id);
+    }
+    return false;
+  }
+
+  #get_id(value = String()) {
+    let i = 0;
+    let id = "";
+    let removed = 0;
+
+    while (value[i]) {
+      if (value[i] == ":") {
+        removed++;
+        i++;
+      }
+
+      if (removed == 2 && value[i] != ">") id = `${id}${value[i]}`;
+      i++;
+    }
+    if (id.length == 0 || isNaN(parseInt(id))) return false;
+    return id;
+  }
+
+  /**
+   *
+   * @param {string} value
+   * @returns {import("discord.js").GuildEmoji | string | undefined | false}
+   */
+  get(value) {
+    if (
+      value.match(
+        /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g,
+      )
+    ) {
+      this.name = value;
+      return value;
     }
 
-	get_data()
-	{
-		if (this.id)
-			return ({name: this.name, id: this.id});
-		return ({name: this.name});
-	}
+    if (!isNaN(parseInt(value))) return this.#fetch(value);
 
-	display()
-	{
-		if (this.name)
-			return (this.name);
-		return ("inconnu");
-	}
-
-	/**
-	 * 
-	 * @param {string} id 
-	 * @returns {GuildEmoji | undefined | false}
-	 */
-    #fetch(id= String())
-
-    {
-		const emoji = clappybot.bot.emojis.cache.get(id);
-
-        if (emoji)
-        {
-			this.id = emoji.id;
-			if (emoji.animated)
-				this.name = `<a:${emoji.name}:${emoji.id}>`;
-			else
-				this.name = `<:${emoji.name}:${emoji.id}>`;
-			return (clappybot.bot.emojis.cache.get(id));
-		}
-        return (false);
+    if (value.startsWith("<") && value.endsWith(">")) {
+      const custom_id = this.#get_id(value);
+      if (custom_id) return this.#fetch(custom_id);
+      return false;
     }
-
-    #get_id(value= String())
-
-    {
-        let i = 0;
-        let id = "";
-        let removed = 0;
-
-        while (value[i])
-
-        {
-            if (value[i] == ':')
-
-            {
-                removed++;
-                i++;
-            }
-
-            if (removed == 2 && value[i] != '>')
-                id = `${id}${value[i]}`;
-            i++;
-        }
-        if (id.length == 0 || isNaN(parseInt(id)))
-            return (false);
-        return (id);
-    }
-
-	/**
-	 * 
-	 * @param {string} value 
-	 * @returns {GuildEmoji | string | undefined | false}
-	 */
-    get(value)
-
-    {
-        if (value.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g))
-        {
-			this.name = value;
-			return (value);
-		}
-
-        if (!isNaN(parseInt(value)))
-            return (this.#fetch(value));
-
-        if (value.startsWith("<") && value.endsWith(">"))
-
-        {
-            const custom_id = this.#get_id(value);
-            if (custom_id)
-                return (this.#fetch(custom_id));
-            return (false);
-        }
-    }
+  }
 }
-
-module.exports = { Emoji }

@@ -16,61 +16,59 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AFunctionalities, AFunctionality } = require("./functionality");
+import { AFunctionalities, AFunctionality } from "./functionality.js";
 
-class AEvents extends AFunctionalities
-{
-	/**
-	 * @typedef {new (...args: any[]) => AFunctionality} AFunctionalityConstructor
-	 */
+/**
+ * @template {AEvent} T
+ * @template {new (...args: any[]) => T} C
+ * @extends {AFunctionalities<T, C>}
+ */
+export class AEvents extends AFunctionalities {
+  /**
+   * @typedef {new (...args: any[]) => AFunctionality} AFunctionalityConstructor
+   */
 
-	/** Constructor
-	 *  @param {AFunctionalityConstructor} type
-	 *  @param {{"title": string, "descriptior": string | undefined,
-	 * 	direct_names: string[] | undefined, shared_folder: boolean | undefined,
-	 * 	"extension": string, "folder": string, "addons": string }} config
-	 */
-	constructor(type, config)
-	{
-		super(type, config)
-	}
+  /** Constructor
+   *  @param {C} type
+   *  @param {{"title": string, "descriptior": string | undefined,
+   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   * 	"extension": string, "folder": string, "addons": string }} config
+   */
+  constructor(type, config) {
+    super(type, config);
+  }
 
-	/**
-	 * 
-	 * @param  {...any} args 
-	 * @returns {Promise<boolean | void>}
-	 */
-	async scan(...args) 
-	{
-		console.error("abstract call to scan method")
-	}
+  /**
+   *
+   * @param  {...any} _args
+   * @returns {Promise<boolean | void>}
+   */
+  async scan(..._args) {
+    console.error("abstract call to scan method");
+  }
 }
 
-class AEvent extends AFunctionality
-{
-	/**
-	 * @type {boolean | undefined}
-	 */
-	any_guild
+export class AEvent extends AFunctionality {
+  /**
+   * @type {boolean | undefined}
+   */
+  any_guild;
 
-	/**
-	 * @type {Function}
-	 */
-	parse
+  /**
+   * @type {Function}
+   */
+  parse;
 
-	/**
-	 * 
-	 * @param {{
-	*	any_guild: boolean | undefined , parse: Function
-	* }} origin Données / paramètres de l'action
-	* @param {string} file_path
-	*/
-   constructor(origin, file_path)
-   {
-		super(file_path)
-		this.parse = origin.parse;
-		this.any_guild = origin.any_guild;
-   }
+  /**
+   *
+   * @param {{
+   *	any_guild: boolean | undefined , parse: Function
+   * }} origin Données / paramètres de l'action
+   * @param {string} file_path
+   */
+  constructor(origin, file_path) {
+    super(file_path);
+    this.parse = origin.parse;
+    this.any_guild = origin.any_guild;
+  }
 }
-
-module.exports = { AEvent, AEvents }

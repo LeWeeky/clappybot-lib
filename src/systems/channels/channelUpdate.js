@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AEvents, AEvent } = require("../abstracts/events");
+import { AEvents, AEvent } from "../abstracts/events.js";
 const config = {
 	"title": "ChannelUpdate",
 	"descriptior": undefined,
@@ -27,8 +27,7 @@ const config = {
 	"addons": "channels/update"
 }
 
-
-class ChannelsUpdate extends AEvents
+export default class ChannelsUpdate extends AEvents
 {
 	constructor()
 	{
@@ -45,12 +44,11 @@ class ChannelsUpdate extends AEvents
 				if (this._list[i].parse)
 					this._list[i].parse(old_channel, new_channel)
 				else
-					console.log("Empty parse", config.title)
+					console.error("Parse function is missing for channel update:", config.title)
 			}
 		}
 	}
 }
-
 
 class ChannelUpdate extends AEvent
 {
@@ -67,5 +65,3 @@ class ChannelUpdate extends AEvent
 		super(event_handler, file_path)
 	}
 }
-
-module.exports = { ChannelsUpdate }

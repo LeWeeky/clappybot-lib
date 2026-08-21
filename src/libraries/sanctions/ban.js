@@ -16,32 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { PermissionsBitField } = require("discord.js");
-const { History } = require("./history");
+import { PermissionsBitField } from "discord.js";
+import History from "./history.js";
 
-const Permissions = PermissionsBitField.Flags
-function bot_can_ban(guild)
-{
-	return (guild.members.me.permissions.has(Permissions.BanMembers));
+const Permissions = PermissionsBitField.Flags;
+export function bot_can_ban(guild) {
+  return (guild.members.me.permissions.has(Permissions.BanMembers));
 }
 
-function user_can_ban(member)
-{
-	return (member.permissions.has(Permissions.BanMembers));
+export function user_can_ban(member) {
+  return (member.permissions.has(Permissions.BanMembers));
 }
 
-async function ban(user, reason, author, guild)
-{
-	const date = new Date;
-	let day = String(date.getDate());
-	let month = String(date.getMonth()+1);
-	const year = date.getFullYear();
+export async function ban(user, reason, author, guild) {
+  const date = new Date();
+  let day = String(date.getDate());
+  let month = String(date.getMonth() + 1);
+  const year = date.getFullYear();
 
-	if (day.length == 1) day = "0"+day;
-	if (month.length == 1) month = "0"+month;
+  if (day.length == 1) day = "0" + day;
+  if (month.length == 1) month = "0" + month;
 
-	guild.members.ban(user.id, {reason: `Modérateur: ${author.tag}, Date: ${day}/${month}/${year}, Raison: ${reason}`});
-	new History(user).add("mute", reason, author);
+  guild.members.ban(user.id, {
+    reason: `Modérateur: ${author.tag}, Date: ${day}/${month}/${year}, Raison: ${reason}`,
+  });
+  new History(user, guild.id).add("mute", reason, author);
 }
-
-module.exports = { bot_can_ban, user_can_ban, ban }

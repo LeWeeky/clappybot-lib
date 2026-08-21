@@ -16,12 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { system } = require("../systems/system");
+import { system } from "../systems/system.js";
 
-const name = "messageReactionAdd";
-async function listen(reaction, user)
-{
-	system.reactions_add.scan(reaction, user);
+export const name = "messageReactionAdd";
+/**
+ * 
+ * @param {import("discord.js").MessageReaction} reaction 
+ * @param {import("discord.js").User} user 
+ */
+export async function listen(reaction, user) {
+  system.reactions_add.scan(reaction, user);
 }
-
-module.exports = { name, listen }

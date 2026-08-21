@@ -16,47 +16,53 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { prepareQuery } = require("./prepare_query");
+import prepareQuery from "./prepare_query.js";
 
 /**
- * 
- * @param {*} connection 
- * @param {string} table 
- * @param {string | null} where 
- * @param {any[] | null} data 
+ *
+ * @param {*} connection
+ * @param {string} table
+ * @param {string | null} where
+ * @param {any[] | null} data
  * @returns {Promise<number>}
  */
-async function postgresql_count(connection, table, where = null, data = null) {
-    where = prepareQuery(where);
+export default async function postgresql_count(connection, table, where = null, data = null) {
+  where = prepareQuery(where);
 
-    try {
-        let rows;
+  try {
+    let rows;
 
-        if (!where) {
-            const { rows: rows_ } = await connection.query(`SELECT COUNT(*) AS occurrences FROM ${table}`);
-            rows = rows_;
-        } else if (data) {
-            const { rows: rows_ } = await connection.query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`, data);
-            rows = rows_;
-        } else {
-            const { rows: rows_ } = await connection.query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`);
-            rows = rows_;
-        }
-
-        if (process.env.DEBUG_INFO == "true")
-            console.info('\x1b[32m%s\x1b[0m', `✅ Comptage dans ${table} réussi`);
-        if (!rows) return -1;
-        if (!rows[0]) return 0;
-        return rows[0].occurrences;
-    } catch (error) {
-        if (process.env.DEBUG_ERROR != "false") {
-            console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Comptage raté dans ${table}`);
-            console.error(error);
-        }
-        return -1;
+    if (!where) {
+      const { rows: rows_ } = await connection.query(
+        `SELECT COUNT(*) AS occurrences FROM ${table}`,
+      );
+      rows = rows_;
+    } else if (data) {
+      const { rows: rows_ } = await connection.query(
+        `SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`,
+        data,
+      );
+      rows = rows_;
+    } else {
+      const { rows: rows_ } = await connection.query(
+        `SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`,
+      );
+      rows = rows_;
     }
-}
 
-module.exports = {
-    postgresql_count
-};
+    if (process.env.DEBUG_INFO == "true")
+      console.info("\x1b[32m%s\x1b[0m", `✅ Comptage dans ${table} réussi`);
+    if (!rows) return -1;
+    if (!rows[0]) return 0;
+    return rows[0].occurrences;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Comptage raté dans ${table}`,
+      );
+      console.error(error);
+    }
+    return -1;
+  }
+}

@@ -16,60 +16,56 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { GuildMember } = require("discord.js");
-const { AEvents, AEvent } = require("../abstracts/events");
+import { AEvents, AEvent } from "../abstracts/events.js";
 
 const config = {
-	"title": "memberUpdate",
-	"descriptior": undefined,
-	"direct_names": ["member_update", "members_update", "memberUpdate", "membersUpdate"],
-	"shared_folder": true,
-	"extension": "update.js",
-	"folder": "members",
-	"addons": "members/update"
+  title: "memberUpdate",
+  descriptior: undefined,
+  direct_names: [
+    "member_update",
+    "members_update",
+    "memberUpdate",
+    "membersUpdate",
+  ],
+  shared_folder: true,
+  extension: "update.js",
+  folder: "members",
+  addons: "members/update",
+};
+
+export class MembersUpdate extends AEvents {
+  constructor() {
+    super(MemberUpdate, config);
+  }
+
+  /**
+   *
+   * @param {import("discord.js").GuildMember} old_member
+   * @param {import("discord.js").GuildMember} new_member
+   */
+  async scan(old_member, new_member) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        (!new_member.user.bot || this._list[i].allow_bots) &&
+        (old_member.guild.id == globalThis.guild_id || this._list[i].any_guild)
+      ) {
+        this._list[i].parse(old_member, new_member);
+      }
+    }
+  }
 }
 
-class MembersUpdate extends AEvents
-{
-	constructor()
-	{
-		super(MemberUpdate, config)
-	}
-
-	/**
-	 * 
-	 * @param {GuildMember} old_member
-	 * @param {GuildMember} new_member
-	 */
-	async scan(old_member, new_member)
-
-	{
-		for (let i in this._list)
-		{
-			if (this._list[i] && (!new_member.user.bot
-				|| this._list[i].allow_bots)
-				&& (old_member.guild.id == globalThis.guild_id || this._list[i].any_guild))
-			{
-				this._list[i].parse(old_member, new_member)
-			}
-		}
-	}
+export class MemberUpdate extends AEvent {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined, permissions: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * }} event_handler Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(event_handler, file_path) {
+    super(event_handler, file_path);
+  }
 }
-
-class MemberUpdate extends AEvent
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined, permissions: Function[] | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-	 * }} event_handler Informations du nouveau message
-     * @param {string} file_path
-	 */
-	constructor(event_handler, file_path)
-	{
-		super(event_handler, file_path)
-	}
-}
-
-module.exports = { MemberUpdate, MembersUpdate }

@@ -16,11 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-function isSpace(character)
-
-{
-    if (["\n", "\t", " "].includes(character)) return (true);
-    return (false);
+export default function isSpace(character) {
+  if (["\n", "\t", " "].includes(character)) return true;
+  return false;
 }
-
-module.exports = { isSpace }

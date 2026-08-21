@@ -16,47 +16,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { prepareQuery } = require("./prepare_query");
+import prepareQuery from "./prepare_query.js";
 
 /**
- * 
- * @param {*} connection 
- * @param {string} request 
- * @param {any[] | null | false} data 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {string} request
+ * @param {any[] | null | false} data
+ * @returns
  */
-async function postgresql_request(connection, request, data = null)
-{
-	request = prepareQuery(request);
+export default async function postgresql_request(
+  connection,
+  request,
+  data = null,
+) {
+  request = /** @type {string} */ (prepareQuery(request));
 
-	try {
-		let rows;
+  try {
+    let rows;
 
-		if (data)
-		{
-			const [rows_, fields] = await connection.query(request, data);
-			rows = rows_;
-		}
-		else
-		{
-			const [rows_, fields] = await connection.query(request);
-			rows = rows_;
-		}
+    if (data) {
+      const [rows_, _fields] = await connection.query(request, data);
+      rows = rows_;
+    } else {
+      const [rows_, _fields] = await connection.query(request);
+      rows = rows_;
+    }
 
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Exécution terminée : ${request}`);
-		return (rows);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur d'exécution : ${request}`);
-			console.error(error);
-		}
-		return (false);
-	}
-}
-
-module.exports = {
-	postgresql_request
+    if (process.env.DEBUG_INFO == "true")
+      console.info("\x1b[32m%s\x1b[0m", `✅ Exécution terminée : ${request}`);
+    return rows;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error("\x1b[31m%s\x1b[0m", `❌ Erreur d'exécution : ${request}`);
+      console.error(error);
+    }
+    return false;
+  }
 }

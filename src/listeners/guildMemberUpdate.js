@@ -16,12 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { system } = require('../systems/system');
+import { system } from "../systems/system.js";
 
-const name = "guildMemberUpdate";
-async function listen(old_member, new_member)
-{
-	system.members_update.scan(old_member, new_member);
+export const name = "guildMemberUpdate";
+export async function listen(old_member, new_member) {
+  system.members_update.scan(old_member, new_member);
 }
-
-module.exports = { name, listen }

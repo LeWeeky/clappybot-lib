@@ -16,63 +16,53 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { Message } = require("discord.js");
-const { AMessages, AMessage } = require("../abstracts/messages");
+import { AMessages, AMessage } from "../abstracts/messages.js";
 
 const config = {
-	"title": "messageUpdate",
-	"descriptior": undefined,
-	"direct_names": ["messageUpdate", "messagesUpdate"],
-	"extension": "update.js",
-	"shared_folder": true,
-	"folder": "messages",
-	"addons": "messages/update"
+  title: "messageUpdate",
+  descriptior: undefined,
+  direct_names: ["messageUpdate", "messagesUpdate"],
+  extension: "update.js",
+  shared_folder: true,
+  folder: "messages",
+  addons: "messages/update",
+};
+
+export class MessagesUpdate extends AMessages {
+  constructor() {
+    super(MessageUpdate, config);
+  }
+
+  /**
+   *
+   * @param {import("discord.js").Message} old_message
+   * @param {import("discord.js").Message} new_message
+   */
+  async scan(old_message, new_message) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        (!new_message.author.bot || this._list[i].allow_bots) &&
+        this.validChannel(old_message, this._list[i])
+      ) {
+        if (await this.has_conditions(new_message, this._list[i].conditions)) {
+          this._list[i].parse(old_message, new_message);
+        }
+      }
+    }
+  }
 }
 
-class MessagesUpdate extends AMessages
-{
-	constructor()
-	{
-		super(MessageUpdate, config)
-	}
-
-	/**
-	 * 
-	 * @param {Message} old_message
-	 * @param {Message} new_message
-	 */
-	async scan(old_message, new_message)
-
-	{
-		for (let i in this._list)
-
-		{
-			if (this._list[i] && (!new_message.author.bot
-				|| this._list[i].allow_bots) && this.validChannel(old_message, this._list[i]))
-			{
-				if (await this.has_conditions(new_message, this._list[i].conditions))
-				{
-					this._list[i].parse(old_message, new_message);
-				}
-			}
-		}
-	}
+export class MessageUpdate extends AMessage {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * }} message Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(message, file_path) {
+    super(message, file_path);
+  }
 }
-
-class MessageUpdate extends AMessage
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-	 * }} message Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(message, file_path)
-	{
-		super(message, file_path)
-	}
-}
-
-module.exports = { MessageUpdate, MessagesUpdate }

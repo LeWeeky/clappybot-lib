@@ -16,41 +16,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AMessages, AMessage } = require("../abstracts/messages");
+import { AUniqueStateMessages, AMessage } from "../abstracts/messages.js";
 
 const config = {
-	"title": "messageCreate",
-	"descriptior": undefined,
-	"direct_names": ["messageCreate", "messagesCreate"],
-	"shared_folder": true,
-	"extension": "create.js",
-	"folder": "messages",
-	"addons": "messages/create"
+  title: "messageCreate",
+  descriptior: undefined,
+  direct_names: ["messageCreate", "messagesCreate"],
+  shared_folder: true,
+  extension: "create.js",
+  folder: "messages",
+  addons: "messages/create",
+};
+
+export class MessagesCreate extends AUniqueStateMessages {
+  constructor() {
+    super(MessageCreate, config);
+  }
+
 }
 
-
-class MessagesCreate extends AMessages
-{
-	constructor()
-	{
-		super(MessageCreate, config)
-	}
+export class MessageCreate extends AMessage {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * }} message Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(message, file_path) {
+    super(message, file_path);
+  }
 }
-
-class MessageCreate extends AMessage
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-	 * }} message Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(message, file_path)
-	{
-		super(message, file_path)
-	}
-}
-
-module.exports = { MessageCreate, MessagesCreate }

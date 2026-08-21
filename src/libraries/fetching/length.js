@@ -16,42 +16,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { isSpace } = require("./is_space");
+import isSpace from "./is_space.js";
 
-function getLength(string)
+function getLength(string) {
+  let i = 0;
+  let length = 0;
 
-{
-    let i = 0;
-    let length = 0;
-
-    while (string[i])
-    {
-        if (!isSpace(string[i]))
-            length++;
-        i++;
-    }
-    return (length);
+  while (string[i]) {
+    if (!isSpace(string[i])) length++;
+    i++;
+  }
+  return length;
 }
 
-function getArgsLength(args)
-{
-    let i = 0;
-    let y = 0;
-    let length = 0;
+function getArgsLength(args) {
+  let i = 0;
+  let y = 0;
+  let length = 0;
 
-    while (args[i])
-
-    {
-        while (args[i][y])
-        {
-            y++;
-            length++;
-        }
-        y = 0;
-        i++;
+  while (args[i]) {
+    while (args[i][y]) {
+      y++;
+      length++;
     }
+    y = 0;
+    i++;
+  }
 
-    return (length);
+  return (length);
 }
 
-module.exports = { getLength, getArgsLength }
+export { getLength, getArgsLength };

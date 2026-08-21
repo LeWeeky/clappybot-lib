@@ -16,45 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { Embed } = require("discord.js");
-
 /**
  * Retourne TRUE si le message est envoyable sinon FALSE
- * @param {{content?: string, embeds?: Embed[]}} data
+ * @param {{content?: string, embeds?: import("discord.js").Embed[]}} data
  * @returns {boolean}
  */
-function isSendable(data)
-{
-	if (!data)
-		return (false);
-	if (data.embeds)
-	{
-		let i = 0;
+export default function isSendable(data) {
+  if (!data) return false;
+  if (data.embeds) {
+    let i = 0;
 
-		while (data.embeds[i] && data.embeds[i].data)
-		{
-			if (
-				data.embeds[i].data.description ||
-				data.embeds[i].data.title ||
-				(data.embeds[i].data.author && data.embeds[i].data.author.name) ||
-				(data.embeds[i].footer && data.embeds[i].data.footer.text) ||
-				data.embeds[i].data.image ||
-				data.embeds[i].data.thumbnail
-			)
-			{
-				if (!data.embeds[i + 1])
-					return (true);
-			}
-			else
-			{
-				return (false);
-			}
-			i++;
-		}
-	}
-	if (data.content && typeof(data.content) == "string")
-		return (true);
-	return (false);
+    while (data.embeds[i] && data.embeds[i].data) {
+      if (
+        data.embeds[i].data.description ||
+        data.embeds[i].data.title ||
+        data.embeds[i].data.author?.name ||
+        data.embeds[i].data.footer?.text ||
+        data.embeds[i].data.image ||
+        data.embeds[i].data.thumbnail
+      ) {
+        if (!data.embeds[i + 1]) return true;
+      } else {
+        return false;
+      }
+      i++;
+    }
+  }
+  if (data.content && typeof data.content == "string") return true;
+  return false;
 }
-
-module.exports = { isSendable }

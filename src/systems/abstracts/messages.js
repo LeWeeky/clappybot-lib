@@ -16,99 +16,98 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { Message } = require("discord.js");
-const { AActions, AAction } = require("./actions");
+import { AActions, AAction } from "./actions.js";
 
-class AMessages extends AActions
-{
-	/** Constructor
- 	 * @param {typeof AMessage} type
-	 * @param {{"title": string, "descriptior": string | undefined,
-	 * direct_names: string[] | undefined, shared_folder: boolean | undefined
-	 * "extension": string, "folder": string, "addons": string }} config
-	*/
-	constructor(type, config)
-	{
-		super(type, config)
-	}
+/**
+ * @template {any[]} TArgs
+ */
+export class AMessages extends AActions {
+  /** Constructor
+   * @param {typeof AMessage} type
+   * @param {{"title": string, "descriptior": string | undefined,
+   * direct_names: string[] | undefined, shared_folder: boolean | undefined
+   * "extension": string, "folder": string, "addons": string }} config
+   */
+  constructor(type, config) {
+    super(type, config);
+  }
 
-	/**
-	 * @param {Message} message
-	 * @param {Function[] | false | undefined} conditions
-	 */
-	async has_conditions(message, conditions)
-	{
-		let i = 0;
-		let result = false;
+  /**
+   * @param {import("discord.js").Message} message
+   * @param {Function[] | false | undefined} conditions
+   */
+  async has_conditions(message, conditions) {
+    let i = 0;
 
-		if (!conditions)
-			return (true);
-		while (conditions[i])
-		{
-			result = await conditions[i](message);
-			if (result) return (true);
-			i++;
-		}
-		return (false);
-	}
+    if (!conditions) return true;
+    while (conditions[i]) {
+      if (await conditions[i](message)) return true;
+      i++;
+    }
+    return false;
+  }
 
-	/**
-	 * 
-	 * @param {*} message
-	 * @param {AAction} action 
-	 * @returns {boolean}
-	 */
-	validChannel(message, action)
-	{
-		if (this.isDM(message.channel) && action.dm)
-			return (true);
-		if (message.guild &&
-			(message.guild.id == globalThis.guild_id
-			|| action.any_guild))
-			return (true);
-		return (false);
-	}
+  /**
+   *
+   * @param {import("discord.js").Message} message
+   * @param {AAction} action
+   * @returns {boolean}
+   */
+  validChannel(message, action) {
+    if (this.isDM(message.channel) && action.dm) return true;
+    if (
+      message.guild &&
+      (message.guild.id == globalThis.guild_id || action.any_guild)
+    )
+      return true;
+    return false;
+  }
 
-	/**
-	 * 
-	 * @param {Message} message
-	 */
-	async scan(message)
-
-	{
-		for (let i in this._list)
-		{
-			if (this._list[i] && (message.author && (!message.author.bot || this._list[i].allow_bots)) && this.validChannel(message, this._list[i]))
-			{
-				if (await this.has_conditions(message, this._list[i].conditions))
-				{
-					this._list[i].parse(message);
-				}
-			}
-		}
-	}
+  /**
+   * @param {...TArgs} _args
+   */
+  async scan(..._args) {
+    console.error("abstract call to scan method");
+  }
 }
 
-class AMessage extends AAction
-{
-	/**
-	 * @type boolean
-	 */
-	allow_bots = false;
-
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined, permissions: Function[] | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-	 * }} interaction Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(interaction, file_path)
-	{
-		super(interaction, file_path)
-		this.allow_bots = interaction.allow_bots
-	}
+export class AUniqueStateMessages extends AMessages {
+  /**
+   *
+   * @param {import("discord.js").Message} message
+   */
+  async scan(message) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        message.author &&
+        (!message.author.bot || this._list[i].allow_bots) &&
+        this.validChannel(message, this._list[i])
+      ) {
+        if (await this.has_conditions(message, this._list[i].conditions)) {
+          this._list[i].parse(message);
+        }
+      }
+    }
+  }
 }
 
-module.exports = { AMessage, AMessages}
+export class AMessage extends AAction {
+  /**
+   * @type boolean
+   */
+  allow_bots = false;
+
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined, permissions?: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * }} interaction Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(interaction, file_path) {
+    super(interaction, file_path);
+    this.allow_bots = interaction.allow_bots || false;
+  }
+}

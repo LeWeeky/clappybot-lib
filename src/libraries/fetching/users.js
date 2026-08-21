@@ -16,166 +16,156 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { clappybot } = require("../../main")
+import { clappybot } from "../../main.js";
 
-class User
+export default class User {
+  /**
+   * @type {import("discord.js").User | null}
+   */
+  instance;
+  /**
+   * @type {string | undefined}
+   */
+  name;
+  /**
+   * @type {string | undefined}
+   */
+  username;
+  /**
+   * @type {string | undefined}
+   */
+  tag;
+  /**
+   * @type {string | undefined}
+   */
+  id;
+  /**
+   * @type {string | function | undefined}
+   */
+  avatarURL;
+  /**
+   * @type {number | undefined}
+   */
+  avatarSize;
+  /**
+   *
+   * @param {{
+   * username?: string, avatarURL?: string, tag?: string, id?: string, avatarSize?: number, displayAvatarURL?: Function}} user
+   */
+  constructor(user = { avatarSize: 512 }) {
+    this.name = user.username;
+    this.username = user.username;
+    this.tag = user.tag;
+    this.id = user.id;
+    this.avatarSize = user.avatarSize;
+    this.instance = null;
 
-{
-	/**
-	 * @type {import("discord.js").User}
-	 */
-	instance
-	/**
-	 * @type {string | undefined}
-	 */
-	name;
-	/**
-	 * @type {string | undefined}
-	 */
-	username;
-	/**
-	 * @type {string | undefined}
-	 */
-	tag;
-	/**
-	 * @type {string | undefined}
-	 */
-	id;
-	/**
-	 * @type {string | function | undefined}
-	 */
-	avatarURL;
-	/**
-	 * @type {number | undefined}
-	 */
-	avatarSize;
-    /**
-     * 
-     * @param {{
-     * username?: string, avatarURL?: string, tag?: string, id?: string, avatarSize?: number, displayAvatarURL?: Function}} user 
-     */
-    constructor(user = {avatarSize: 512})
-    {
-        this.name =  user.username;
-        this.username =  user.username;
-        this.tag = user.tag;
-        this.id = user.id;
-        this.avatarSize = user.avatarSize;
+    this.bot = clappybot.bot;
 
-        this.bot = clappybot.bot;
+    if (user.avatarURL && typeof user.avatarURL == "string")
+      this.avatarURL = user.avatarURL;
+    else if (typeof user.displayAvatarURL == "function")
+      this.avatarURL = user.displayAvatarURL({
+        dynamic: true,
+        size: this.avatarSize,
+      });
+  }
 
-        if (user.avatarURL && typeof user.avatarURL == "string")
-			this.avatarURL = user.avatarURL;
-        else if (typeof user.displayAvatarURL == "function")
-			this.avatarURL = user.displayAvatarURL({dynamic: true, size: this.avatarSize});
+  #set(user) {
+    this.instance = user;
+    this.avatarURL = user.displayAvatarURL({ dynamic: true, size: 512 });
+    this.name = user.username;
+    this.username = user.username;
+    this.tag = user.tag;
+    this.id = user.id;
+    this.avatarSize = user.avatarSize;
+
+    return {
+      id: user.id,
+      name: user.username,
+      username: user.username,
+      tag: user.tag,
+      exists: true,
+      instance: this.instance,
+    };
+  }
+
+  async #fetch(id) {
+    const user = await this.bot.users.fetch(id).catch((err) => {
+      console.error(err);
+      return null;
+    });
+
+    if (user) return this.#set(user);
+    return null;
+  }
+
+  /**
+   *
+   * @param {string} id
+   * @param {*} mentions
+   * @param {number} target
+   * @returns
+   */
+  async get(id, mentions = null, target = 0) {
+    if (mentions && mentions.size > target) {
+      let mentionsList = [];
+      mentions.map((user, id) => {
+        mentionsList.push([user, id]);
+      });
+
+      const user = mentionsList[target][0];
+
+      if (user) return this.#set(user);
     }
 
-    #set(user)
-    {
-		this.instance = user;
-        this.avatarURL = user.displayAvatarURL({dynamic: true, size: 512})
-		this.name =  user.username;
-        this.username =  user.username;
-        this.tag = user.tag;
-        this.id = user.id;
-        this.avatarSize = user.avatarSize;
+    if (!id) return null;
+    if (typeof id == "number") id = String(id);
+    let len = id.length;
+    if (id.startsWith("<@") && id.endsWith(">")) {
+      id = id.slice(2, id.length - 1);
+      len = id.length;
+    }
 
-		return ({
-            id : user.id,
-            name : user.username,
-            username: user.username,
-            tag : user.tag,
-            exists: true,
-			instance: this.instance
+    if (len >= 16 && len <= 20) {
+      if (this.bot.users.cache.has(id))
+        return this.#set(this.bot.users.cache.get(id));
+      else return await this.#fetch(id);
+    }
+    return null;
+  }
+
+  getData(not_null = false) {
+    if (!this.username && not_null) {
+      const user = {
+        username: "DeletedUser",
+        id: "0",
+        tag: "DeletedUser#0000",
+        avatarURL: "https://tenor.com/view/discord-loading-gif-26060546",
+      };
+      this.name = user.username;
+      this.username = user.username;
+      this.tag = user.tag;
+      this.id = user.id;
+      this.avatarSize = user.avatarSize;
+
+      this.bot = clappybot.bot;
+
+      if (user.avatarURL && typeof user.avatarURL == "string")
+        this.avatarURL = user.avatarURL;
+      else if (typeof user.displayAvatarURL == "function")
+        this.avatarURL = user.displayAvatarURL({
+          dynamic: true,
+          size: this.avatarSize,
         });
     }
-
-    async #fetch(id)
-    {
-        const user = await this.bot.users.fetch(id)
-        .catch(err => {
-            console.error(err)
-            return (null)
-        })
-
-        if (user)
-            return (this.#set(user));
-        return (null);
-    }
-
-	/**
-	 * 
-	 * @param {string} id 
-	 * @param {*} mentions 
-	 * @param {number} target 
-	 * @returns 
-	 */
-    async get(id, mentions = null, target = 0)
-    {
-        if (mentions && mentions.size > target)
-        {
-            let mentionsList = []
-            mentions.map((user, id) => {
-                mentionsList.push([user, id])
-            })
-
-            const user = mentionsList[target][0]
-
-            if (user)
-                return (this.#set(user));
-        }
-
-		if (!id)
-			return (null);
-		if (typeof id == 'number')
-			id = String(id);
-        let len = id.length;
-        if (id.startsWith("<@") && id.endsWith(">"))
-        {
-            id = id.slice(2, (id.length - 1));
-            len = id.length
-        }
-
-        if (!isNaN(id))
-        {
-            if (len >= 16 && len <= 20)
-            {
-                if (this.bot.users.cache.has(id))
-                    return (this.#set(this.bot.users.cache.get(id)));
-                else
-                    return (await this.#fetch(id));
-            }
-        }
-        return (null);
-    }
-
-	getData(not_null = false)
-	{
-		if (!this.username && not_null)
-		{
-			const user = {username: "DeletedUser", id: "0", tag: "DeletedUser#0000", avatarURL: "https://tenor.com/view/discord-loading-gif-26060546"}
-			this.name =  user.username;
-			this.username =  user.username;
-			this.tag = user.tag;
-			this.id = user.id;
-			this.avatarSize = user.avatarSize;
-
-			this.bot = clappybot.bot;
-
-			if (user.avatarURL && typeof user.avatarURL == "string")
-				this.avatarURL = user.avatarURL;
-			else if (typeof user.displayAvatarURL == "function")
-				this.avatarURL = user.displayAvatarURL({dynamic: true, size: this.avatarSize});
-		}
-		return ({
-            id : this.id,
-            name : this.username,
-            username: this.username,
-            tag : this.tag,
-            exists: true,
-			instance: this.instance
-        });
-	}
+    return {
+      id: this.id,
+      name: this.username,
+      username: this.username,
+      tag: this.tag,
+      exists: true,
+      instance: this.instance,
+    };
+  }
 }
-
-module.exports = { User }

@@ -16,18 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { Message } = require('discord.js');
-const { system } = require('../systems/system');
+import { system } from "../systems/system.js";
 
-const name = "messageDelete";
+export const name = "messageDelete";
 /**
- * 
- * @param {Message} message 
- * @returns 
+ *
+ * @param {import('discord.js').Message} message
+ * @returns
  */
-async function listen(message)
-{
-	system.messageDelete.scan(message);
+export async function listen(message) {
+  system.messageDelete.scan(message);
 }
- 
-module.exports = { name, listen }

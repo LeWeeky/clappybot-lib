@@ -16,26 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-class Random
+export default class Random {
+  /**
+   *
+   * @param {number} int_min
+   * @param {number} int_max
+   */
+  constructor(int_min, int_max) {
+    this.min = int_min;
+    this.max = int_max;
+  }
 
-{
-	/**
-	 * 
-	 * @param {number} int_min 
-	 * @param {number} int_max 
-	 */
-    constructor(int_min, int_max)
-
-    {
-        this.min = int_min;
-        this.max = int_max;
-    }
-
-    next()
-
-    {
-        return (Math.floor(Math.random() * (this.max - this.min) + this.min));
-    }
+  next() {
+    return Math.floor(Math.random() * (this.max - this.min) + this.min);
+  }
 }
-
-module.exports = { Random }

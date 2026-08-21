@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AInteractions, AInteraction } = require("../abstracts/interactions");
+import { AInteractions, AInteraction } from "../abstracts/interactions.js";
 
 const config = {
 	"title": "button",
@@ -26,7 +26,7 @@ const config = {
 	"addons": "interactions/buttons"
 }
 
-class Buttons extends AInteractions
+export class Buttons extends AInteractions
 {
 	constructor()
 	{
@@ -34,7 +34,7 @@ class Buttons extends AInteractions
 	}
 }
 
-class Button extends AInteraction
+export class Button extends AInteraction
 {
 	/**
 	 * 
@@ -50,5 +50,3 @@ class Button extends AInteraction
 		super(interaction, file_path)
    }
 }
-
-module.exports = { Button, Buttons }

@@ -16,44 +16,56 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { prepareQuery } = require("./prepare_query");
+import prepareQuery from "./prepare_query.js";
 
 /**
- * 
- * @param {*} connection 
- * @param {string} table 
- * @param {string} where 
- * @param {any[] | null} data 
+ *
+ * @param {*} connection
+ * @param {string} table
+ * @param {string} where
+ * @param {any[] | null | undefined} data
  * @returns {Promise<boolean>}
  */
-async function postgresql_exists(connection, table, where, data = null) {
-    where = prepareQuery(where);
+export default async function postgresql_exists(
+  connection,
+  table,
+  where,
+  data = null,
+) {
+  where = /** @type {string} */ (prepareQuery(where));
 
-    try {
-        let rows;
+  try {
+    let rows;
 
-        if (data) {
-            const [resRows, fields] = await connection.execute(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`, data);
-            rows = resRows;
-        } else {
-            const [resRows, fields] = await connection.query(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`);
-            rows = resRows;
-        }
-        
-        if (process.env.DEBUG_INFO == "true")
-            console.info('\x1b[32m%s\x1b[0m', `✅ Vérification de l'existence d'un élément dans ${table} réussi`);
-        if (!rows) return false;
-        if (!rows[0]) return false;
-        return rows[0].element_exists;
-    } catch (error) {
-        if (process.env.DEBUG_ERROR != "false") {
-            console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Vérification de l'existence d'un élément dans ${table} ratée`);
-            console.error(error);
-        }
-        return false;
+    if (data) {
+      const [resRows, _fields] = await connection.execute(
+        `SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`,
+        data,
+      );
+      rows = resRows;
+    } else {
+      const [resRows, _fields] = await connection.query(
+        `SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`,
+      );
+      rows = resRows;
     }
-}
 
-module.exports = {
-    postgresql_exists
-};
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Vérification de l'existence d'un élément dans ${table} réussi`,
+      );
+    if (!rows) return false;
+    if (!rows[0]) return false;
+    return rows[0].element_exists;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Vérification de l'existence d'un élément dans ${table} ratée`,
+      );
+      console.error(error);
+    }
+    return false;
+  }
+}

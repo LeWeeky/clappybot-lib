@@ -16,63 +16,67 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { HistoryPage } = require("../../models/HistoryPage");
-const { Member } = require("../../models/Member");
+import HistoryPage from "../../models/HistoryPage.js";
+import Member from "../../models/Member.js";
 
-class History
+export default class History {
+  /**
+   *
+   * @type {Member | null} member
+   */
+  member;
 
-{
-	/**
-	 * 
-	 * @type {Member} member 
-	 */
-	member;
+  /**
+   * @param {*} user
+   * @param {string} guild_id
+   */
+  constructor(user, guild_id) {
+    this.user = user;
+    this.guild_id = guild_id;
+    this.member = null;
+  }
 
-    
-    /**
-     * @param {*} user
-     * @param {string} guild_id
-     */
-    constructor(user, guild_id)
-    {
-        this.user = user;
-		this.guild_id = guild_id;
-		Member.firstBy({user_id: this.user.id}).then((member) => this.member = member);
-		console.log(this.member)
-    }
+  async fetchMember() {
+    if (!this.member)
+      this.member = await Member.firstBy({
+        user_id: this.user.id,
+      });
+    return this.member;
+  }
 
-    /**
-     * @returns {Promise<HistoryPage[]>}
-     */
-    async get()
-    {
-		if (!this.member)
-			return ([])
-		await this.member.fetchStuff();
-		if (!this.member.history)
-			return ([])
-        return (this.member.history);
-    }
+  /**
+   * @returns {Promise<HistoryPage[]>}
+   */
+  async get() {
+    await this.fetchMember();
+    if (!this.member) return [];
+    await this.member.fetchStuff();
+    // TODO remove the ts-ignore when the Models system will be fully typed
+    // @ts-ignore
+    if (!this.member.history) return [];
+    // @ts-ignore
+    return this.member.history;
+  }
 
-    /**
-     * @param {*} sanction
-     * @param {string} reason
-     * @param {*} author
-     * @returns {Promise<HistoryPage>}
-     */
-    async add(sanction, reason, author)
-    {
-		if (!this.member)
-			this.member = await Member.create({guild_id: this.guild_id, user_id: this.user.id})
-        const history = new HistoryPage({
-            sanction: sanction,
-            author: author.username,
-            reason: reason
-		});
+  /**
+   * @param {string} sanction
+   * @param {string} reason
+   * @param {import('discord.js').User} author
+   * @returns {Promise<HistoryPage>}
+   */
+  async add(sanction, reason, author) {
+    if (!this.member)
+      this.member = await Member.create({
+        guild_id: this.guild_id,
+        user_id: this.user.id,
+      });
+    const history = new HistoryPage({
+      sanction: sanction,
+      author: author.username,
+      reason: reason,
+    });
 
-        this.member.addToHistory(history);
-        return (history);
-    }
+    this.member.addToHistory(history);
+    return history;
+  }
 }
-
-module.exports = { History }

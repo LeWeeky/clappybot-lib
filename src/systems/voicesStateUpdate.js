@@ -16,53 +16,50 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AEvents, AEvent } = require("./abstracts/events");
+import { AEvents, AEvent } from "./abstracts/events.js";
+
 const config = {
-	"title": "voiceStateUpdate",
-	"descriptior": undefined,
-	"direct_names": ["voiceStateUpdate", "voicesStateUpdate"],
-	"shared_folder": true,
-	"extension": "update.js",
-	"folder": "voices",
-	"addons": "voices/update"
+  title: "voiceStateUpdate",
+  descriptior: undefined,
+  direct_names: ["voiceStateUpdate", "voicesStateUpdate"],
+  shared_folder: true,
+  extension: "update.js",
+  folder: "voices",
+  addons: "voices/update",
+};
+
+export default class VoicesStateUpdate extends AEvents {
+  constructor() {
+    super(VoiceStateUpdate, config);
+  }
+
+  /**
+   *
+   * @param {import("discord.js").VoiceState} old_state
+   * @param {import("discord.js").VoiceState} new_state
+   */
+  async scan(old_state, new_state) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        (old_state.guild?.id == globalThis.guild_id || this._list[i].any_guild)
+      ) {
+        this._list[i].parse(old_state, new_state);
+      }
+    }
+  }
 }
 
-
-class VoicesStateUpdate extends AEvents
-{
-	constructor()
-	{
-		super(VoiceStateUpdate, config)
-	}
-
-	async scan(old_channel, new_channel)
-	{
-		for (let i in this._list)
-		{
-			if (this._list[i] &&
-				(old_channel.guild.id == globalThis.guild_id || this._list[i].any_guild))
-			{
-				this._list[i].parse(old_channel, new_channel)
-			}
-		}
-	}
+class VoiceStateUpdate extends AEvent {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, parse: Function
+   * }} event_handler Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(event_handler, file_path) {
+    super(event_handler, file_path);
+  }
 }
-
-
-class VoiceStateUpdate extends AEvent
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, parse: Function
-	 * }} event_handler Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(event_handler, file_path)
-	{
-		super(event_handler, file_path)
-	}
-}
-
-module.exports = { VoicesStateUpdate }

@@ -17,52 +17,46 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {*} table 
- * @param {*} where 
- * @param {any[] | null} data 
+ *
+ * @param {*} connection
+ * @param {*} table
+ * @param {*} where
+ * @param {any[] | null} data
  * @returns {Promise<number>}
  */
-async function sqlite_count(connection, table, where = null, data = null)
-{
-	try {
-		let row
-		let statement
-		
-		if (!where)
-		{
-			statement = connection
-				.prepare(`SELECT COUNT(*) AS occurrences FROM ${table}`
-			);
-		}
-		else
-		{
-			statement = connection
-				.prepare(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`
-			);
+export default async function sqlite_count(
+  connection,
+  table,
+  where = null,
+  data = null,
+) {
+  try {
+    let row;
+    let statement;
 
-		}
-		if (data)
-			row = statement.get(...data);
-		else
-			row = statement.get();
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Comptage dans ${table} réussi`);
-		if (!row)
-			return (-1);
-		return (row.occurrences);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Comptage raté dans ${table}`);
-			console.error(error);
-		}
-		return (-1);
-	}
-}
-
-module.exports = {
-	sqlite_count
+    if (!where) {
+      statement = connection.prepare(
+        `SELECT COUNT(*) AS occurrences FROM ${table}`,
+      );
+    } else {
+      statement = connection.prepare(
+        `SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`,
+      );
+    }
+    if (data) row = statement.get(...data);
+    else row = statement.get();
+    if (process.env.DEBUG_INFO == "true")
+      console.info("\x1b[32m%s\x1b[0m", `✅ Comptage dans ${table} réussi`);
+    if (!row) return -1;
+    return row.occurrences;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Comptage raté dans ${table}`,
+      );
+      console.error(error);
+    }
+    return -1;
+  }
 }

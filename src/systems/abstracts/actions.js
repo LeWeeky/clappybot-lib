@@ -16,71 +16,74 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { ChannelType } = require("discord.js");
-const { AEvents, AEvent } = require("./events");
+import { ChannelType } from "discord.js";
+import { AEvents, AEvent } from "./events.js";
 
-class AActions extends AEvents
-{
-	/** Constructor
-	 *  @param {typeof AEvent} type
-	 *   @param {{"title": string, "descriptior": string | undefined,
-	 * 	direct_names: string[] | undefined, shared_folder: boolean | undefined,
-	* 	"extension": string, "folder": string, "addons": string }} config
-	 */
-	constructor(type, config)
-	{
-		super(type, config)
-	}
+/**
+ * @template {AAction} T
+ * @template {new (...args: any[]) => T} C
+ * @extends {AEvents<T, C>}
+ */
+export class AActions extends AEvents {
+  /** Constructor
+   *  @param {C} type
+   *  @param {{"title": string, "descriptior": string | undefined,
+   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   * 	"extension": string, "folder": string, "addons": string }} config
+   */
+  constructor(type, config) {
+    super(type, config);
+  }
 
-	isDM(channel)
-	{
-		return (channel.type == ChannelType.DM
-			|| channel.type == ChannelType.GroupDM)
-	}
+  /**
+   * 
+   * @param {import("discord.js").Channel} channel 
+   * @returns {boolean}
+   */
+  isDM(channel) {
+    return (
+      channel.type == ChannelType.DM || channel.type == ChannelType.GroupDM
+    );
+  }
 
-	/**
-	 * 
-	 * @param {*} interaction
-	 * @param {AAction} action 
-	 * @returns {boolean}
-	 */
-	validChannel(interaction, action)
-	{
-		if (this.isDM(interaction.channel) && action.dm)
-			return (true);
-		if (interaction.guild &&
-			(interaction.guild.id == globalThis.guild_id
-			|| action.any_guild))
-			return (true);
-		return (false);
-	}
+  /**
+   *
+   * @param {*} interaction
+   * @param {AAction} action
+   * @returns {boolean}
+   */
+  validChannel(interaction, action) {
+    if (this.isDM(interaction.channel) && action.dm) return true;
+    if (
+      interaction.guild &&
+      (interaction.guild.id == globalThis.guild_id || action.any_guild)
+    )
+      return true;
+    return false;
+  }
 }
 
-class AAction extends AEvent
-{
-	/**
-	 * @type {Function[] | undefined}
-	 */
-	conditions;
+export class AAction extends AEvent {
+  /**
+   * @type {Function[] | undefined}
+   */
+  conditions;
 
-	/**
-	 * @type {boolean | undefined}
-	 */
-	dm;
+  /**
+   * @type {boolean | undefined}
+   */
+  dm;
 
-	/**
-	 * 
-	 * @param {{
-	* 	dm: boolean | undefined , any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
-	* }} interaction Informations e la nouvelle interaction
-	* @param {string} file_path
-	*/
-   constructor(interaction, file_path)
-   {
-		super(interaction, file_path)
-		this.conditions = interaction.conditions;
-		this.dm = interaction.dm;
-   }
+  /**
+   *
+   * @param {{
+   * 	dm: boolean | undefined , any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
+   * }} interaction Informations e la nouvelle interaction
+   * @param {string} file_path
+   */
+  constructor(interaction, file_path) {
+    super(interaction, file_path);
+    this.conditions = interaction.conditions;
+    this.dm = interaction.dm;
+  }
 }
-
-module.exports = { AAction, AActions }

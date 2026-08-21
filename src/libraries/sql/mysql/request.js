@@ -17,44 +17,32 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {string} request 
- * @param {any[] | null | false} data 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {string} request
+ * @param {any[] | null | false} data
+ * @returns
  */
-async function mysql_request(connection, request, data = null)
-{
-	try {
-		let rows;
+export default async function mysql_request(connection, request, data = null) {
+  try {
+    let rows;
 
-		if (data)
-		{
-			const [rows_, fields] = await connection.promise()
-			.execute(request, data);
-			rows = rows_;
-		}
-		else
-		{
-			const [rows_, fields] = await connection.promise()
-			.query(request);
-			rows = rows_;
-		}
+    if (data) {
+      const [rows_, _fields] = await connection.promise().execute(request, data);
+      rows = rows_;
+    } else {
+      const [rows_, _fields] = await connection.promise().query(request);
+      rows = rows_;
+    }
 
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Exécution terminée : ${request}`);
-		return (rows);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur d'exécution : ${request}`);
-			console.error(error);
-		}
-		return (false);
-	}
-}
-
-module.exports = {
-	mysql_request
+    if (process.env.DEBUG_INFO == "true")
+      console.info("\x1b[32m%s\x1b[0m", `✅ Exécution terminée : ${request}`);
+    return rows;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error("\x1b[31m%s\x1b[0m", `❌ Erreur d'exécution : ${request}`);
+      console.error(error);
+    }
+    return false;
+  }
 }

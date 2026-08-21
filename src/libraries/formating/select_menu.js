@@ -23,7 +23,7 @@
  * @param {number} end 
  * @returns 
  */
-function SelectMenuOptions(options, start = 0, end = 24)
+export default function SelectMenuOptions(options, start = 0, end = 24)
 
 {
     const select_options = []
@@ -62,5 +62,3 @@ function SelectMenuOptions(options, start = 0, end = 24)
 
     return (select_options);
 }
-
-module.exports = { SelectMenuOptions }

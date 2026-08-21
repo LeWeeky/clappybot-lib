@@ -16,40 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AInteractions, AInteraction } = require("../abstracts/interactions");
+import { AInteractions, AInteraction } from "../abstracts/interactions.js";
 
 const config = {
-	"title": "menu",
-	"descriptior": "ce menu",
-	"extension": "mn.js",
-	"folder": "menus",
-	"addons": "interactions/menus"
+  title: "menu",
+  descriptior: "ce menu",
+  extension: "mn.js",
+  folder: "menus",
+  addons: "interactions/menus",
+};
+
+export class Menus extends AInteractions {
+  constructor() {
+    super(Menu, config);
+  }
 }
 
-
-class Menus extends AInteractions
-{
-	constructor()
-	{
-		super(Menu, config)
-	}
+export class Menu extends AInteraction {
+  /**
+   *
+   * @param {{
+   * 	customId: string | undefined, conditions: Function[]
+   * | undefined, permissions: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined , parse: Function
+   * }} interaction Informations e la nouvelle interaction
+   * @param {string} file_path
+   */
+  constructor(interaction, file_path) {
+    super(interaction, file_path);
+  }
 }
-
-class Menu extends AInteraction
-{
-	/**
-	 * 
-	 * @param {{
-	* 	customId: string | undefined, conditions: Function[]
-	* | undefined, permissions: Function[] | undefined, dm: boolean
-	* | undefined , any_guild: boolean | undefined , parse: Function
-	* }} interaction Informations e la nouvelle interaction
-	* @param {string} file_path
-	*/
-   constructor(interaction, file_path)
-   {
-	  super(interaction, file_path)
-   }
-}
-
-module.exports = { Menu, Menus }

@@ -16,38 +16,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { prepareQuery } = require("./prepare_query");
+import prepareQuery from "./prepare_query.js";
 
 /**
- * 
- * @param {*} connection 
- * @param {*} table 
- * @param {*} where 
- * @param {any[] | null} data 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {*} table
+ * @param {*} where
+ * @param {any[] | null} data
+ * @returns
  */
-async function postgresql_delete(connection, table, where, data = null) {
-    where = prepareQuery(where);
+export default async function postgresql_delete(
+  connection,
+  table,
+  where,
+  data = null,
+) {
+  where = prepareQuery(where);
 
-    try {
-        if (data) {
-            await connection.query(`DELETE FROM ${table} WHERE ${where}`, data);
-        } else {
-            await connection.query(`DELETE FROM ${table} WHERE ${where}`);
-        }
-        
-        if (process.env.DEBUG_INFO == "true")
-            console.info('\x1b[32m%s\x1b[0m', `✅ Element supprimé dans la table : ${table}`);
-        return null;
-    } catch (error) {
-        if (process.env.DEBUG_ERROR != "false") {
-            console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Impossible de supprimer l'élement souhaité dans la table ${table}`);
-            console.error(error);
-        }
-        return error;
+  try {
+    if (data) {
+      await connection.query(`DELETE FROM ${table} WHERE ${where}`, data);
+    } else {
+      await connection.query(`DELETE FROM ${table} WHERE ${where}`);
     }
-}
 
-module.exports = {
-    postgresql_delete
-};
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Element supprimé dans la table : ${table}`,
+      );
+    return null;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Impossible de supprimer l'élement souhaité dans la table ${table}`,
+      );
+      console.error(error);
+    }
+    return error;
+  }
+}

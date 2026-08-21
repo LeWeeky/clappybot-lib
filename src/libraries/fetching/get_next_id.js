@@ -16,39 +16,50 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { mysql_select } = require("../sql/mysql/select");
-const { clappybot } = require("../../main");
+import mysql_select from "../sql/mysql/select.js";
+import { clappybot } from "../../main.js";
 
-async function get_next_id(target)
-{
-	try {
-		const connection = clappybot.database.connect();
-		const rows = await mysql_select(connection, "next_ids", "next_id", "module = ?", [target]);
+// TODO check if it's still needed
+/**
+ * 
+ * @param {string} target 
+ * @returns 
+ */
+export async function get_next_id(target) {
+  try {
+    const connection = await clappybot.database?.connect();
+    const rows = await mysql_select(
+      connection,
+      "next_ids",
+      "next_id",
+      "module = ?",
+      [target],
+    );
 
-		if (rows[0])
-		{
-			await connection.promise().execute(
-				'UPDATE next_ids SET next_id = ? WHERE module = ?',
-				[rows[0].next_id + 1, target]
-			);
-	
-			clappybot.database.break();
+    if (rows[0]) {
+      await connection
+        .promise()
+        .execute("UPDATE next_ids SET next_id = ? WHERE module = ?", [
+          rows[0].next_id + 1,
+          target,
+        ]);
 
-			return (rows[0].next_id);
-		}
-		await connection.promise().execute(
-			'INSERT INTO next_ids VALUES (?, ?)',
-			[target, 2]
-		);
-		clappybot.database.break();
-		return (1);
-	} catch (error) {
-		clappybot.database.break();
-		console.error('Erreur lors de la récupération du next_id de  '+target+' :', error.message);
-		return error;
-	}
-}
+      clappybot.database?.break();
 
-module.exports = {
-	get_next_id
+      return rows[0].next_id;
+    }
+    await connection
+      .promise()
+      .execute("INSERT INTO next_ids VALUES (?, ?)", [target, 2]);
+    clappybot.database?.break();
+    return 1;
+    
+  } catch (error) {
+    clappybot.database?.break();
+    console.error(
+      "Erreur lors de la récupération du next_id de  " + target + " :",
+      /** @type {Error} */ (error).message,
+    );
+    return error;
+  }
 }

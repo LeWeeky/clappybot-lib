@@ -16,101 +16,79 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AFunctionality, AFunctionalities } = require("./abstracts/functionality");
+import { AFunctionality, AFunctionalities } from "./abstracts/functionality.js";
 
 const config = {
-	"title": "task",
-	"descriptior": undefined,
-	"direct_names": [
-		"tasks", "daily",
-		"weekly", "monthly"],
-	"shared_folder": false,
-	"extension": "tasks.js",
-	"folder": "tasks",
-	"addons": "tasks"
+  title: "task",
+  descriptior: undefined,
+  direct_names: ["tasks", "daily", "weekly", "monthly"],
+  shared_folder: false,
+  extension: "tasks.js",
+  folder: "tasks",
+  addons: "tasks",
+};
+
+export class Tasks extends AFunctionalities {
+  constructor() {
+    super(Task, config);
+  }
+
+  /**
+   * Supprime toutes les commandes
+   */
+  destroy() {
+    for (let i = 0; i < this._list.length; i++) this._list[i].stop();
+    super.destroy();
+  }
+
+  async load() {
+    await super.load();
+
+    for (let i = 0; i < this._list.length; i++) this._list[i].start();
+  }
+
+  async reload() {
+    this.destroy();
+    await this.load();
+  }
+
+  /**
+   *
+   * @param {*} handler commande à ajouter
+   * @param {string} file_path
+   */
+  add(handler, file_path) {
+    if (!handler.start) {
+      console.warn(file_path, "method start is missing");
+      return;
+    }
+    if (!handler.stop) {
+      console.warn(file_path, "method stop is missing");
+      return;
+    }
+    this._list.push(new Task(handler, file_path));
+  }
 }
 
-class Tasks extends AFunctionalities
-{
-	/** Liste de commandes
-	 *  @type {Task[]}
-	 */
-	list;
+export class Task extends AFunctionality {
+  /**
+   * @type {Function}
+   */
+  start;
 
-	constructor()
-	{
-		super(Task, config)
-	}
+  /**
+   * @type {Function}
+   */
+  stop;
 
-
-	/**
-	 * Supprime toutes les commandes
-	 */
-	destroy()
-	{
-		for (let i = 0; i < this._list.length; i++)
-			this._list[i].stop();
-		super.destroy();
-	}
-
-	async load()
-	{
-		await super.load()
-
-		for (let i = 0; i < this._list.length; i++)
-			this._list[i].start();
-	}
-
-	async reload()
-	{
-		this.destroy();
-		await this.load();
-	}
-
-	/**
-	 * 
-	 * @param {*} handler commande à ajouter
-	 * @param {string} file_path
-	 */
-	add(handler, file_path)
-	{
-		if (!handler.start)
-		{
-			console.warn(file_path, "method start is missing")
-			return 
-		}
-		if (!handler.stop)
-		{
-			console.warn(file_path, "method stop is missing")
-			return 
-		}
-		this._list.push(new Task(handler, file_path))
-	}
+  /**
+   *
+   * @param {{start: Function, stop: Function}} task
+   * @param {string} file_path
+   */
+  constructor(task, file_path) {
+    super(file_path);
+    this.start = task.start;
+    this.stop = task.stop;
+  }
 }
-
-class Task extends AFunctionality
-{
-	/**
-	 * @type {Function}
-	 */
-	start;
-
-	/**
-	 * @type {Function}
-	 */
-	stop;
-
-	/**
-	 * 
-	 * @param {{start: Function, stop: Function}} task
-	 * @param {string} file_path
-	 */
-   constructor(task, file_path)
-   {
-		super(file_path)
-	  	this.start = task.start;
-	  	this.stop = task.stop;
-   }
-}
-
-module.exports = { Task, Tasks }

@@ -16,9 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const name = "guildBanRemove";
-async function listen(guild, user)
-{
+export const name = "guildBanAdd";
+export async function listen(_guild, _user) {
+  // TODO handle the event
 }
-
-module.exports = { name, listen }

@@ -16,79 +16,81 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { Message, EmbedBuilder } = require("discord.js")
-const { Colors } = require("../../libraries/colors")
+import { EmbedBuilder } from "discord.js";
+import Colors from "../../libraries/colors.js";
 
-class Messages
+/**
+ * @typedef { import("discord.js").DMChannel
+ *  | import("discord.js").PartialDMChannel
+ *  | import("discord.js").PartialGroupDMChannel
+ *  |  import("discord.js").NewsChannel
+ *  |  import("discord.js").StageChannel
+ *  |  import("discord.js").TextChannel
+ *  |  import("discord.js").PublicThreadChannel
+ *  |  import("discord.js").PrivateThreadChannel
+ *  |  import("discord.js").VoiceChannel
+ * } ChannelWithMessages
+ */
+export class Messages {
+  /**
+   *
+   * @param {ChannelWithMessages} channel
+   * @param {number} length
+   */
+  constructor(channel, length = 100) {
+    this.channel = channel;
+    this.length = length;
+  }
 
-{
-    constructor (channel, length = 100)
+  /**
+   *
+   * @param {string} message_id
+   * @returns {Promise<import("discord.js").Message | null>}
+   */
+  async get(message_id) {
+    const messages = await this.channel.messages.fetch({ limit: this.length });
+    /**
+     * @type {import("discord.js").Message | null}
+     */
+    let TARGET_MESSAGE = null;
+    messages.forEach(function (message) {
+      if (message.id == message_id) return (TARGET_MESSAGE = message);
+    });
 
-    {
-        this.channel = channel
-        this.length = length
-    }
+    return TARGET_MESSAGE;
+  }
 
-	/**
-	 * 
-	 * @param {string} message_id 
-	 * @returns {Message}
-	 */
-    async get(message_id)
+  async all() {
+    const messages = await this.channel.messages.fetch({ limit: this.length });
+    const return_format = {};
 
-    {
-        const messages = await this.channel.messages.fetch({limit: this.length})
-        let TARGET_MESSAGE = false
-        messages.forEach(
-            function(message)
+    messages.forEach(function (message) {
+      return_format[message.id] = message;
+    });
 
-            {
-                if (message.id == message_id) return (TARGET_MESSAGE = message)
-            }
-        )
+    return return_format;
+  }
 
-        return (TARGET_MESSAGE)
-    }
+  async toList() {
+    const messages = await this.channel.messages.fetch({ limit: this.length });
+    const return_format = [];
 
-    async all()
+    messages.forEach(function (message) {
+      return_format.push(message);
+    });
 
-    {
-        const messages = await this.channel.messages.fetch({limit: this.length})
-        const return_format = {};
-
-        messages.forEach(
-            function(message)
-
-            {
-                return_format[message.id] = message;
-            }
-        )
-
-        return (return_format)
-    }
-
-	async toList()
-	{
-		const messages = await this.channel.messages.fetch({limit: this.length})
-        const return_format = [];
-
-        messages.forEach(
-            function(message)
-            {
-                return_format.push(message);
-            }
-        )
-
-        return (return_format)
-	}
+    return return_format;
+  }
 }
 
 /**
- * 
- * @param {*} target_message 
+ *
+ * @param {*} target_message
  * @returns {{
  *	text?: string,
+ *	content?: string,
  *	embed?: {
+ *    author?: {name: string, iconURL?: string},
  *		title?: string,
  *		description?: string,
  *		comment?: {text: string, iconURL?: string},
@@ -99,65 +101,55 @@ class Messages
  * 	}
  * }}
  */
-function getMessageData(target_message)
-{
-    let data = {
-        text: undefined,
-        embed: {
-			author: undefined,
-            title: undefined,
-            description: undefined,
-            comment: undefined,
-            icon: undefined,
-            banner: undefined,
-            color: Colors.none,
-            fields: undefined
-        }
+export function getMessageData(target_message) {
+  /**
+   * @type {{
+   *	text?: string,
+   *	content?: string,
+   *	embed?: {
+   *    author?: {name: string, iconURL?: string},
+   *		title?: string,
+   *		description?: string,
+   *		comment?: {text: string, iconURL?: string},
+   *		icon?: string,
+   *      banner?: string,
+   *      color?: number,
+   *      fields?: {name: string, value: string, inline?: boolean}[]
+   * 	}
+   * }}
+   */
+  let data = {};
+
+  if (target_message.embeds && target_message.embeds[0]) {
+    data["embed"] = {};
+    if (target_message.embeds[0]["author"]) {
+      data["embed"]["author"] = target_message.embeds[0]["author"];
     }
+    if (target_message.embeds[0]["title"])
+      data["embed"]["title"] = target_message.embeds[0]["title"];
+    if (target_message.embeds[0]["description"])
+      data["embed"]["description"] = target_message.embeds[0]["description"];
+    if (target_message.embeds[0]["footer"])
+      data["embed"]["comment"] = target_message.embeds[0]["footer"];
+    if (target_message.embeds[0]["thumbnail"])
+      data["embed"]["icon"] = target_message.embeds[0]["thumbnail"]["url"];
+    if (target_message.embeds[0]["image"])
+      data["embed"]["banner"] = target_message.embeds[0]["image"]["url"];
+    if (target_message.embeds[0]["color"])
+      data["embed"]["color"] = target_message.embeds[0]["color"]; //`#${target_message.embeds[0]["color"].toString(16)}`;
 
-    if (target_message.embeds && target_message.embeds[0])
-
-    {
-		if (target_message.embeds[0]["author"])
-		{
-			data["embed"]["author"] = target_message.embeds[0]["author"];
-		}
-        if (target_message.embeds[0]["title"])
-            data["embed"]["title"] = target_message.embeds[0]["title"];
-        if (target_message.embeds[0]["description"])
-            data["embed"]["description"] = target_message.embeds[0]["description"];
-        if (target_message.embeds[0]["footer"])
-            data["embed"]["comment"] = target_message.embeds[0]["footer"];
-        if (target_message.embeds[0]["thumbnail"])
-            data["embed"]["icon"] = target_message.embeds[0]["thumbnail"]["url"];
-        if (target_message.embeds[0]["image"])
-            data["embed"]["banner"] = target_message.embeds[0]["image"]["url"];
-        if (target_message.embeds[0]["color"])
-            data["embed"]["color"] = target_message.embeds[0]["color"];//`#${target_message.embeds[0]["color"].toString(16)}`;
-
-        if (target_message.embeds[0].fields)
-
-        {
-            data["embed"]["fields"] = [];
-            target_message.embeds[0].fields.forEach(field => {
-                data["embed"]["fields"].push(field);
-            })
-        }
+    if (target_message.embeds[0].fields) {
+      data["embed"]["fields"] = [...target_message.embeds[0].fields];
     }
+  }
 
-    else
+  if (target_message.content) {
+    // TODO check if text is still needed
+    data["text"] = target_message.content;
+    data["content"] = target_message.content;
+  }
 
-    {
-        data["embed"] = false;
-    }
-
-    if (target_message.content)
-
-    {
-        data["text"] = target_message.content;
-    }
-
-    return (data);
+  return data;
 }
 
 /**
@@ -173,86 +165,65 @@ function getMessageData(target_message)
  *      banner?: string,
  *      color?: number,
  *      fields?: {name: string, value: string, inline?: boolean}[]
- * 	}}} data 
- * @returns 
+ * 	}}} data
+ * @returns
  */
-function newMessage(data)
+export function newMessage(data) {
+  /**
+   * @type {import("discord.js").MessageCreateOptions}
+   */
+  const message_data = {};
 
-{
-	const message_data = {};
+  if (data["embed"]) {
+    let parameters = 0;
+    let embed = new EmbedBuilder();
 
-	if (data["embed"])
+    if (data["embed"]["author"]) {
+      embed.setAuthor(data["embed"]["author"]);
+      parameters++;
+    }
 
-	{
-		let parameters = 0;
-		let embed = new EmbedBuilder()
+    if (data["embed"]["title"]) {
+      embed.setTitle(data["embed"]["title"]);
+      parameters++;
+    }
 
-		if (data["embed"]["author"])
-		{
-			embed.setAuthor(data["embed"]["author"]);
-			parameters++;
-		}
+    if (data["embed"]["description"]) {
+      embed.setDescription(data["embed"]["description"]);
+      parameters++;
+    }
 
-		if (data["embed"]["title"])
+    if (data["embed"]["comment"]) {
+      embed.setFooter(data["embed"]["comment"]);
+      parameters++;
+    }
 
-		{
-			embed.setTitle(data["embed"]["title"]);
-			parameters++;
-		}
+    if (data["embed"]["icon"]) {
+      embed.setThumbnail(data["embed"]["icon"]);
+      parameters++;
+    }
 
-		if (data["embed"]["description"])
+    if (data["embed"]["banner"]) {
+      embed.setImage(data["embed"]["banner"]);
+      parameters++;
+    }
 
-		{
-			embed.setDescription(data["embed"]["description"]);
-			parameters++;
-		}
+    if (data["embed"]["fields"]) {
+      embed.setFields(data["embed"]["fields"]);
+      parameters++;
+    }
 
-		if (data["embed"]["comment"])
+    if (data["embed"]["color"]) embed.setColor(data["embed"]["color"]);
+    else data["embed"]["color"] = Colors.none;
 
-		{
-			embed.setFooter(data["embed"]["comment"]);
-			parameters++;
-		}
+    if (parameters) message_data["embeds"] = [embed];
+    else message_data["embeds"] = [];
 
-		if (data["embed"]["icon"])
+    if (data["text"]) message_data["content"] = data["text"];
+  }
 
-		{
-			embed.setThumbnail(data["embed"]["icon"]);
-			parameters++;
-		}
+  if (data["content"]) message_data["content"] = data["content"];
+  if (data["text"]) message_data["content"] = data["text"];
 
-		if (data["embed"]["banner"])
-
-		{
-			embed.setImage(data["embed"]["banner"]);
-			parameters++;
-		}
-
-		if (data["embed"]["fields"])
-
-		{
-			embed.setFields(data["embed"]["fields"]);
-			parameters++;
-		}
-
-		if (data["embed"]["color"])
-			embed.setColor(data["embed"]["color"])
-
-		if (parameters)
-			message_data["embeds"] = [embed];
-		else
-			message_data["embeds"] = [];
-
-		if (data["text"])
-			message_data["content"] = data["text"];
-	}
-
-	if (data["content"])
-		message_data["content"] = data["content"];
-	if (data["text"])
-		message_data["content"] = data["text"];
-
-	return (message_data);
+  return message_data;
 }
-
-module.exports = { Messages, getMessageData, newMessage }

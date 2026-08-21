@@ -1,30 +1,38 @@
-const { fetchException } = require("./fetchException");
+/**
+ * ClappyBot - A powerful framework for bot developers
+ * Copyright (C) 2019–2025 LeWeeky
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import fetchException from "./fetchException.js";
 
 /**
  * Singularize a plural model name
  * (include basic English rules and few exceptions)
- * @param {string} name 
+ * @param {string} name
  * @returns {string}
  */
-function toSingularize(name)
-{
-	const execption = fetchException(name, "singular")
+export default function toSingularize(name) {
+  const execption = fetchException(name, "singular");
 
-	if (execption)
-		return (execption);
-    if (name.endsWith('ies'))
-        return (name.slice(0, -3) + 'y'); // "Categories" -> "Category"
-    if (name.endsWith('es'))
-		{
-        const base = name.slice(0, -2);
-        if (/(s|x|z|ch|sh)$/.test(base))
-            return (base); // "Boxes" -> "Box"
-    }
-    if (name.endsWith('s'))
-        return (name.slice(0, -1)); // "Users" -> "User"
-    return (name); // fallback: no change
-}
-
-module.exports = {
-	toSingularize
+  if (execption) return execption;
+  if (name.endsWith("ies")) return name.slice(0, -3) + "y"; // "Categories" -> "Category"
+  if (name.endsWith("es")) {
+    const base = name.slice(0, -2);
+    if (/(s|x|z|ch|sh)$/.test(base)) return base; // "Boxes" -> "Box"
+  }
+  if (name.endsWith("s")) return name.slice(0, -1); // "Users" -> "User"
+  return name; // fallback: no change
 }

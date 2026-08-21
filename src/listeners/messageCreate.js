@@ -16,57 +16,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { split } = require('../libraries/formating/split');
-const { clappybot } = require('../main');
+import split from "../libraries/formating/split.js";
+import { clappybot } from "../main.js";
+import isStaff from "../libraries/permissions/guild_staff.js";
+import { system } from "../systems/system.js";
 
-const { isStaff } = require('../libraries/permissions/guild_staff');
-const { Message } = require('discord.js');
-const { system } = require('../systems/system');
-
-const name = "messageCreate";
+export const name = "messageCreate";
 /**
- * 
- * @param {Message} message 
- * @returns 
+ *
+ * @param {import('discord.js').Message} message
+ * @returns
  */
-async function listen(message)
+export async function listen(message) {
+  const prefix = clappybot.prefix;
 
-{
-    const prefix = clappybot.prefix;
+  let cmd;
+  let args = split(message.content.toLocaleLowerCase());
 
-    let cmd;
-    let args = split(message.content.toLocaleLowerCase());
+  if (message.content.startsWith(prefix) && message.content.length > 1) {
+    cmd = args[0].substring(prefix.length);
+    args = args.slice(1, args.length);
+  }
 
-    if (message.content.startsWith(prefix) && message.content.length > 1)
+  if (cmd) system.commands.scan(message, cmd, args);
+  system.messageCreate.scan(message);
 
-    {
-        cmd = args[0].substr(prefix.length);
-        args = args.slice(1, args.length);
+  if (
+    message.member &&
+    message.guild &&
+    message.guild.id == globalThis.guild_id
+  ) {
+    if (await isStaff(message.member)) {
+      if (message.content == prefix + "join") {
+        clappybot.bot.emit("guildMemberAdd", message.member);
+        message.delete();
+      }
+
+      if (message.content == prefix + "leave") {
+        clappybot.bot.emit("guildMemberRemove", message.member);
+        message.delete();
+      }
     }
-
-	if (cmd)
-		system.commands.scan(message, cmd, args);
-	system.messageCreate.scan(message);
-
-    if (message.member && message.guild && message.guild.id == globalThis.guild_id)
-    {
-        if (await isStaff(message.member))
-        {
-            if (message.content == prefix+'join')
-
-            {
-                clappybot.bot.emit('guildMemberAdd', message.member);
-                message.delete()
-            }
-
-            if (message.content == prefix+'leave')
-
-            {
-                clappybot.bot.emit('guildMemberRemove', message.member)
-                message.delete()
-            }
-        }
-    }
+  }
 }
- 
-module.exports = { name, listen }

@@ -16,17 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-function getDomain(url)
-{
-    try {
-        const parsedUrl = new URL(url);
-        return (parsedUrl.hostname);
-    } catch (e) {
-        console.error('Invalid URL:', e);
-        return (null);
-    }
-}
-
-module.exports = {
-    getDomain
+export default function getDomain(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.hostname;
+  } catch (e) {
+    console.error("Invalid URL:", e);
+    return null;
+  }
 }
