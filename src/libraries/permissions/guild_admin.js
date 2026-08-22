@@ -16,19 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { clappybot } = require("../../main");
-const { isClapAdmin } = require("./clappy_admin");
-const { GuildMember, User, PermissionsBitField } = require("discord.js");
-
 /**
- * 
- * @param {GuildMember | User} member 
- * @returns 
+ *
+ * @param {import("discord.js").GuildMember | import("discord.js").User} _member
+ * @returns
  */
-function isAdmin(member)
-{
-	// temporarily unavailable
-	return (false);
+export default function isAdmin(_member) {
+  // temporarily unavailable
+  return false;
 }
-
-module.exports = { isAdmin }

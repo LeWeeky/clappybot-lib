@@ -17,51 +17,49 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {string} table 
- * @param {string} where 
- * @param {any[] | null} data 
+ *
+ * @param {*} connection
+ * @param {string} table
+ * @param {string} where
+ * @param {any[] | null} data
  * @returns {Promise<boolean>}
  */
-async function mysql_exists(connection, table, where, data = null)
-{
-	try {
-		let rows
+export default async function mysql_exists(connection, table, where, data = null) {
+  try {
+    let rows;
 
-		if (data)
-		{
-			const [res_rows, fields] = await connection
-				.promise().execute(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`,
-				data
-			);
-			rows = res_rows;
-		}
-		else
-		{
-			const [res_rows, fields] = await connection
-				.promise().query(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`
-			);
-			rows = res_rows;
-		}
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Véréfication de l'existance d'un élément dans ${table} réussi`);
-		if (!rows)
-			return (false);
-		if (!rows[0])
-			return (false);
-		return (rows[0].element_exists);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Véréfication de l'existance d'un élément dans ${table} ratée`);
-			console.error(error);
-		}
-		return (false);
-	}
-}
-
-module.exports = {
-	mysql_exists
+    if (data) {
+      const [res_rows, _fields] = await connection
+        .promise()
+        .execute(
+          `SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`,
+          data,
+        );
+      rows = res_rows;
+    } else {
+      const [res_rows, _fields] = await connection
+        .promise()
+        .query(
+          `SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`,
+        );
+      rows = res_rows;
+    }
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Véréfication de l'existance d'un élément dans ${table} réussi`,
+      );
+    if (!rows) return false;
+    if (!rows[0]) return false;
+    return rows[0].element_exists;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Véréfication de l'existance d'un élément dans ${table} ratée`,
+      );
+      console.error(error);
+    }
+    return false;
+  }
 }

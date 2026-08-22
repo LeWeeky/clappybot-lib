@@ -16,66 +16,78 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { REST, Routes } = require("discord.js");
-const { clappybot } = require("../../main");
-const { system } = require("../system");
+import { REST, Routes } from "discord.js";
+import { clappybot } from "../../main.js";
+import { system } from "../system.js";
+
+/** @typedef {import("discord.js").ClientUser} ReadyDiscordClient */
 
 /**
- * 
- * @param {REST | null} rest 
+ *
+ * @param {REST | null} rest
  */
-async function buildGlobalCommands(rest = null)
-{
-	if (!rest)
-		rest = new REST().setToken(process.env.TOKEN);
+async function buildGlobalCommands(rest = null) {
+  if (!rest) rest = new REST().setToken(process.env.TOKEN || "");
 
-	try {
-		console.log(`Rechargement des ${system.commands.commands_builder.global_cmds.length} (/) commandes globales.`);
+  try {
+    console.log(
+      `Reloading ${system.commands.commands_builder.global_cmds.length} global (/) commands...`,
+    );
 
-		const data = await rest.put(
-			Routes.applicationCommands(clappybot.bot.user.id),
-			{ body: system.commands.commands_builder.global_cmds },
-		);
+    const data =
+      /** @type {import("discord.js").RESTPutAPIApplicationGuildCommandsResult} */ (
+        await rest.put(
+          Routes.applicationCommands(
+            /** @type {ReadyDiscordClient} */ (clappybot.bot.user).id
+          ),
+          {
+            body: system.commands.commands_builder.global_cmds,
+          },
+        )
+      );
 
-		console.log(`${data.length} (/) commandes globales ont bien été rechargée.`);
-	} catch (error) {
-		console.error(error);
-	}
+    console.log(
+      `${data.length} global (/) commands have been reloaded.`,
+    );
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 /**
- * 
- * @param {REST | null} rest 
+ *
+ * @param {REST | null} rest
  */
-async function buildGuildCommands(rest = null)
-{
-	if (!rest)
-		rest = new REST().setToken(process.env.TOKEN);
+async function buildGuildCommands(rest = null) {
+  if (!rest) rest = new REST().setToken(process.env.TOKEN || "");
 
-	try {
-		console.log(`Rechargement des ${system.commands.commands_builder.guild_cmds.length} (/) commandes privées.`);
+  try {
+    console.log(
+      `Reloading ${system.commands.commands_builder.guild_cmds.length} guild (/) commands...`,
+    );
 
-		const data = await rest.put(
-			Routes.applicationGuildCommands(clappybot.bot.user.id, globalThis.guild_id),
-			{ body: system.commands.commands_builder.guild_cmds },
-		);
+    const data =
+      /** @type {import("discord.js").RESTPutAPIApplicationGuildCommandsResult} */ (
+        await rest.put(
+          Routes.applicationGuildCommands(
+            /** @type {ReadyDiscordClient} */ (clappybot.bot.user).id,
+            globalThis.guild_id,
+          ),
+          { body: system.commands.commands_builder.guild_cmds },
+        )
+      );
 
-		console.log(`${data.length} (/) commandes privées ont bien été rechargée.`);
-	} catch (error) {
-		console.error(error);
-	}
+    console.log(`${data.length} guild (/) commands have been reloaded.`);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-async function build_commands()
+export default async function build_commands() {
+  const rest = new REST().setToken(process.env.TOKEN || "");
 
-{
-	const rest = new REST().setToken(process.env.TOKEN);
+  buildGlobalCommands(rest);
 
-	buildGlobalCommands(rest);
-
-	if (!globalThis.guild_id)
-		return ;
-	buildGuildCommands(rest);
+  if (!globalThis.guild_id) return;
+  buildGuildCommands(rest);
 }
-
-module.exports = { build_commands }

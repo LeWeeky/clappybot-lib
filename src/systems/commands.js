@@ -16,323 +16,268 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { readdirSync, existsSync, statSync } = require("fs");
-const { Message, ChannelType, ChatInputCommandInteraction, SlashCommandBuilder, MessageFlags } = require("discord.js");
-const { SlashCommands } = require("./interactions/slashCmd");
-// const cmdCreator = require("../modules/cmdcreator/cmd_listener");
-// const { get_commands } = require("../modules/cmdcreator/functions/get_commands");
-// const { str_is_alpha } = require("../libraries/informations/is_alpha");
-const { AAction, AActions } = require("./abstracts/actions");
+import { readdirSync, existsSync, statSync } from "fs";
+import { ChannelType } from "discord.js";
+import SlashCommands from "./interactions/slashCmd.js";
+import { AAction, AActions } from "./abstracts/actions.js";
 
 const config = {
-	"title": "commands",
-	"descriptior": undefined,
-	"direct_names": ["command", "cmd"],
-	"shared_folder": false,
-	"extension": "cmd.js",
-	"folder": "commands",
-	"addons": "commands"
+  title: "commands",
+  descriptior: undefined,
+  direct_names: ["command", "cmd"],
+  shared_folder: false,
+  extension: "cmd.js",
+  folder: "commands",
+  addons: "commands",
+};
+
+export class Commands extends AActions {
+  /** Donnée de création des slash commandes
+   * @type {SlashCommands}
+   */
+  commands_builder;
+
+  constructor() {
+    super(Command, config);
+    this.commands_builder = new SlashCommands();
+  }
+
+  /**
+   *
+   * @param {Command} cmd commande à ajouter
+   * @param {String} file_path chemin d'accès vers le fichier
+   */
+  add(cmd, file_path) {
+    if (cmd.name) super.add(cmd, file_path);
+  }
+
+  /**
+   * @param {import('discord.js').Message | import("discord.js").ChatInputCommandInteraction} interaction
+   * @param {Function[] | undefined} permissions
+   */
+  async has_permissions(interaction, permissions) {
+    let i = 0;
+
+    if (!permissions || permissions.length == 0) return true;
+    while (permissions[i]) {
+      if (await permissions[i](interaction.member)) return true;
+      i++;
+    }
+    return false;
+  }
+
+  /**
+   *
+   * @param {string} path
+   */
+  #load_dir(path) {
+    readdirSync(path).forEach(async (file) => {
+      if (file.endsWith(".js")) {
+        const file_path = `${path}/${file}`;
+        const command = await import(file_path);
+        if (command.parse) {
+          this.add(command, file_path);
+          this.commands_builder.add(command);
+        } else console.warn(file_path, "method parse is missing");
+      }
+    });
+  }
+
+  load_addon() {
+    if (existsSync(`./add-on/${config.addons}`)) {
+      readdirSync(`./add-on/${config.addons}`).forEach(async (module) => {
+        if (module.endsWith(config.extension)) {
+          const file_path = `${process.cwd()}/add-on/${config.addons}/${module}`;
+          const command = await import(
+            file_path
+          );
+          if (command.parse) {
+            this.add(command, file_path);
+            this.commands_builder.add(command);
+          } else console.warn(file_path, "method parse is missing");
+        } else if (
+          statSync(`./add-on/${config.addons}/${module}`).isDirectory()
+        ) {
+          readdirSync(`./add-on/${config.addons}/${module}`).forEach(
+            async (file) => {
+              if (file.endsWith(config.extension)) {
+                const file_path = `${process.cwd()}/add-on/${config.addons}/${module}/${file}`;
+                const command = await import(
+                  file_path
+                );
+                if (command.parse) {
+                  this.add(command, file_path);
+                  this.commands_builder.add(command);
+                } else console.warn(file_path, "method parse is missing");
+              }
+            },
+          );
+        }
+      });
+    }
+  }
+
+  async load() {
+    readdirSync("./sources/modules").forEach((module) => {
+      if (
+        !module.startsWith(".") &&
+        statSync(`./sources/modules/${module}`).isDirectory()
+      ) {
+        readdirSync(`./sources/modules/${module}`).forEach(async (file) => {
+          if (file == config.folder) {
+            this.#load_dir(
+              `${process.cwd()}/sources/modules/${module}/${config.folder}`,
+            );
+          } else if (
+            file.endsWith(config.extension) ||
+            this.isDirectFile(file)
+          ) {
+            const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
+            const command = await import(
+              file_path
+            );
+            if (command.parse) {
+              this.add(command, file_path);
+              this.commands_builder.add(command);
+            } else console.warn(file_path, "method parse is missing");
+          }
+        });
+      }
+    });
+    this.load_addon();
+    // await this.load_cmdcreator(); temporarily unavailable
+    console.log(`${this._list.length} commands have been loaded.`);
+  }
+
+  async reload() {
+    this.commands_builder.destroy();
+    this.destroy();
+    await this.load();
+  }
+
+  #isDM(channel) {
+    return (
+      channel.type == ChannelType.DM || channel.type == ChannelType.GroupDM
+    );
+  }
+
+  #isValidExecutor(interaction, cmd) {
+    return !interaction.bot || cmd.allow_bots;
+  }
+
+  /**
+   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction
+   * @returns {interaction is import('discord.js').ChatInputCommandInteraction}
+   */
+  #isChatInputInteraction(interaction) {
+    return "commandType" in interaction;
+  }
+
+  /**
+   * Reply safely for both Message and ChatInputCommandInteraction.
+   *
+   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction
+   * @param {string} content
+   * @param {boolean} [ephemeral=false]
+   */
+  #reply(interaction, content, ephemeral = false) {
+    if (this.#isChatInputInteraction(interaction)) {
+      const interaction_reply = /** @type {any} */ (interaction.reply.bind(interaction));
+      return interaction_reply(ephemeral ? { content, ephemeral: true } : { content });
+    }
+
+    return interaction.reply(content);
+  }
+
+  /**
+   *
+   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction
+   * @param {Command} cmd
+   * @param {{res: boolean}} replyied
+   * @returns {boolean}
+   */
+  validCommandChannel(interaction, cmd, replyied) {
+    if (this.#isDM(interaction.channel)) {
+      if (cmd.dm) return true;
+      replyied.res = true;
+
+      this.#reply(
+        interaction,
+        `Sorry but, this command is not available in private messages.`,
+        true,
+      );
+      return false;
+    }
+    if (
+      (interaction.guild && interaction.guild.id == globalThis.guild_id) ||
+      cmd.any_guild
+    )
+      return true;
+    return false;
+  }
+  /**
+   *
+   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction interaction ou message
+   * @param {string} cmd interaction ou format parsé du message
+   * @param {string[]} args arguments du message parsé
+   * @return {Promise<boolean>}
+   */
+  async scan(interaction, cmd, args) {
+    const replyied = { res: false };
+
+    for (let i in this._list) {
+      if (
+        this.#isValidExecutor(interaction, cmd) &&
+        (this._list[i].name == cmd || this._list[i].alias.includes(cmd)) &&
+        this.validCommandChannel(interaction, this._list[i], replyied)
+      ) {
+        if (replyied.res) break;
+        if (await this.has_permissions(interaction, this._list[i].permissions))
+          this._list[i].parse(interaction, cmd, args);
+        else
+          this.#reply(
+            interaction,
+            `Sorry but, you don't have the required permissions to perform this command.`,
+          );
+        return true;
+      }
+    }
+    return replyied.res;
+  }
 }
 
-function get_cmd_description(data)
+export class Command extends AAction {
+  /**
+   * @type {string}
+   */
+  name;
 
-{
-	if (data.informations)
-		return (data.informations)
-	return ("Une commande personnalisée créé via le CmdCreator !");
+  /**
+   * @type {string[]}
+   */
+  alias = [];
+
+  /**
+   * @type {Function[] | false | undefined}
+   */
+  permissions;
+
+
+  /**
+   *
+   * @param {{
+   * name: string, alias: string[] | undefined, builder: import('discord.js').SlashCommandBuilder | undefined,
+   * permissions: Function[] | undefined, dm: boolean | undefined ,
+   * any_guild: boolean | undefined, parse: Function, conditions: undefined
+   * }} cmd Informations de la nouvelle commande
+   * @param {string} file_path
+   */
+  constructor(cmd, file_path) {
+    super(cmd, file_path);
+    this.name = cmd.name;
+    if (cmd.alias) this.alias = cmd.alias;
+    this.permissions = cmd.permissions;
+    this.dm = cmd.dm;
+    this.any_guild = cmd.any_guild;
+  }
 }
-
-class Commands extends AActions
-{
-	/** Donnée de création des slash commandes
-	 * @type {SlashCommands}
-	 */
-	commands_builder;
-
-	constructor()
-	{
-		super(Command, config)
-		this.commands_builder = new SlashCommands();
-	}
-
-	/**
-	 * 
-	 * @param {Command} cmd commande à ajouter
-	 * @param {String} file_path chemin d'accès vers le fichier
-	 */
-	add(cmd, file_path)
-	{
-		if (cmd.name)
-			super.add(cmd, file_path)
-	}
-
-	/**
-	 * @param {*} interaction
-	 * @param {Function[] | undefined} permissions
-	*/
-	async has_permissions(interaction, permissions)
-	{
-		let i = 0;
-		let result = false;
-
-		if (!permissions || permissions.length == 0)
-			return (true);
-		while (permissions[i])
-		{
-			result = await permissions[i](interaction.member);
-			if (result) return (true);
-			i++;
-		}
-		return (false);
-	}
-
-	/**
-	 * 
-	 * @param {string} path
-	 */
-	#load_dir(path)
-	{
-		readdirSync(path)
-		.forEach(file => 
-		{
-			if (file.endsWith(".js"))
-			{
-				const file_path = `${path}/${file}`;
-				const command = require(file_path.slice(0, file_path.length - 3));
-				if (command.parse)
-				{
-					this.add(command, file_path);
-					this.commands_builder.add(command);
-				}
-				else
-					console.warn(file_path, "method parse is missing")
-			}
-		});
-	}
-
-	// async load_cmdcreator()
-	// {
-	// 	if (isEnable("cmdcreator"))
-	// 	{
-	// 		const cmd_list = await get_commands();
-
-	// 		if (cmd_list)
-	// 		{
-	// 			for (let i = 0; i < cmd_list.length; i++)
-	// 			{
-	// 				if (!str_is_alpha(cmd_list[i].name))
-	// 					continue ;
-	// 				const cmd_data = {
-	// 					parse: cmdCreator.parse,
-	// 					name: cmd_list[i].name,
-	// 					alias: [],
-	// 					permissions: undefined,
-	// 					dm: false,
-	// 					builder: new SlashCommandBuilder()
-	// 					.setName(cmd_list[i].name)
-	// 					.setDescription(get_cmd_description(cmd_list[i].name)),
-	// 					any_guild: cmd_list[i].public[0] !== 0x00
-	// 				}
-	// 				this.add(cmd_data, "cmdcreator");
-	// 				if (cmd_list[i].name != "help")
-	// 					this.commands_builder.add(cmd_data);
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	load_addon()
-	{
-		if (existsSync(`./add-on/${config.addons}`))
-		{
-			readdirSync(`./add-on/${config.addons}`)
-			.forEach(module => 
-			{
-				if (module.endsWith(config.extension))
-				{
-					const file_path = `${process.cwd()}/add-on/${config.addons}/${module}`;
-					const command = require(file_path.slice(0, file_path.length - 3));
-					if (command.parse)
-					{
-						this.add(command, file_path);
-						this.commands_builder.add(command);
-					}
-					else
-						console.warn(file_path, "method parse is missing")
-				}
-				else if (statSync(`./add-on/${config.addons}/${module}`).isDirectory())
-				{
-					readdirSync(`./add-on/${config.addons}/${module}`)
-					.forEach(file =>
-					{
-						if (file.endsWith(config.extension))
-						{
-							const file_path = `${process.cwd()}/add-on/${config.addons}/${module}/${file}`;
-							const command = require(file_path.slice(0, file_path.length - 3));
-							if (command.parse)
-							{
-								this.add(command, file_path);
-								this.commands_builder.add(command);
-							}
-							else
-								console.warn(file_path, "method parse is missing")
-						}
-					});
-				}
-			});
-		}
-	}
-
-	async load()
-	{
-		readdirSync("./sources/modules")
-		.forEach(module => 
-		{
-			if (!module.startsWith(".") && statSync(`./sources/modules/${module}`).isDirectory())
-			{
-				readdirSync(`./sources/modules/${module}`)
-				.forEach(file =>
-				{
-					if (file == config.folder)
-					{
-						this.#load_dir(`${process.cwd()}/sources/modules/${module}/${config.folder}`)
-					}
-					else if (file.endsWith(config.extension) || this.isDirectFile(file))
-					{
-						const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-						const command = require(file_path.slice(0, file_path.length - 3));
-						if (command.parse)
-						{
-							this.add(command, file_path);
-							this.commands_builder.add(command);
-						}
-						else
-							console.warn(file_path, "method parse is missing")
-					}
-				});
-			}
-		});
-		this.load_addon();
-		// await this.load_cmdcreator(); temporarily unavailable
-		console.log(`${this._list.length} commandes ont bien été chargées`)
-	}
-
-	async reload()
-	{
-		this.commands_builder.destroy();
-		this.destroy();
-		await this.load();
-	}
-
-	#isDM(channel)
-	{
-		return (channel.type == ChannelType.DM
-			|| channel.type == ChannelType.GroupDM)
-	}
-
-	#isValidExecutor(interaction, cmd)
-	{
-		return (!interaction.bot
-			|| cmd.allow_bots)
-	}
-
-	/**
-	 * 
-	 * @param {Message | ChatInputCommandInteraction} interaction
-	 * @param {Command} cmd 
-	 * @param {{res: boolean}} replyied
-	 * @returns {boolean}
-	 */
-	validCommandChannel(interaction, cmd, replyied)
-	{
-		if (this.#isDM(interaction.channel))
-		{
-			if (cmd.dm)
-				return (true);
-			replyied.res = true;
-			interaction.reply({content: `Désolé mais, cette commande n'est pas disponible en message privé.`, flags: [MessageFlags.Ephemeral]})
-			return (false);
-		}
-		if (interaction.guild &&
-			(interaction.guild.id == globalThis.guild_id)
-			|| cmd.any_guild)
-			return (true);
-		return (false);
-	}
-	/**
-	 * 
-	 * @param {Message | ChatInputCommandInteraction} interaction interaction ou message
-	 * @param {string} cmd interaction ou format parsé du message
-	 * @param {string[]} args arguments du message parsé
-	 * @return {Promise<boolean>}
-	 */
-	async scan(interaction, cmd, args)
-	{
-		const replyied = {res: false};
-
-		for (let i in this._list)
-
-		{
-			if (this.#isValidExecutor(interaction, cmd)
-				&& (this._list[i].name == cmd || this._list[i].alias.includes(cmd))
-				&& this.validCommandChannel(interaction, this._list[i], replyied))
-			{
-				if (replyied.res)
-					break;
-				if (await this.has_permissions(interaction, this._list[i].permissions))
-					this._list[i].parse(interaction, cmd, args);
-				else
-					interaction.reply({content: `Désolé mais, vous n'avez pas la permission d'utiliser cette commande.`})
-				return (true);
-			}
-		}
-		return (replyied.res);
-	}
-}
-
-class Command extends AAction
-{
-	/**
-	 * @type {string}
-	 */
-	name;
-
-	/**
-	 * @type {string[]}
-	 */
-	alias = [];
-
-	/**
-	 * @type {Function[] | false | undefined}
-	 */
-	permissions;
-
-	/**
-	 * @type {Function}
-	 * @param {Message} interaction 
-	 * @param {string} cmd 
-	 * @param {string[]} args 
-	 */
-	exe;
-
-	/**
-	 * 
-	 * @param {{
-	 * name: string, alias: string[] | undefined, builder: SlashCommandBuilder | undefined,
-	 * permissions: Function[] | undefined, dm: boolean | undefined ,
-	 * any_guild: boolean | undefined, parse: Function, conditions: undefined
-	 * }} cmd Informations de la nouvelle commande
-	 * @param {string} file_path
-	 */
-	constructor(cmd, file_path)
-	{
-		super(cmd, file_path)
-		this.name = cmd.name;
-		if (cmd.alias) this.alias = cmd.alias;
-		this.permissions = cmd.permissions;
-		this.dm = cmd.dm;
-		this.any_guild = cmd.any_guild;
-	}
-}
-
-module.exports = { Command, Commands }

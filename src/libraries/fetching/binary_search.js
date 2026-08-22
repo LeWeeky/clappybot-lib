@@ -17,33 +17,26 @@
  */
 
 /**
- * 
- * @param {[[any, any]]} plist 
- * @param {string | number} target 
+ *
+ * @param {[[any, any]]} plist
+ * @param {string | number} target
  * @param {number} target_index
  * @returns {any[][] | null}
  */
-function binarySearch(plist, target, target_index = 0)
-{
-    let length = plist.length;
-    let first = 0;
-    let last = length - 1;
-	let middle_index;
-	let middle;
+export function binarySearch(plist, target, target_index = 0) {
+  let length = plist.length;
+  let first = 0;
+  let last = length - 1;
+  let middle_index;
+  let middle;
 
-    while (first <= last)
-    {
-        middle_index = Math.floor((first + last) / 2);
-        middle = plist[middle_index];
+  while (first <= last) {
+    middle_index = Math.floor((first + last) / 2);
+    middle = plist[middle_index];
 
-        if (middle[target_index] == target) 
-            return (middle)
-        if (middle[target_index] > target) 
-            last=middle_index-1;
-		else if (middle[target_index] < target)
-            first=middle_index+1;
-    }
-    return (null);
+    if (middle[target_index] == target) return middle;
+    if (middle[target_index] > target) last = middle_index - 1;
+    else if (middle[target_index] < target) first = middle_index + 1;
+  }
+  return null;
 }
-
-module.exports = { binarySearch }

@@ -8,17 +8,20 @@
 	},
 	"license": "GPL-3.0-or-later",
 	"author": "LeWeeky",
-	"type": "commonjs",
+	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"files": [
 		"dist"
 	],
+	"exports": {
+		".": "./dist/index.js",
+		"./drivers": "./dist/libraries/models/index.js"
+	},
 	"scripts": {
 		"clean": "rm -rf dist",
-		"build": "npm run clean && tsc && copyfiles -u 1 \"src/**/*.json\" dist",
-		"prepack": "npm run build",
-		"prepublish": "npm run build"
+		"build": "tsc && copyfiles -u 1 \"src/**/*.json\" dist",
+		"prepack": "npm run clean && npm run build"
 	},
 	"dependencies": {
 		"better-sqlite3": "^13.0.3",
@@ -37,11 +40,16 @@
 	},
 	"homepage": "https://github.com/LeWeeky/clappybot-lib#readme",
 	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@eslint/json": "^2.0.1",
+		"@eslint/markdown": "^8.0.3",
 		"copyfiles": "^2.4.1",
+		"eslint": "^10.8.1",
+		"globals": "^17.11.0",
 		"typescript": "^7.0.2"
 	},
 	"allowScripts": {
-		"better-sqlite3@12.10.1": true,
+		"better-sqlite3@13.0.3": true,
 		"esbuild@0.27.7": true
 	}
 }

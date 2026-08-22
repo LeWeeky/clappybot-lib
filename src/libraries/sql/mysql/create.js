@@ -17,35 +17,32 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {string} name 
- * @param {string} content 
- * @param {string | null} more 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {string} name
+ * @param {string} content
+ * @param {string | null} more
+ * @returns
  */
-async function mysql_create_table(connection, name, content, more = null)
-{
-    try {
-		if (more)
-			await connection.promise().query(`CREATE TABLE IF NOT EXISTS ${name} (${content}) ${more}`);
-        else
-			await connection.promise().query(`CREATE TABLE IF NOT EXISTS ${name} (${content})`);
-	    
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Table ${name} crée`);
-        return (null);
-    }
-    catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-        {
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Table ${name}`);
-        	console.error(error);
-		}
-        return (error);
-    }
-}
+export default async function mysql_create_table(connection, name, content, more = null) {
+  try {
+    if (more)
+      await connection
+        .promise()
+        .query(`CREATE TABLE IF NOT EXISTS ${name} (${content}) ${more}`);
+    else
+      await connection
+        .promise()
+        .query(`CREATE TABLE IF NOT EXISTS ${name} (${content})`);
 
-module.exports = {
-    mysql_create_table
+    if (process.env.DEBUG_INFO == "true")
+      console.info("\x1b[32m%s\x1b[0m", `✅ Table ${name} crée`);
+    return null;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error("\x1b[31m%s\x1b[0m", `❌ Erreur : Table ${name}`);
+      console.error(error);
+    }
+    return error;
+  }
 }

@@ -16,14 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { system } = require("../systems/system");
+import { system } from "../systems/system.js";
 
-async function listen(old_presence, new_presence)
-{
-    if (!(new_presence.guild.id) || new_presence.guild.id != globalThis.guild_id
-		|| new_presence.user.bot) return;
+export const name = "presenceUpdate";
+/**
+ * 
+ * @param {import("discord.js").Presence} old_presence 
+ * @param {import("discord.js").Presence} new_presence 
+ * @returns 
+ */
+export async function listen(old_presence, new_presence) {
+  if (
+    !new_presence.guild?.id ||
+    new_presence.guild.id != globalThis.guild_id ||
+    new_presence.user?.bot
+  )
+    return;
 
-	system.presencesUpdate.scan(old_presence, new_presence)
+  system.presencesUpdate.scan(old_presence, new_presence);
 }
-
-module.exports = { name: "presenceUpdate", listen }

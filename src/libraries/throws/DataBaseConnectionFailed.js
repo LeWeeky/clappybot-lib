@@ -16,16 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-class DataBaseConnectionFailed extends Error
-{
-	constructor(database)
-	{
-		super()
-		this.message = `Connection to '${database}' failed.`
-	}
-	name	= "DataBaseConnectionFailed";	
-}
-
-module.exports = {
-	DataBaseConnectionFailed
+export default class DataBaseConnectionFailed extends Error {
+  constructor(database) {
+    super();
+    this.message = `Connection to '${database}' failed.`;
+  }
+  name = "DataBaseConnectionFailed";
 }

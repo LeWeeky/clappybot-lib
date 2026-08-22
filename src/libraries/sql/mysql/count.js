@@ -17,59 +17,50 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {*} table 
- * @param {*} where 
- * @param {any[] | null} data 
+ *
+ * @param {*} connection
+ * @param {*} table
+ * @param {*} where
+ * @param {any[] | null} data
  * @returns {Promise<number>}
  */
-async function mysql_count(connection, table, where = null, data = null)
-{
-	try {
-		let rows
-		
-		if (!where)
-		{
-			const [res_rows, fields] = await connection
-				.promise().query(`SELECT COUNT(*) AS occurrences FROM ${table}`
-			);
-			rows = res_rows;
-		}
-		else if (data)
-		{
-			const [res_rows, fields] = await connection
-				.promise().execute(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`,
-				data
-			);
-			rows = res_rows;
-		}
-		else
-		{
-			const [res_rows, fields] = await connection
-				.promise().query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`
-			);
-			rows = res_rows;
-		}
+export default async function mysql_count(connection, table, where = null, data = null) {
+  try {
+    let rows;
 
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Comptage dans ${table} réussi`);
-		if (!rows)
-			return (-1);
-		if (!rows[0])
-			return (0);
-		return (rows[0].occurrences);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Comptage raté dans ${table}`);
-			console.error(error);
-		}
-		return (-1);
-	}
-}
+    if (!where) {
+      const [res_rows, _fields] = await connection
+        .promise()
+        .query(`SELECT COUNT(*) AS occurrences FROM ${table}`);
+      rows = res_rows;
+    } else if (data) {
+      const [res_rows, _fields] = await connection
+        .promise()
+        .execute(
+          `SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`,
+          data,
+        );
+      rows = res_rows;
+    } else {
+      const [res_rows, _fields] = await connection
+        .promise()
+        .query(`SELECT COUNT(*) AS occurrences FROM ${table} WHERE ${where}`);
+      rows = res_rows;
+    }
 
-module.exports = {
-	mysql_count
+    if (process.env.DEBUG_INFO == "true")
+      console.info("\x1b[32m%s\x1b[0m", `✅ Comptage dans ${table} réussi`);
+    if (!rows) return -1;
+    if (!rows[0]) return 0;
+    return rows[0].occurrences;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Comptage raté dans ${table}`,
+      );
+      console.error(error);
+    }
+    return -1;
+  }
 }

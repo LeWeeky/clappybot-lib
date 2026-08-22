@@ -16,18 +16,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { GuildMember, User } = require("discord.js");
-const { isAdmin } = require("./guild_admin");
+import isAdmin from "./guild_admin.js";
 
 /**
  * 
- * @param {GuildMember | User} member 
+ * @param {import("discord.js").GuildMember | import("discord.js").User} member 
  * @returns 
  */
-async function isStaff(member)
+export default async function isStaff(member)
 {
 	// temporarily unavailable
+	if (await isAdmin(member))
+		return (true);
 	return (false);
 }
-
-module.exports = { isStaff }

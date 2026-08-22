@@ -17,68 +17,73 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {string} table 
- * @param {string} target 
- * @param {string | null | false} where 
- * @param {any[] | null | false} data 
- * @param {number} limit 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {string} table
+ * @param {string} target
+ * @param {string | null | false} where
+ * @param {any[] | null | false} data
+ * @param {number} limit
+ * @returns
  */
-async function mysql_select(connection, table, target, where = null, data = null, limit = 0)
-{
-	try {
-		let rows;
-		let limit_query = '';
+export default async function mysql_select(
+  connection,
+  table,
+  target,
+  where = null,
+  data = null,
+  limit = 0,
+) {
+  try {
+    let rows;
+    let limit_query = "";
 
-		if (limit > 0)
-			limit_query = `LIMIT ${limit}`
+    if (limit > 0) limit_query = `LIMIT ${limit}`;
 
-		if (where)
-		{
-			if (data)
-			{
-				const [rows_, fields] = await connection.promise()
-				.execute(`SELECT ${target} FROM ${table} WHERE ${where} ${limit_query}`, data);
-				rows = rows_;
-			}
-			else
-			{
-				const [rows_, fields] = await connection.promise()
-				.query(`SELECT ${target} FROM ${table} WHERE ${where} ${limit_query}`);
-				rows = rows_;
-			}
-		}
-		else
-		{
-			if (data)
-				{
-					const [rows_, fields] = await connection.promise()
-					.execute(`SELECT ${target} FROM ${table}`, data);
-					rows = rows_;
-				}
-				else
-				{
-					const [rows_, fields] = await connection.promise()
-					.query(`SELECT ${target} FROM ${table}`);
-					rows = rows_;
-				}
-		}
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Récupérations de ${target} de la table ${table}`);
-		return (rows);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : impossible de récupérer ${target} dans la table ${table}`);
-			console.error(error);
-		}
-		return (false);
-	}
-}
-
-module.exports = {
-	mysql_select
+    if (where) {
+      if (data) {
+        const [rows_, _fields] = await connection
+          .promise()
+          .execute(
+            `SELECT ${target} FROM ${table} WHERE ${where} ${limit_query}`,
+            data,
+          );
+        rows = rows_;
+      } else {
+        const [rows_, _fields] = await connection
+          .promise()
+          .query(
+            `SELECT ${target} FROM ${table} WHERE ${where} ${limit_query}`,
+          );
+        rows = rows_;
+      }
+    } else {
+      if (data) {
+        const [rows_, _fields] = await connection
+          .promise()
+          .execute(`SELECT ${target} FROM ${table}`, data);
+        rows = rows_;
+      } else {
+        const [rows_, _fields] = await connection
+          .promise()
+          .query(`SELECT ${target} FROM ${table}`);
+        rows = rows_;
+      }
+    }
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Récupérations de ${target} de la table ${table}`,
+      );
+    return rows;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : impossible de récupérer ${target} dans la table ${table}`,
+      );
+      console.error(error);
+    }
+    return false;
+  }
 }

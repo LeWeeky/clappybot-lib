@@ -16,32 +16,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { PermissionsBitField } = require("discord.js");
-const { History } = require("./history");
+import { PermissionsBitField } from "discord.js";
+import History from "./history.js";
 
-const Permissions = PermissionsBitField.Flags
-function bot_can_kick(guild)
-{
-	return (guild.members.me.permissions.has(Permissions.KickMembers));
+const Permissions = PermissionsBitField.Flags;
+/**
+ * 
+ * @param {import("discord.js").Guild} guild 
+ * @returns {boolean}
+ */
+export function bot_can_kick(guild) {
+  return guild.members.me?.permissions.has(Permissions.KickMembers) || false;
 }
 
-function user_can_kick(member)
-{
-	return (member.permissions.has(Permissions.KickMembers));
+/**
+ * 
+ * @param {import("discord.js").GuildMember} member 
+ * @returns 
+ */
+export function user_can_kick(member) {
+  return member.permissions.has(Permissions.KickMembers);
 }
 
-async function kick(user, reason, author, guild)
-{
-	const date = new Date;
-	let day = String(date.getDate());
-	let month = String(date.getMonth()+1);
-	const year = date.getFullYear();
+/**
+ * 
+ * @param {import('discord.js').User} user 
+ * @param {string} reason 
+ * @param {import('discord.js').User} author 
+ * @param {import('discord.js').Guild} guild 
+ */
+export async function kick(user, reason, author, guild) {
+  const date = new Date();
+  let day = String(date.getDate());
+  let month = String(date.getMonth() + 1);
+  const year = date.getFullYear();
 
-	if (day.length == 1) day = "0"+day;
-	if (month.length == 1) month = "0"+month;
+  if (day.length == 1) day = "0" + day;
+  if (month.length == 1) month = "0" + month;
 
-	guild.members.cache.get(user.id).kick(`Modérateur: ${author.tag}, Date: ${day}/${month}/${year}, Raison: ${reason}`);
-	new History(user).add("kick", reason, author);
+  const member = guild.members.cache.get(user.id);
+  if (member) {
+    member.kick(
+      `Modérateur: ${author.tag}, Date: ${day}/${month}/${year}, Raison: ${reason}`,
+    );
+    new History(user, guild.id).add("kick", reason, author);
+  }
 }
-
-module.exports = { bot_can_kick, user_can_kick, kick }

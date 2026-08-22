@@ -19,11 +19,7 @@
 /**
  * @param {String} url - URL de l'image
  * @returns {boolean}
-*/
-function isImage(url)
-
-{
-    return (/\.(jpg|jpeg|png|webp|avif|gif)$/.test(url));
+ */
+export default function isImage(url) {
+  return /\.(jpg|jpeg|png|webp|avif|gif)$/.test(url);
 }
-
-module.exports = { isImage }

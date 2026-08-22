@@ -17,34 +17,35 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {*} table 
- * @param {*} where 
- * @param {any[] | null} data 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {*} table
+ * @param {*} where
+ * @param {any[] | null} data
+ * @returns
  */
-async function mysql_delete(connection, table, where, data = null)
-{
-    try {
-		if (data)
-			await connection.promise().execute(`DELETE FROM ${table} WHERE ${where}`, data);
-		else
-        	await connection.promise().query(`DELETE FROM ${table} WHERE ${where}`);
-		if (process.env.DEBUG_INFO == "true")
-	    	console.info('\x1b[32m%s\x1b[0m', `✅ Element supprimé dans la table : ${table}`);
-        return (null);
+export default async function mysql_delete(connection, table, where, data = null) {
+  try {
+    if (data)
+      await connection
+        .promise()
+        .execute(`DELETE FROM ${table} WHERE ${where}`, data);
+    else
+      await connection.promise().query(`DELETE FROM ${table} WHERE ${where}`);
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Element supprimé dans la table : ${table}`,
+      );
+    return null;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Impossible de supprimer l'élement souhaité dans la table ${table}`,
+      );
+      console.error(error);
     }
-    catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Impossible de supprimer l'élement souhaité dans la table ${table}`);
-        	console.error(error);
-		}
-        return (error);
-    }
-}
-
-module.exports = {
-    mysql_delete
+    return error;
+  }
 }

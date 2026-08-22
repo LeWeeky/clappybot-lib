@@ -16,59 +16,55 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { GuildMember } = require("discord.js");
-const { AEvents, AEvent } = require("../abstracts/events");
+import { AEvents, AEvent } from "../abstracts/events.js";
 
 const config = {
-	"title": "MemberRemove",
-	"descriptior": undefined,
-	"direct_names": ["member_remove", "members_remove", "memberRemove", "membersRemove"],
-	"shared_folder": true,
-	"extension": "leave.js",
-	"folder": "members",
-	"addons": "members/leave"
+  title: "MemberRemove",
+  descriptior: undefined,
+  direct_names: [
+    "member_remove",
+    "members_remove",
+    "memberRemove",
+    "membersRemove",
+  ],
+  shared_folder: true,
+  extension: "leave.js",
+  folder: "members",
+  addons: "members/leave",
+};
+
+export class MembersRemove extends AEvents {
+  constructor() {
+    super(MemberRemove, config);
+  }
+
+  /**
+   *
+   * @param {import("discord.js").GuildMember} member
+   */
+  async scan(member) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        (!member.user.bot || this._list[i].allow_bots) &&
+        (member.guild.id == globalThis.guild_id || this._list[i].any_guild)
+      ) {
+        this._list[i].parse(member);
+      }
+    }
+  }
 }
 
-class MembersRemove extends AEvents
-{
-	constructor()
-	{
-		super(MemberRemove, config)
-	}
-
-	/**
-	 * 
-	 * @param {GuildMember} member
-	 */
-	async scan(member)
-
-	{
-		for (let i in this._list)
-		{
-			if (this._list[i] && (!member.user.bot
-				|| this._list[i].allow_bots)
-				&& (member.guild.id == globalThis.guild_id || this._list[i].any_guild))
-			{
-				this._list[i].parse(member)
-			}
-		}
-	}
+export class MemberRemove extends AEvent {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * }} event_handler Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(event_handler, file_path) {
+    super(event_handler, file_path);
+  }
 }
-
-class MemberRemove extends AEvent
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-	 * }} event_handler Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(event_handler, file_path)
-	{
-		super(event_handler, file_path)
-	}
-}
-
-module.exports = { MemberRemove, MembersRemove }

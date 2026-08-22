@@ -16,191 +16,167 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { readdirSync, existsSync, statSync } = require("fs");
+import { readdirSync, existsSync, statSync } from "fs";
 
-class AFunctionalities
-{
-	/**
-	 * @typedef {new (...args: any[]) => AFunctionality} AFunctionalityConstructor
-	 */
+/**
+ * @template {AFunctionality} T
+ * @template {new (...args: any[]) => T} C
+ */
+export class AFunctionalities {
+  /**
+   * @typedef {new (...args: any[]) => AFunctionality} T
+   */
 
-	/** Liste de commandes
-	 *  @type {AFunctionalityConstructor[]}
-	 */
-	_list
-	/** Liste de commandes
-	 *  @type {AFunctionalityConstructor}
-	 */
-	_type;
-	
-	/**
-	 *  @type {{"title": string, "descriptior": string | undefined,
-	 * 	direct_names: string[] | undefined, shared_folder: boolean | undefined,
-	* 	"extension": string, "folder": string, "addons": string }} config
-	 */
-	_config;
+  /** Liste de commandes
+   *  @type {T[]}
+   */
+  _list;
+  /** Liste de commandes
+   *  @type {C}
+   */
+  _type;
 
-	/** Constructor
-	 *  @param {AFunctionalityConstructor} type
-	 *  @param {{"title": string, "descriptior": string | undefined,
-	 * 	direct_names: string[] | undefined, shared_folder: boolean | undefined,
-	 * 	"extension": string, "folder": string, "addons": string }} config
-	 */
-	constructor(type, config)
-	{
-		this._type = type;
-		this._list = [];
-		this._config = config;
-	}
+  /**
+   *  @type {{"title": string, "descriptior": string | undefined,
+   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   * 	"extension": string, "folder": string, "addons": string }} config
+   */
+  _config;
 
-	/**
-	 * 
-	 * @param {*} handler commande à ajouter
-	 * @param {string} file_path
-	 */
-	add(handler, file_path)
-	{
-		if (handler.parse)
-			this._list.push(new this._type(handler, file_path))
-		else
-			console.warn(file_path, "method parse is missing")
-	}
+  /** Constructor
+   *  @param {C} type
+   *  @param {{"title": string, "descriptior": string | undefined,
+   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   * 	"extension": string, "folder": string, "addons": string }} config
+   */
+  constructor(type, config) {
+    this._type = type;
+    this._list = [];
+    this._config = config;
+  }
 
-	/**
-	 * Supprime toutes les commandes
-	 */
-	destroy()
-	{
-		this._list = [];
-	}
+  /**
+   *
+   * @param {T & {parse?: () => Promise<void>}} handler
+   * @param {string} file_path
+   */
+  add(handler, file_path) {
+    if (handler.parse) this._list.push(new this._type(handler, file_path));
+    else console.warn(file_path, "method parse is missing");
+  }
 
-	/**
-	 * 
-	 * @returns {string}
-	 */
-	#getExtension()
-	{
-		if (this._config.shared_folder)
-			return (this._config.extension);
-		return (".js");
-	}
+  /**
+   * Supprime toutes les commandes
+   */
+  destroy() {
+    this._list = [];
+  }
 
-	/**
-	 * 
-	 * @param {string} path
-	 */
-	async load_dir(path)
-	{
-		const extention = this.#getExtension();
-		readdirSync(path)
-		.forEach(file => 
-		{
-			if (file.endsWith(extention))
-			{
-				const file_path = `${path}/${file}`;
-				const handler = require(file_path.slice(0, file_path.length - 3));
-				this.add(handler, file_path);	
-			}
-		});
-	}
+  /**
+   *
+   * @returns {string}
+   */
+  #getExtension() {
+    if (this._config.shared_folder) return this._config.extension;
+    return ".js";
+  }
 
-	/**
-	 * 
-	 * @param {string} file_name 
-	 * @returns {boolean}
-	 */
-	isDirectFile(file_name)
-	{
-		if (!this._config.direct_names)
-			return (false);
-		for (let i = 0; i < this._config.direct_names.length; i++)
-		{
-			if (file_name == `${this._config.direct_names[i]}.js`)
-				return (true);
-		}
-		return (false);
-	}
+  /**
+   *
+   * @param {string} path
+   */
+  async load_dir(path) {
+    const extention = this.#getExtension();
+    readdirSync(path).forEach(async (file) => {
+      if (file.endsWith(extention)) {
+        const file_path = `${path}/${file}`;
+        const handler = await import(file_path);
+        this.add(handler, file_path);
+      }
+    });
+  }
 
-	load_addon()
-	{
-		const addons_path = "./add-on";
+  /**
+   *
+   * @param {string} file_name
+   * @returns {boolean}
+   */
+  isDirectFile(file_name) {
+    if (!this._config.direct_names) return false;
+    for (let i = 0; i < this._config.direct_names.length; i++) {
+      if (file_name == `${this._config.direct_names[i]}.js`) return true;
+    }
+    return false;
+  }
 
-		if (existsSync(addons_path) && existsSync(`${addons_path}/${this._config.addons}`))
-		{
-			readdirSync(`${addons_path}/${this._config.addons}`)
-			.forEach(module => 
-			{
-				if (module.endsWith(".js"))
-				{
-					const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}`;
-					const handler = require(file_path.slice(0, file_path.length - 3));
-					this.add(handler, file_path);
-				}
-				else if (statSync(`${addons_path}${this._config.addons}/${module}`).isDirectory())
-				{
-					readdirSync(`../../../../${addons_path}/${this._config.addons}/${module}`)
-					.forEach(file =>
-					{
-						if (file.endsWith(".js"))
-						{
-							const file_path =`../../../../../${addons_path}/${this._config.addons}/${module}/${file}`;
-							const handler = require(file_path.slice(0, file_path.length - 3));
-							this.add(handler, file_path);
-						}
-					});
-				}
-			});
-		}
-	}
+  load_addon() {
+    const addons_path = "./add-on";
 
-	async load()
-	{
-		readdirSync("./sources/modules")
-		.forEach(module => 
-		{
-			if (!module.startsWith(".") && statSync(`./sources/modules/${module}`).isDirectory())
-			{
-				readdirSync(`./sources/modules/${module}`)
-				.forEach(file =>
-				{
-					if (file == this._config.folder)
-					{
-						this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`)
-					}
-					else if (this.isDirectFile(file))
-					{
-						const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-						console.log("file_path", file_path)
-						const handler  = require(file_path.slice(0, file_path.length - 3));
-						this.add(handler, file_path);
-					}
-				});
-			}
-		});
-		this.load_addon();
-		console.log(`${this._list.length} "${this._config.title}" ont bien été chargées`)
-	}
+    if (
+      existsSync(addons_path) &&
+      existsSync(`${addons_path}/${this._config.addons}`)
+    ) {
+      readdirSync(`${addons_path}/${this._config.addons}`).forEach(async (module) => {
+        if (module.endsWith(".js")) {
+          const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}`;
+          const handler = await import(file_path);
+          this.add(handler, file_path);
+        } else if (
+          statSync(
+            `${addons_path}${this._config.addons}/${module}`,
+          ).isDirectory()
+        ) {
+          readdirSync(
+            `../../../../${addons_path}/${this._config.addons}/${module}`,
+          ).forEach(async (file) => {
+            if (file.endsWith(".js")) {
+              const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}/${file}`;
+              const handler = await import(file_path);
+              this.add(handler, file_path);
+            }
+          });
+        }
+      });
+    }
+  }
 
-	async reload()
-	{
-		this.destroy();
-		await this.load();
-	}
+  async load() {
+    readdirSync("./sources/modules").forEach((module) => {
+      if (
+        !module.startsWith(".") &&
+        statSync(`./sources/modules/${module}`).isDirectory()
+      ) {
+        readdirSync(`./sources/modules/${module}`).forEach(async (file) => {
+          if (file == this._config.folder) {
+            this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`);
+          } else if (this.isDirectFile(file)) {
+            const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
+            console.log("file_path", file_path);
+            const handler = await import(file_path);
+            this.add(handler, file_path);
+          }
+        });
+      }
+    });
+    this.load_addon();
+    console.log(
+      `${this._list.length} "${this._config.title}" has been loaded.`,
+    );
+  }
+
+  async reload() {
+    this.destroy();
+    await this.load();
+  }
 }
 
-class AFunctionality
-{
-	/**
-	 * @param {string} file_path
-	*/
-   constructor(file_path)
-   {
-		if (process.env.DEBUG != "true")
-			return 
-		while (file_path.startsWith("../"))
-			file_path = file_path.substring(3)
-		console.log("New functionality imported:", file_path);
-   }
+export class AFunctionality {
+  /**
+   * @param {string} file_path
+   */
+  constructor(file_path) {
+    if (process.env.DEBUG != "true") return;
+    while (file_path.startsWith("../")) file_path = file_path.substring(3);
+    console.log("New functionality imported:", file_path);
+  }
 }
-
-module.exports = { AFunctionality, AFunctionalities }

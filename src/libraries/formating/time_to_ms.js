@@ -16,177 +16,145 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { charIsNumber } = require("../informations/is_number");
+import { charIsNumber } from "../informations/is_number.js";
 
-function getDays(string_time, time_data)
-{
-	var	tmp = "";
-	let i = 0;
-	var	founded = false;
+function getDays(string_time, time_data) {
+  var tmp = "";
+  let i = 0;
+  var founded = false;
 
-	while (string_time[i])
-	{
-		if (!charIsNumber(string_time[i]))
-		{
-			if (string_time[i] == "d" || string_time[i] == "j")
-			{
-				founded = true;
-				break ;
-			}
-			if (string_time[i] == "h" || string_time[i] == "m" || string_time[i] == "s")
-				return (0);
-			return (-1);
-		}
-		tmp = `${tmp}${string_time[i]}`;
-		i++;
-	}
-	if (!founded)
-		return (-1);
-	if (tmp.length > 0)
-		time_data.days = parseInt(tmp);
-	return (i + 1)
+  while (string_time[i]) {
+    if (!charIsNumber(string_time[i])) {
+      if (string_time[i] == "d" || string_time[i] == "j") {
+        founded = true;
+        break;
+      }
+      if (
+        string_time[i] == "h" ||
+        string_time[i] == "m" ||
+        string_time[i] == "s"
+      )
+        return 0;
+      return -1;
+    }
+    tmp = `${tmp}${string_time[i]}`;
+    i++;
+  }
+  if (!founded) return -1;
+  if (tmp.length > 0) time_data.days = parseInt(tmp);
+  return i + 1;
 }
 
-function getHours(string_time, time_data, start)
-{
-	var	tmp = "";
-	let i = start;
-	var	founded = false;
+function getHours(string_time, time_data, start) {
+  var tmp = "";
+  let i = start;
+  var founded = false;
 
-	if (!string_time[i] && start)
-		return (start);
-	while (string_time[i])
-	{
-		if (!charIsNumber(string_time[i]))
-		{
-			if (string_time[i] == "h")
-			{
-				founded = true;
-				break ;
-			}
-			if (string_time[i] == "m" || string_time[i] == "s")
-				return (start);
-			return (-1);
-		}
-		tmp = `${tmp}${string_time[i]}`;
-		i++;
-	}
-	if (!founded)
-		return (-1);
-	time_data.hours = parseInt(tmp);
-	return (i + 1)
+  if (!string_time[i] && start) return start;
+  while (string_time[i]) {
+    if (!charIsNumber(string_time[i])) {
+      if (string_time[i] == "h") {
+        founded = true;
+        break;
+      }
+      if (string_time[i] == "m" || string_time[i] == "s") return start;
+      return -1;
+    }
+    tmp = `${tmp}${string_time[i]}`;
+    i++;
+  }
+  if (!founded) return -1;
+  time_data.hours = parseInt(tmp);
+  return i + 1;
 }
 
-function getMinutes(string_time, time_data, start)
-{
-	var	tmp = "";
-	let i = start;
-	var	founded = false;
+function getMinutes(string_time, time_data, start) {
+  var tmp = "";
+  let i = start;
+  var founded = false;
 
-	if (!string_time[i] && start)
-		return (start);
-	while (string_time[i])
-	{
-		if (!charIsNumber(string_time[i]))
-		{
-			if (string_time[i] == "m")
-			{
-				founded = true;
-				break ;
-			}
-			if (string_time[i] == "s")
-				return (start);
-			return (-1);
-		}
-		tmp = `${tmp}${string_time[i]}`;
-		i++;
-	}
-	if (!founded)
-		return (-1);
-	time_data.minutes = parseInt(tmp);
-	return (i + 1)
+  if (!string_time[i] && start) return start;
+  while (string_time[i]) {
+    if (!charIsNumber(string_time[i])) {
+      if (string_time[i] == "m") {
+        founded = true;
+        break;
+      }
+      if (string_time[i] == "s") return start;
+      return -1;
+    }
+    tmp = `${tmp}${string_time[i]}`;
+    i++;
+  }
+  if (!founded) return -1;
+  time_data.minutes = parseInt(tmp);
+  return i + 1;
 }
 
-function getSeconds(string_time, time_data, start)
-{
-	var	tmp = "";
-	let i = start;
-	var	founded = false;
+function getSeconds(string_time, time_data, start) {
+  var tmp = "";
+  let i = start;
+  var founded = false;
 
-	if (!string_time[i] && start)
-		return (start);
-	while (string_time[i])
-	{
-		if (!charIsNumber(string_time[i]))
-		{
-			if (string_time[i] == "s")
-			{
-				founded = true;
-				break ;
-			}
-			return (-1);
-		}
-		tmp = `${tmp}${string_time[i]}`;
-		i++;
-	}
-	if (!founded)
-		return (-1);
-	time_data.seconds = parseInt(tmp);
-	return (i + 1)
+  if (!string_time[i] && start) return start;
+  while (string_time[i]) {
+    if (!charIsNumber(string_time[i])) {
+      if (string_time[i] == "s") {
+        founded = true;
+        break;
+      }
+      return -1;
+    }
+    tmp = `${tmp}${string_time[i]}`;
+    i++;
+  }
+  if (!founded) return -1;
+  time_data.seconds = parseInt(tmp);
+  return i + 1;
 }
 
 /**
- * 
- * @param {string} string_time 
- * @returns 
+ *
+ * @param {string} string_time
+ * @returns
  */
-function stringTimeToTimeDate(string_time)
-{
-	string_time = string_time.toLocaleLowerCase();
-	const time_data = {
-		days: 0,
-		hours: 0,
-		minutes: 0,
-		seconds: 0
-	}
-	let start = 0;
+export function stringTimeToTimeDate(string_time) {
+  string_time = string_time.toLocaleLowerCase();
+  const time_data = {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  };
+  let start = 0;
 
-	if (!string_time)
-		return (undefined);
-	start = getDays(string_time, time_data);
-	if (start == -1)
-		return (undefined);
-	start = getHours(string_time, time_data, start);
-	if (start == -1)
-		return (undefined);
-	start = getMinutes(string_time, time_data, start);
-	if (start == -1)
-		return (undefined);
-	start = getSeconds(string_time, time_data, start);
-	if (start == -1)
-		return (undefined);
-	return (time_data);
+  if (!string_time) return undefined;
+  	start = getDays(string_time, time_data);
+  if (start == -1) return undefined;
+  	start = getHours(string_time, time_data, start);
+  if (start == -1) return undefined;
+  	start = getMinutes(string_time, time_data, start);
+  if (start == -1) return undefined;
+  	start = getSeconds(string_time, time_data, start);
+  if (start == -1) return undefined;
+  return time_data;
 }
 
 /**
- * 
- * @param {string} string_time 
- * @returns 
+ *
+ * @param {string} string_time
+ * @returns
  */
-function timeToMs(string_time)
-{
-	const	time_data = stringTimeToTimeDate(string_time);
+export function timeToMs(string_time) {
+  const time_data = stringTimeToTimeDate(string_time);
 
-	if (!time_data)
-		return (0);
-	return (
-		Date.now() + ((86400 * time_data.days)
-		+ (3600 * time_data.hours)
-		+ (60 * time_data.minutes)
-		+ (time_data.seconds)) * 1000);
-}
-
-module.exports = {
-	stringTimeToTimeDate,
-	timeToMs
+  if (!time_data) return 0;
+  return (
+    Date.now() +
+    (86400 * time_data.days +
+      3600 * time_data.hours +
+      60 * time_data.minutes +
+      time_data.seconds) *
+      1000
+  );
 }

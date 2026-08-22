@@ -16,9 +16,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-function getMessageUrl(guild_id, channel_id, message_id)
-{
-	return (`https://discord.com/channels/${guild_id}/${channel_id}/${message_id}`);
+export default function getMessageUrl(guild_id, channel_id, message_id) {
+  return `https://discord.com/channels/${guild_id}/${channel_id}/${message_id}`;
 }
-
-module.exports = { getMessageUrl }

@@ -16,33 +16,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { isSpace } = require("../fetching/is_space");
+import isSpace from "../fetching/is_space.js";
 
 /**
  * Useful if you want to extract the text of a command after its arguments
- * @param {*} content 
- * @param {*} length 
- * @returns 
+ * @param {*} content
+ * @param {*} length
+ * @returns
  */
-function subString(content, length)
-{
-    let i = 0;
-    let y = 0;
-    let new_string = "";
+export default function subString(content, length) {
+  let i = 0;
+  let new_string = "";
 
-    while (content[i] && length > 0)
-    {
-        if (!isSpace(content[i]))
-            length--;
-        i++;
-    }
-    while (content[i])
-    {
-        new_string = new_string+content[i]
-        i++;
-        y++;
-    }
-    return (new_string);
+  while (content[i] && length > 0) {
+    if (!isSpace(content[i])) length--;
+    i++;
+  }
+  while (content[i]) {
+    new_string = new_string + content[i];
+    i++;
+  }
+  return new_string;
 }
-
-module.exports = { subString }

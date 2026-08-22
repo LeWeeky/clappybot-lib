@@ -17,24 +17,15 @@
  */
 
 /**
- * 
- * @param {*} interaciton 
- * @param {string[]} args 
- * @param {"string" | "user"} type 
- * @returns 
+ *
+ * @param {*} interaciton
+ * @param {string[]} args
+ * @param {"string" | "user"} type
+ * @returns
  */
-function getTargetUser(interaciton, args, type = "string")
-{
-	if (interaciton.options)
-	{
-		if (type == "string")
-			return (interaciton.options.getString("user"));
-		return (interaciton.options.getUser("user"));
-	}
-	else
-		return (args[0]);
-}
-
-module.exports = {
-	getTargetUser
+export default function getTargetUser(interaciton, args, type = "string") {
+  if (interaciton.options) {
+    if (type == "string") return interaciton.options.getString("user");
+    return interaciton.options.getUser("user");
+  } else return args[0];
 }

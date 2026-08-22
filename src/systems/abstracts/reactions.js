@@ -16,9 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AAction, AActions } = require("./actions");
+import { AAction, AActions } from "./actions.js";
 
-class AReactions extends AActions
+
+export class AReactions extends AActions
 {
 	/** Constructor
 	 *  @param {typeof AReaction} type
@@ -31,20 +32,18 @@ class AReactions extends AActions
 	}
 
 	/**
-	 * @param {[reaction, user]} data
+	 * @param {[import("discord.js").MessageReaction, import("discord.js").User]} data
 	 * @param {Function[] | undefined} conditions
 	 */
 	async has_conditions([reaction, user], conditions)
 	{
 		let i = 0;
-		let result = false;
 
 		if (!conditions)
 			return (false);
 		while (conditions[i])
 		{
-			result = await conditions[i](reaction, user);
-			if (result) return (true);
+			if (await conditions[i](reaction, user)) return (true);
 			i++;
 		}
 		return (false);
@@ -67,6 +66,11 @@ class AReactions extends AActions
 		return (false);
 	}
 
+	/**
+	 * 
+	 * @param {import("discord.js").MessageReaction} reaction 
+	 * @param {import("discord.js").User} user 
+	 */
 	async scan(reaction, user)
 	{
 		for (let i in this._list)
@@ -88,7 +92,7 @@ class AReactions extends AActions
 	}
 }
 
-class AReaction extends AAction
+export class AReaction extends AAction
 {
 	/**
 	 * @type {string | undefined}
@@ -114,5 +118,3 @@ class AReaction extends AAction
 		this.id = interaction.id;
    }
 }
-
-module.exports = { AReaction, AReactions }

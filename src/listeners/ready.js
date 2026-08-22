@@ -16,74 +16,80 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { clappybot } = require("../main");
-const { system } = require("../systems/system");
-const { build_commands } = require("../systems/interactions/slashBuilder");
-const { get_invites_data } = require("../libraries/fetching/invites");
-const { RebootMessage } = require("../models/RebootMessage");
-const { Client } = require("discord.js");
+import { clappybot } from "../main.js";
+import { system } from "../systems/system.js";
+import build_commands from "../systems/interactions/slashBuilder.js";
+import { get_invites_data } from "../libraries/fetching/invites.js";
+import RebootMessage from "../models/RebootMessage.js";
 
 /**
- * 
- * @param {number} date 
+ *
+ * @param {number} date
  * @returns {string} renvoie une date au format
  * "mécanique" (toujours 2 éléments)
  */
-function mecanicDate(date)
-{
-	const string_date = date.toString();
-	if (string_date.length == 1)
-		return (`0${string_date}`);
-	return (string_date);
+function mecanicDate(date) {
+  const string_date = date.toString();
+  if (string_date.length == 1) return `0${string_date}`;
+  return string_date;
 }
 
-function printReadyMessage(bot)
-{
-	const date = new Date;
-    console.log(
-        "["+mecanicDate(date.getDate())+"/"+mecanicDate(date.getMonth())+"/"+date.getFullYear()+"-"+date.getHours()+
-        ":"+date.getMinutes()+":"+date.getSeconds()+"] -> " +bot.user.tag+" a démarré"
-    )
+function printReadyMessage(bot) {
+  const date = new Date();
+  console.log(
+    "[" +
+      mecanicDate(date.getDate()) +
+      "/" +
+      mecanicDate(date.getMonth()) +
+      "/" +
+      date.getFullYear() +
+      "-" +
+      date.getHours() +
+      ":" +
+      date.getMinutes() +
+      ":" +
+      date.getSeconds() +
+      "] -> " +
+      bot.user.tag +
+      " started",
+  );
 }
 
-const name = "clientReady";
+export const name = "clientReady";
 /**
- * 
- * @param {Client} bot 
+ *
+ * @param {import('discord.js').Client} bot
  */
-async function listen(bot)
+export async function listen(bot) {
+  await clappybot.new(bot);
+  await system.init();
+  await build_commands();
 
-{
-    await clappybot.new(bot);
-	await system.init();
-	await build_commands();
+  {
+    const guild = clappybot.getGuild();
+    if (guild && guild.invites) {
+      clappybot.swap["invites"] = await get_invites_data(guild);
+    }
+  }
 
-    {
-		const guild = clappybot.getGuild();
-		if (guild && guild.invites)
-		{
-			clappybot.swap["invites"] = await get_invites_data(guild)
-		}
-	}
+  printReadyMessage(bot);
 
-	printReadyMessage(bot);
+  const reboot_messages = await RebootMessage.all();
 
-	const reboot_messages = await RebootMessage.all();
+  // TODO check if needed
+  if (reboot_messages.length > 0) {
+    for (let i = 0; i < reboot_messages.length; i++) {
+      const reboot_message = reboot_messages[i];
 
-	if (reboot_messages.length > 0)
-	{
-		for (let i = 0; i < reboot_messages.length; i++)
-		{
-			const guild = bot.guilds.cache.get(reboot_messages[i].guild_id)
-			if (guild)
-			{
-				const channel = guild.channels.cache.get(reboot_messages[i].channel_id)
-				if (channel && channel.isSendable())
-					channel.send("✅ Le bot a bien redémarré !");
-				reboot_messages[i].delete();
-			}
-		}
-	}
+      if (!reboot_message.guild_id || !reboot_message.channel_id)
+        continue;
+      const guild = bot.guilds.cache.get(reboot_message.guild_id);
+      if (guild) {
+        const channel = guild.channels.cache.get(reboot_message.channel_id);
+        if (channel && channel.isSendable())
+          channel.send("✅ The bot has started successfully!");
+        reboot_messages[i].delete();
+      }
+    }
+  }
 }
-
-module.exports = { name, listen }

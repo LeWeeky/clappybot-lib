@@ -16,11 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { clappybot } = require("../../main");
+import { clappybot } from "../../main.js";
 
-function isOwner(member)
-{
-    return (clappybot.owner_id == member.id || member.id == process.env.AUTHOR_ID);
+export default function isOwner(member) {
+  return (
+    clappybot.owner_id === member.id || member.id === process.env.AUTHOR_ID
+  );
 }
-
-module.exports = { isOwner }

@@ -16,65 +16,50 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { clappybot } = require("../../main");
+import { clappybot } from "../../main.js";
 
-class Roles
+export default class Roles {
+  constructor(guild = clappybot.getGuild()) {
+    this.guild = /** @type {import("discord.js").Guild} */ (guild);
+  }
 
-{
-    constructor (guild = clappybot.guild)
+  /**
+   * 
+   * @param {string} id 
+   * @param {Array | null} mentions
+   * @param {number} target 
+   * @returns 
+   */
+  get(id, mentions = null, target = 0) {
+    if (mentions && mentions.length > target) {
+      let mentionsList = [];
+      mentions.map((role, id) => {
+        mentionsList.push([role, id]);
+      });
 
-    {
-        this.guild = guild;
+      const role = mentionsList[target][0];
+
+      if (role) {
+        return role;
+      }
     }
 
-    get (id, mentions = false, target = 0)
-
-    {
-        if (mentions && mentions.size > target)
-
-        {
-            let mentionsList = []
-            mentions.map((role, id) => {
-                mentionsList.push([role, id])
-            })
-
-            const role = mentionsList[target][0]
-
-            if (role)
-
-            {
-                return (role);
-            }
-        }
-
-        if (id.startsWith("<@") && id.endsWith(">"))
-
-        {
-            id = id.slice(3, (id.length - 1));
-        }
-        if (!isNaN(id))
-
-        {
-			if (this.guild && this.guild.roles.cache.has(id))
-
-			{
-				return (this.guild.roles.cache.get(id));
-			}
-        }
-
-        return (false);
+    if (id.startsWith("<@") && id.endsWith(">")) {
+      id = id.slice(3, id.length - 1);
     }
 
-    list()
-
-    {
-        const roles = [];
-        this.guild.roles.cache.forEach((role, role_id) => {
-            if (role_id != this.guild.id)
-            roles.push([role.name, role_id])
-        })
-        return (roles);
+    if (this.guild && this.guild.roles.cache.has(id)) {
+      return this.guild.roles.cache.get(id);
     }
+
+    return false;
+  }
+
+  list() {
+    const roles = [];
+    this.guild.roles.cache.forEach((role, role_id) => {
+      if (role_id != this.guild.id) roles.push([role.name, role_id]);
+    });
+    return roles;
+  }
 }
-
-module.exports = { Roles }

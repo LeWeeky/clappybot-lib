@@ -16,47 +16,47 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const {
-    Client, Partials, GatewayIntentBits,
-} = require('discord.js');
-
-const { Options } = require("discord.js")
+import { Client, Partials, GatewayIntentBits, Options } from "discord.js";
 
 const client_intents = [
-    GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.DirectMessageReactions,
-    GatewayIntentBits.MessageContent, GatewayIntentBits.DirectMessages, GatewayIntentBits.GuildPresences, GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildInvites
-]
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildMessageReactions,
+  GatewayIntentBits.DirectMessageReactions,
+  GatewayIntentBits.MessageContent,
+  GatewayIntentBits.DirectMessages,
+  GatewayIntentBits.GuildPresences,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.GuildVoiceStates,
+  GatewayIntentBits.GuildInvites,
+];
 
 const client_partials = [
-    Partials.Message, Partials.Reaction, Partials.Channel, Partials.User
-]
+  Partials.Message,
+  Partials.Reaction,
+  Partials.Channel,
+  Partials.User,
+];
 
-class DiscordClient
-{
-    constructor()
-
-    {
-        return (
-			new Client( {
-				partials: client_partials, 
-				intents: client_intents,
-				sweepers: {
-					...Options.DefaultSweeperSettings,
-					messages: {
-						interval: 900,
-						filter: () => message => message.createdTimestamp + 900 < Date.now()
-					},
-				},
-				makeCache: Options.cacheWithLimits({
-					...Options.DefaultMakeCacheSettings,
-					ReactionManager: 0,
-					MessageManager: 300,
-					PresenceManager: 50,
-				}),
-			}
-		));
-    }
+export default class DiscordClient extends Client  {
+  constructor() {
+    super ({
+      partials: client_partials,
+      intents: client_intents,
+      sweepers: {
+        ...Options.DefaultSweeperSettings,
+        messages: {
+          interval: 900,
+          filter: () => (message) =>
+            message.createdTimestamp + 900 < Date.now(),
+        },
+      },
+      makeCache: Options.cacheWithLimits({
+        ...Options.DefaultMakeCacheSettings,
+        ReactionManager: 0,
+        MessageManager: 300,
+        PresenceManager: 50,
+      }),
+    });
+  }
 }
-
-module.exports = { DiscordClient }

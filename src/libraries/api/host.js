@@ -16,35 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { api_call } = require("./call_api");
+import { apiCall } from "./call_api.js";
 
-async function get_host_expiration(service_id)
-{
-	const response = await api_call(`service/${service_id}/host`);
+export async function get_host_expiration(service_id) {
+  const response = await apiCall(`service/${service_id}/host`);
 
-	if (!response)
-		return (null);
-	const json_data = await response.json();
+  if (!response) return null;
+  const json_data = await response.json();
 
-	if (!json_data || !json_data.expiration_date)
-		return (null);
+  if (!json_data || !json_data.expiration_date) return null;
 
-	return (new Date(json_data.expiration_date));
+  return new Date(json_data.expiration_date);
 }
 
-async function get_host_remaining_days(service_id)
-{
-	const expiration_date = await get_host_expiration(service_id);
-	if (!expiration_date)
-		return (0);
+export async function get_host_remaining_days(service_id) {
+  const expiration_date = await get_host_expiration(service_id);
+  if (!expiration_date) return 0;
 
-	const current_date = new Date();
-	return (Math.ceil((
-		expiration_date.getTime() - current_date.getTime())
-		/ (1000 * 60 * 60 * 24))
-	);
-}
-
-module.exports = {
-	get_host_expiration, get_host_remaining_days
+  const current_date = new Date();
+  return Math.ceil(
+    (expiration_date.getTime() - current_date.getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
 }

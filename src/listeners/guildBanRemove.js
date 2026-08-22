@@ -16,9 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const name = "guildBanRemove";
-async function listen(guild, user)
-{
+export const name = "guildBanRemove";
+/**
+ * 
+ * @param {import("discord.js").Guild} _guild 
+ * @param {import("discord.js").User} _user 
+ */
+export async function listen(_guild, _user) {
+  // TODO handle the event
 }
-
-module.exports = { name, listen }

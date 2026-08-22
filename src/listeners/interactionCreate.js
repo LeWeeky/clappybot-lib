@@ -16,30 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { MessageFlags } = require('discord.js');
-const { system } = require('../systems/system')
+import { MessageFlags } from "discord.js";
+import { system } from "../systems/system.js";
 
-const name = "interactionCreate";
+export const name = "interactionCreate";
 /**
- * 
- * @param {import('discord.js').Interaction} interaction 
- * @returns 
+ *
+ * @param {import('discord.js').ChatInputCommandInteraction} interaction
+ * @returns
  */
-async function listen(interaction)
-
-{
-    if (interaction.isCommand())
-    {
-        const { commandName } = interaction;
-		if (!(await system.commands.scan(interaction, commandName, [])))
-            interaction.reply({content: "Désolé mais, cette commande a été désactivée.", flags: [MessageFlags.Ephemeral]})
+export async function listen(interaction) {
+  if (interaction.isCommand()) {
+    const { commandName } = interaction;
+    if (!(await system.commands.scan(interaction, commandName, []))) {
+      const interaction_reply = /** @type {any} */ (interaction.reply.bind(interaction));
+      interaction_reply({
+        content: "Sorry but, this command is not available in private messages.",
+        flags: [MessageFlags.Ephemeral],
+      });
     }
-    if (interaction.isButton())
-		system.buttons.scan(interaction);
-    if (interaction.isAnySelectMenu())
-        system.menus.scan(interaction);
-	else if (interaction.isModalSubmit())
-		system.modals.scan(interaction);
+  }
+  if (interaction.isButton()) system.buttons.scan(interaction);
+  if (interaction.isAnySelectMenu()) system.menus.scan(interaction);
+  else if (interaction.isModalSubmit()) system.modals.scan(interaction);
 }
-
-module.exports = { name, listen }

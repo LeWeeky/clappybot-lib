@@ -17,41 +17,36 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {string} table 
- * @param {string} target 
- * @param {string} where 
- * @param {any[] | null} data 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {string} table
+ * @param {string} target
+ * @param {string} where
+ * @param {any[] | null} data
+ * @returns
  */
-async function mysql_update(connection, table, target, where, data = null)
-{
-    try {
-		if (!data)
-		{
-			 await connection.promise().execute(`UPDATE ${table} SET ${target} WHERE ${where}`);
-		}
-		else
-		{
-			 await connection.promise().execute(`UPDATE ${table} SET ${target} WHERE ${where}`,
-				data
-			);
-		}
-		if (process.env.DEBUG_INFO == "true")
-	    	console.log('\x1b[32m%s\x1b[0m', `✅ Table ${table} mise à jour`);
-        return (null);
+export default async function mysql_update(connection, table, target, where, data = null) {
+  try {
+    if (!data) {
+      await connection
+        .promise()
+        .execute(`UPDATE ${table} SET ${target} WHERE ${where}`);
+    } else {
+      await connection
+        .promise()
+        .execute(`UPDATE ${table} SET ${target} WHERE ${where}`, data);
     }
-    catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-        {
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : mise à jour de la Table ${table}`);
-       	 	console.error(error);
-		}
-        return (error);
+    if (process.env.DEBUG_INFO == "true")
+      console.log("\x1b[32m%s\x1b[0m", `✅ Table ${table} mise à jour`);
+    return null;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : mise à jour de la Table ${table}`,
+      );
+      console.error(error);
     }
-}
-
-module.exports = {
-    mysql_update
+    return error;
+  }
 }

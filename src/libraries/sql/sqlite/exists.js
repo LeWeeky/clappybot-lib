@@ -17,40 +17,37 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {string} table 
- * @param {string} where 
- * @param {any[] | null} data 
+ *
+ * @param {*} connection
+ * @param {string} table
+ * @param {string} where
+ * @param {any[] | null} data
  * @returns {Promise<boolean>}
  */
-async function sqlite_exists(connection, table, where, data = null)
-{
-	try {
-		const statement = connection
-			.prepare(`SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`);
-		let row;
+export default async function sqlite_exists(connection, table, where, data = null) {
+  try {
+    const statement = connection.prepare(
+      `SELECT EXISTS(SELECT 1 FROM ${table} WHERE ${where}) AS element_exists`,
+    );
+    let row;
 
-		if (data)
-			row = statement.get(data);
-		else
-			row = statement.get();
-		if (process.env.DEBUG_INFO == "true")
-			console.info('\x1b[32m%s\x1b[0m', `✅ Véréfication de l'existance d'un élément dans ${table} réussi`);
-		if (!row)
-			return (false);
-		return (row.element_exists);
-	}
-	catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Véréfication de l'existance d'un élément dans ${table} ratée`);
-			console.error(error);
-		}
-		return (false);
-	}
-}
-
-module.exports = {
-	sqlite_exists
+    if (data) row = statement.get(data);
+    else row = statement.get();
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Véréfication de l'existance d'un élément dans ${table} réussi`,
+      );
+    if (!row) return false;
+    return row.element_exists;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Véréfication de l'existance d'un élément dans ${table} ratée`,
+      );
+      console.error(error);
+    }
+    return false;
+  }
 }

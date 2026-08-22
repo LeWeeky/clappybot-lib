@@ -17,39 +17,40 @@
  */
 
 /**
- * 
- * @param {*} connection 
- * @param {*} table 
- * @param {*} where 
- * @param {any[] | null} data 
- * @returns 
+ *
+ * @param {*} connection
+ * @param {*} table
+ * @param {*} where
+ * @param {any[] | null} data
+ * @returns
  */
-async function sqlite_delete(connection, table, where, data = null)
-{
-    try {
-		let statement;
-		if (data)
-			statement = connection.prepare(`DELETE FROM ${table} WHERE ${where}`);
-		else
-        	statement = connection.prepare(`DELETE FROM ${table} WHERE ${where}`);
-		if (data)
-			statement.run(...data);
-		else
-			statement.run();
-		if (process.env.DEBUG_INFO == "true")
-	    	console.info('\x1b[32m%s\x1b[0m', `✅ Element supprimé dans la table : ${table}`);
-        return (null);
+export default async function sqlite_delete(
+  connection,
+  table,
+  where,
+  data = null,
+) {
+  try {
+    let statement;
+    if (data)
+      statement = connection.prepare(`DELETE FROM ${table} WHERE ${where}`);
+    else statement = connection.prepare(`DELETE FROM ${table} WHERE ${where}`);
+    if (data) statement.run(...data);
+    else statement.run();
+    if (process.env.DEBUG_INFO == "true")
+      console.info(
+        "\x1b[32m%s\x1b[0m",
+        `✅ Element supprimé dans la table : ${table}`,
+      );
+    return null;
+  } catch (error) {
+    if (process.env.DEBUG_ERROR != "false") {
+      console.error(
+        "\x1b[31m%s\x1b[0m",
+        `❌ Erreur : Impossible de supprimer l'élement souhaité dans la table ${table}`,
+      );
+      console.error(error);
     }
-    catch (error) {
-		if (process.env.DEBUG_ERROR != "false")
-		{
-			console.error('\x1b[31m%s\x1b[0m', `❌ Erreur : Impossible de supprimer l'élement souhaité dans la table ${table}`);
-        	console.error(error);
-		}
-        return (error);
-    }
-}
-
-module.exports = {
-    sqlite_delete
+    return error;
+  }
 }

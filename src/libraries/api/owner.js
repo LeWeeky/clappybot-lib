@@ -16,24 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { apiCall } = require("../api/call_api");
+import { apiCall } from "./call_api.js";
 
-async function getOwnerId(service_id)
-{
-	if (!process.env.API_URI)
-		return (null);
-	const response = await apiCall(`service/${service_id}/owner/`);
+async function getOwnerId(service_id) {
+  if (!process.env.API_URI) return null;
+  const response = await apiCall(`service/${service_id}/owner/`);
 
-	if (!response || !response.ok)
-		return (null);
-	const json_data = await response.json();
+  if (!response || !response.ok) return null;
+  const json_data = await response.json();
 
-	if (!json_data || !json_data.discord_id)
-		return (null);
+  if (!json_data || !json_data.discord_id) return null;
 
-	return (json_data.discord_id);
+  return json_data.discord_id;
 }
 
-module.exports = {
-	getOwnerId
-}
+export { getOwnerId };

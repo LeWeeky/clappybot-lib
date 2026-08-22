@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { get_invites_data } = require("../libraries/fetching/invites");
-const { clappybot } = require("../main");
+import { get_invites_data } from "../libraries/fetching/invites.js";
+import { clappybot } from "../main.js";
 
-async function listen(invite)
-
-{
-    if (invite.guild && invite.guild.id == globalThis.guild_id)
-    {
-        clappybot.swap["invites"] = get_invites_data(invite.guild);
-    }
+export const name = "inviteCreate";
+/**
+ * 
+ * @param {import("discord.js").Invite} invite 
+ */
+export async function listen(invite) {
+  if (invite.guild && invite.guild.id == globalThis.guild_id) {
+    clappybot.swap["invites"] = get_invites_data(invite.guild);
+  }
 }
-
-module.exports = { name: "inviteCreate", listen }

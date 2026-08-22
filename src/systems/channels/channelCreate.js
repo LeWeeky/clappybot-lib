@@ -16,56 +16,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AEvents, AEvent } = require("../abstracts/events");
+import { AEvents, AEvent } from "../abstracts/events.js";
 const config = {
-	"title": "ChannelCreate",
-	"descriptior": undefined,
-	"direct_names": ["channelCreate", "channelsCreate"],
-	"shared_folder": true,
-	"extension": "create.js",
-	"folder": "channels",
-	"addons": "channels/create"
+  title: "ChannelCreate",
+  descriptior: undefined,
+  direct_names: ["channelCreate", "channelsCreate"],
+  shared_folder: true,
+  extension: "create.js",
+  folder: "channels",
+  addons: "channels/create",
+};
+
+export default class ChannelsCreate extends AEvents {
+  constructor() {
+    super(ChannelCreate, config);
+  }
+
+  async scan(channel) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        (channel.guild.id == globalThis.guild_id || this._list[i].any_guild)
+      ) {
+        if (this._list[i].parse) this._list[i].parse(channel);
+        else console.error("Parse function is missing for channel create:", config.title);
+      }
+    }
+  }
 }
 
-
-class ChannelsCreate extends AEvents
-{
-	constructor()
-	{
-		super(ChannelCreate, config)
-	}
-
-	async scan(channel)
-	{
-		for (let i in this._list)
-		{
-			if (this._list[i] &&
-				(channel.guild.id == globalThis.guild_id || this._list[i].any_guild))
-			{
-				if (this._list[i].parse)
-					this._list[i].parse(channel)
-				else
-					console.log("Empty parse", config.title)
-			}
-		}
-	}
+class ChannelCreate extends AEvent {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, parse: Function
+   * }} event_handler Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(event_handler, file_path) {
+    super(event_handler, file_path);
+  }
 }
-
-
-class ChannelCreate extends AEvent
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, parse: Function
-	 * }} event_handler Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(event_handler, file_path)
-	{
-		super(event_handler, file_path)
-	}
-}
-
-module.exports = { ChannelsCreate }

@@ -16,44 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-class SlashCommands
-{
-	/** Liste de commandes
-	 *  @type {any[]}
-	 */
-	list;
+export default class SlashCommands {
+  constructor() {
+    this.guild_cmds = [];
+    this.global_cmds = [];
+  }
 
-	constructor()
-	{
-		this.guild_cmds = [];
-		this.global_cmds = [];
-	}
+  /**
+   *
+   * @param {any} command commande à ajouter
+   */
+  add(command) {
+    if (command.builder) {
+      const cmd_json = command.builder.toJSON();
 
-	/**
-	 * 
-	 * @param {any} command commande à ajouter
-	 */
-	add(command)
-	{
-		if (command.builder)
-		{
-			const cmd_json = command.builder.toJSON();
+      if (command.any_guild) this.global_cmds.push(cmd_json);
+      else this.guild_cmds.push(cmd_json);
+    }
+  }
 
-			if (command.any_guild)
-				this.global_cmds.push(cmd_json);
-			else
-				this.guild_cmds.push(cmd_json);
-		}
-	}
-
-	/**
-	 * Supprime toutes les commandes
-	 */
-	destroy()
-	{
-		this.guild_cmds = [];
-		this.global_cmds = [];
-	}
+  /**
+   * Supprime toutes les commandes
+   */
+  destroy() {
+    this.guild_cmds = [];
+    this.global_cmds = [];
+  }
 }
-
-module.exports = { SlashCommands }

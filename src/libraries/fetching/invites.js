@@ -16,93 +16,77 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-async function is_invite_from_this_guild(guild, invide_code)
-{
-    const invite_list = await guild.invites.fetch().catch(error => {
-        console.error("unable to retrieve invitations")
-		return (false);
-    });
-	if (!invite_list)
-		return (false);
-	invite_list.forEach(invite => {
-        if (invide_code == invite.code)
-			return (true);
-    })
-	return (false);
-}
-
 /**
  * 
- * @param {string} invite 
+ * @param {import("discord.js").Guild} guild 
+ * @param {string} invide_code 
+ * @returns {Promise<boolean>}
  */
-function get_invite_code(invite)
-{
-	if (invite.endsWith("/"))
-		invite = invite.substring(0, invite.length - 2);
-	if (invite.endsWith("http:"))
-		invite = invite.substring(7, invite.length - 8);
-	if (invite.endsWith("https:"))
-		invite = invite.substring(8, invite.length - 9);
-	while (invite.startsWith(":"))
-		invite = invite.substring(1);
-	while (invite.startsWith("/"))
-		invite = invite.substring(1);
-	while (invite.endsWith("/"))
-		invite = invite.substring(0, invite.length - 2);
-	const args = invite.split("/");
-	return (args[args.length - 1]);
+export async function is_invite_from_this_guild(guild, invide_code) {
+  const invite_list = await guild.invites.fetch().catch((error) => {
+    console.error("Unable to retrieve invitations:", error);
+    return null;
+  });
+  if (!invite_list) return false;
+  invite_list.forEach((invite) => {
+    if (invide_code == invite.code) return true;
+  });
+  return false;
 }
 
 /**
- * 
+ *
+ * @param {string} invite
+ */
+export function get_invite_code(invite) {
+  if (invite.endsWith("/")) invite = invite.substring(0, invite.length - 2);
+  if (invite.endsWith("http:")) invite = invite.substring(7, invite.length - 8);
+  if (invite.endsWith("https:"))
+    invite = invite.substring(8, invite.length - 9);
+  while (invite.startsWith(":")) invite = invite.substring(1);
+  while (invite.startsWith("/")) invite = invite.substring(1);
+  while (invite.endsWith("/")) invite = invite.substring(0, invite.length - 2);
+  const args = invite.split("/");
+  return args[args.length - 1];
+}
+
+/**
+ *
  * @param {*} guild serveur concerné
  * @returns liste des invitations
  */
-async function get_invites(guild)
+export async function get_invites(guild) {
+  const invites = {};
+  const invite_list = await guild.invites.fetch().catch((error) => {
+    console.error("Unable to retrieve invitations:", error);
+    return false;
+  });
+  if (!invite_list) return false;
+  invite_list.forEach((invite) => {
+    invites[invite.code] = invite.uses;
+  });
 
-{
-    const invites = {};
-    const invite_list = await guild.invites.fetch().catch(error => {
-        console.error("unable to retrieve invitations")
-		return (false);
-    });
-	if (!invite_list)
-		return (false);
-	invite_list.forEach(invite => {
-        invites[invite.code] = invite.uses;
-    })
-
-    return (invites);
+  return invites;
 }
 
 /**
- * 
+ *
  * @param {*} guild serveur concerné
  * @returns liste des invitations
  */
-async function get_invites_data(guild)
-{
-    const invites = {};
-    const invite_list = await guild.invites.fetch().catch(error => {
-        console.log("Impossoble de récupérer les invitations")
-		return (false);
-    });
-	if (!invite_list)
-		return (false);
-	invite_list.forEach(invite => {
-        invites[invite.code] = {
-			uses: invite.uses,
-			inviter_id: invite.inviterId
-		}
-    })
+export async function get_invites_data(guild) {
+  const invites = {};
+  const invite_list = await guild.invites.fetch().catch((error) => {
+    console.error("Unable to retrieve invitations:", error);
+    return false;
+  });
+  if (!invite_list) return false;
+  invite_list.forEach((invite) => {
+    invites[invite.code] = {
+      uses: invite.uses,
+      inviter_id: invite.inviterId,
+    };
+  });
 
-    return (invites);
-}
-
-
-module.exports = {
-	is_invite_from_this_guild,
-	get_invite_code,
-	get_invites,
-	get_invites_data
+  return invites;
 }

@@ -16,38 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AReactions, AReaction } = require("../abstracts/reactions");
+import { AReaction, AReactions } from "../abstracts/reactions.js";
 
 const config = {
-	"title": "reactionRemove",
-	"descriptior": undefined,
-	"extension": "remove.js",
-	"folder": "reactions",
-	"addons": "reactions"
+  title: "reactionRemove",
+  descriptior: undefined,
+  extension: "remove.js",
+  folder: "reactions",
+  addons: "reactions",
+};
+
+export class ReactionsRemove extends AReactions {
+  constructor() {
+    super(ReactionRemove, config);
+  }
 }
 
-class ReactionsRemove extends AReactions
-{
-	constructor()
-	{
-		super(ReactionRemove, config)
-	}
+export class ReactionRemove extends AReaction {
+  /**
+   *
+   * @param {{
+   * 	name: string | undefined, id: string | undefined, dm: boolean | undefined,
+   *   any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
+   * }} interaction Informations e la nouvelle interaction
+   * @param {string} file_path
+   */
+  constructor(interaction, file_path) {
+    super(interaction, file_path);
+  }
 }
-
-class ReactionRemove extends AReaction
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	name: string | undefined, id: string | undefined, dm: boolean | undefined,
-	 *   any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
-	 * }} interaction Informations e la nouvelle interaction
-	 * @param {string} file_path
-	*/
-   constructor(interaction, file_path)
-   {
-	   super(interaction, file_path)
-   }
-}
-
-module.exports = { ReactionRemove, ReactionsRemove }

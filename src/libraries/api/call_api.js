@@ -17,24 +17,18 @@
  */
 
 /**
- * 
- * @param {string} call 
+ *
+ * @param {string} call
  */
-async function apiCall(call)
-{
-	if (!process.env.API_URI || process.env.API_URI.length == 0)
-	{
-		console.warn('\x1b[31m%s\x1b[0m', "[ ! WARING ! ]: API_URI is not set!")
-		return (null);
-	}
-	try {
-		return (await fetch(`${process.env.API_URI}/${call}`))
-	} catch (error) {
-		console.error("API CONNECTION FAILED", error);
-		return (null);
-	}
-}
-
-module.exports = {
-	apiCall
+export async function apiCall(call) {
+  if (!process.env.API_URI || process.env.API_URI.length == 0) {
+    console.warn("\x1b[31m%s\x1b[0m", "[ ! WARING ! ]: API_URI is not set!");
+    return null;
+  }
+  try {
+    return await fetch(`${process.env.API_URI}/${call}`);
+  } catch (error) {
+    console.error("API CONNECTION FAILED", error);
+    return null;
+  }
 }

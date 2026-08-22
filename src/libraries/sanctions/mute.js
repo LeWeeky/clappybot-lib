@@ -16,53 +16,66 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { clappybot } = require("../../main");
-const { History } = require("../../libraries/sanctions/history");
-const { Member } = require("../../models/Member");
+import History from "./history.js";
+import Member from "../../models/Member.js";
 
-async function is_mute(guild, user_id)
-{
-	if (guild && guild.members.cache.has(user_id))
-	{
-		return (guild.members.cache.get(user_id)
-			.roles.cache.has(await clappybot.roles.get("mute")));
-	}
-	const member = await Member.firstBy({user_id: user_id, guild_id: guild.id});
-	return (member && member.mute);
+/**
+ *
+ * @param {import("discord.js").Guild} guild
+ * @param {string} user_id
+ * @returns {Promise<boolean>}
+ */
+export async function is_mute(guild, user_id) {
+  if (guild && guild.members.cache.has(user_id)) {
+    const mute_role_id = null;//await clappybot.roles.get("mute");
+    if (!mute_role_id) return false;
+    return (
+      guild.members.cache
+        .get(user_id)
+        ?.roles.cache.has(mute_role_id) || false
+    );
+  }
+  const member = await Member.firstBy({ user_id: user_id, guild_id: guild.id });
+  return (member && member.mute) || false;
 }
 
-async function mute_role_exists(guild)
-{
-	const mute_role_id = await clappybot.roles.get("mute");
-	if (mute_role_id)
-		return (guild.roles.cache.has(mute_role_id));
-	return (false);
+export async function mute_role_exists(guild) {
+  const mute_role_id = null;//await clappybot.roles.get("mute");
+  if (mute_role_id) return guild.roles.cache.has(mute_role_id);
+  return false;
 }
 
-async function mute(user, reason, guild, author)
-{
-	const member = await Member.firstByOrCreate({user_id: user.id, guild_id: guild.id});
-	member.mute = true;
-	await member.save()
+/**
+ * 
+ * @param {import("discord.js").User} user 
+ * @param {string} reason 
+ * @param {import("discord.js").Guild} guild 
+ * @param {import("discord.js").User} author 
+ * @returns 
+ */
+export async function mute(user, reason, guild, author) {
+  const db_member = await Member.firstByOrCreate({
+    user_id: user.id,
+    guild_id: guild.id,
+  });
+  db_member.mute = true;
+  await db_member.save();
 
-	new History(user, guild.id).add("mute", reason, author);
+  new History(user, guild.id).add("mute", reason, author);
 
-	if (guild.members.cache.has(user.id))
-	{
-		const mute_role_id = await clappybot.roles.get("mute")
-		const member = guild.members.cache.get(user.id);
-		const res = await member.roles.add(mute_role_id)
-		.then(res => {
-				return (true);
-		})
-		.catch(error => {
-			console.log(error)
-			console.log("Impossible de mettre le rôle mute /mute")
-			return (false);
-		})
-		return (res)
-	}
-	return (true);
+  const member = guild.members.cache.get(user.id);
+  const mute_role_id = null;//await clappybot.roles.get("mute");
+  if (member && mute_role_id) {
+    const res = await member.roles
+      .add(mute_role_id)
+      .then((_res) => {
+        return true;
+      })
+      .catch((error) => {
+        console.error("Impossible to add mute role:", error);
+        return false;
+      });
+    return res;
+  }
+  return true;
 }
-
-module.exports = { mute, is_mute, mute_role_exists }

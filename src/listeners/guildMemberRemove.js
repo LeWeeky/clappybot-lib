@@ -16,12 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { system } = require('../systems/system');
+import { system } from "../systems/system.js";
 
-const name = "guildMemberRemove";
-async function listen(member)
-{
-    system.members_remove.scan(member)
+export const name = "guildMemberRemove";
+/**
+ * 
+ * @param {import("discord.js").GuildMember} member 
+ */
+export async function listen(member) {
+  system.members_remove.scan(member);
 }
-
-module.exports = { name, listen }

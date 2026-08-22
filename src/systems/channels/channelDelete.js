@@ -16,56 +16,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const { AEvents, AEvent } = require("../abstracts/events");
+import { AEvents, AEvent } from "../abstracts/events.js";
 const config = {
-	"title": "ChannelDelete",
-	"descriptior": undefined,
-	"direct_names": ["channelDelete", "channelsDelete"],
-	"shared_folder": true,
-	"extension": "delete.js",
-	"folder": "channels",
-	"addons": "channels/delete"
+  title: "ChannelDelete",
+  descriptior: undefined,
+  direct_names: ["channelDelete", "channelsDelete"],
+  shared_folder: true,
+  extension: "delete.js",
+  folder: "channels",
+  addons: "channels/delete",
+};
+
+export default class ChannelsDelete extends AEvents {
+  constructor() {
+    super(ChannelDelete, config);
+  }
+
+  async scan(channel) {
+    for (let i in this._list) {
+      if (
+        this._list[i] &&
+        (channel.guild.id == globalThis.guild_id || this._list[i].any_guild)
+      ) {
+        if (this._list[i].parse) this._list[i].parse(channel);
+        else console.log("Empty parse", config.title);
+      }
+    }
+  }
 }
 
-
-class ChannelsDelete extends AEvents
-{
-	constructor()
-	{
-		super(ChannelDelete, config)
-	}
-
-	async scan(channel)
-	{
-		for (let i in this._list)
-		{
-			if (this._list[i] &&
-				(channel.guild.id == globalThis.guild_id || this._list[i].any_guild))
-			{
-				if (this._list[i].parse)
-					this._list[i].parse(channel)
-				else
-					console.log("Empty parse", config.title)
-			}
-		}
-	}
+class ChannelDelete extends AEvent {
+  /**
+   *
+   * @param {{
+   * 	conditions: Function[] | undefined | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, parse: Function
+   * }} event_handler Informations du nouveau message
+   * @param {string} file_path
+   */
+  constructor(event_handler, file_path) {
+    super(event_handler, file_path);
+  }
 }
-
-
-class ChannelDelete extends AEvent
-{
-	/**
-	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, parse: Function
-	 * }} event_handler Informations du nouveau message
-	 * @param {string} file_path
-	 */
-	constructor(event_handler, file_path)
-	{
-		super(event_handler, file_path)
-	}
-}
-
-module.exports = { ChannelsDelete }
