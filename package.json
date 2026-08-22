@@ -14,11 +14,14 @@
 	"files": [
 		"dist"
 	],
+	"exports": {
+		".": "./dist/index.js",
+		"./drivers": "./dist/libraries/models/index.js"
+	},
 	"scripts": {
 		"clean": "rm -rf dist",
-		"build": "npm run clean && tsc && copyfiles -u 1 \"src/**/*.json\" dist",
-		"prepack": "npm run build",
-		"prepublish": "npm run build"
+		"build": "tsc && copyfiles -u 1 \"src/**/*.json\" dist",
+		"prepack": "npm run clean && npm run build"
 	},
 	"dependencies": {
 		"better-sqlite3": "^13.0.3",

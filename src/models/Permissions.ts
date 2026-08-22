@@ -1,4 +1,4 @@
-import AModel from "../libraries/models/AModel.js";
+import AModel from "../libraries/drivers/AModel.js";
 import PermissionsBits from "../libraries/permissions/bits.js";
 import type { DRIVER_FIELDS } from "../types/database.types.js";
 

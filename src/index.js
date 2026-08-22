@@ -3,10 +3,10 @@ export { clappybot } from "./main.js";
 export { default as DiscordClient } from "./libraries/client.js";
 export { default as Colors } from "./libraries/colors.js";
 
-export { default as AModel } from "./libraries/models/AModel.js";
-export { default as DataBaseWrapper } from "./libraries/models/DataBaseWrapper.js";
-export { default as MySQLDriver } from "./libraries/models/MySQLDriver.js";
-export { default as SqliteDriver } from "./libraries/models/SqliteDriver.js";
+export { default as AModel } from "./libraries/drivers/AModel.js";
+export { default as DataBaseWrapper } from "./libraries/drivers/DataBaseWrapper.js";
+export { default as MySQLDriver } from "./libraries/drivers/MySQLDriver.js";
+export { default as SqliteDriver } from "./libraries/drivers/SqliteDriver.js";
 
 export { ban } from "./libraries/sanctions/ban.js";
 export { default as History } from "./libraries/sanctions/history.js";

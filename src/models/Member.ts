@@ -1,4 +1,4 @@
-import AModel from "../libraries/models/AModel.js";
+import AModel from "../libraries/drivers/AModel.js";
 import HistoryPage from "../models/HistoryPage.js";
 import type { DRIVER_FIELDS } from "../types/database.types.js";
 

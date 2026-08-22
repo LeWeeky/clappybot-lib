@@ -25,15 +25,15 @@ import dotenv from "dotenv";
 import DiscordClient from "./libraries/client.js";
 import { getOwnerId } from "./libraries/api/owner.js";
 import package_json from "../package.json" with { type: "json" };
-import DataBaseWrapper from "./libraries/models/DataBaseWrapper.js";
-import MySQLDriver from "./libraries/models/MySQLDriver.js";
-import SqliteDriver from "./libraries/models/SqliteDriver.js";
-import PostgreSQLDriver from "./libraries/models/PostgreSQLDriver.js";
+import DataBaseWrapper from "./libraries/drivers/DataBaseWrapper.js";
+import MySQLDriver from "./libraries/drivers/MySQLDriver.js";
+import SqliteDriver from "./libraries/drivers/SqliteDriver.js";
+import PostgreSQLDriver from "./libraries/drivers/PostgreSQLDriver.js";
 
 import Config from "./models/Config.js";
 import RebootMessage from "./models/RebootMessage.js";
 import type { Client } from "discord.js";
-import type ADriver from "./libraries/models/ADriver.js";
+import type ADriver from "./libraries/drivers/ADriver.js";
 import Roles from "./models/Roles.js";
 
 function showMissingParameters() {
