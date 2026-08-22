@@ -79,39 +79,36 @@ export default class ADriver {
    * Replaces the "friendly type" with
    * the type in the SQL server
    */
-  static toQueryType(field: string, fields: { [key: string]: DRIVER_FIELDS }): string {
-    let type: string;
-
-    switch (fields[field]) {
+  static getQueryType(friendlyType: DRIVER_FIELDS): string {
+    switch (friendlyType) {
       case "integer":
-        type = "INT DEFAULT 0";
-        break;
+        return "INT DEFAULT 0";
       case "size": // [ ! ] Not supported by PostgreSQL / SQLite
-        type = "UNSIGNED INT";
-        break;
-      case "bigint": // [ ! ] Not supported by PostgreSQL / SQLite
-        type = "UNSIGNED BIGINT";
-        break;
+        return "UNSIGNED INT";
+      case "bigint":
+        return "UNSIGNED BIGINT";
       case "datetime":
-        type = "DATETIME DEFAULT CURRENT_TIMESTAMP";
-        break;
+        return "DATETIME DEFAULT CURRENT_TIMESTAMP";
       case "string":
-        type = "VARCHAR(255)";
-        break;
+        return "VARCHAR(255)";
       case "text":
-        type = "TEXT";
-        break;
+        return "TEXT";
       case "boolean":
-        type = "BOOLEAN";
-        break;
+        return "BOOLEAN";
       case "timestamp":
-        type = "VARCHAR(20)";
-        break;
+        return "VARCHAR(20)";
       default:
-        type = fields[field];
-        break;
+        console.warn(`MySQLDriver: Unhandled field type: ${friendlyType}`);
+        return friendlyType;
     }
-    return `${field} ${type}`;
+  }
+
+  /**
+   * Create the SQL query by replacing the "friendly type"
+   * with the type in the SQL server
+   */
+  static toQuery(field: string, fields: { [key: string]: DRIVER_FIELDS }): string {
+    return `${field} ${this.getQueryType(fields[field])}`;
   }
 
   async request(_request: string, _data: any[] | null = null): Promise<any> {

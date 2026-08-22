@@ -59,39 +59,28 @@ export default class SqliteDriver extends ADriver {
    * Replaces the "friendly type" with
    * the type in the SQL server
    */
-  static toQueryType(field: string, fields: { [key: string]: DRIVER_FIELDS }) {
-    let type: string;
-
-    switch (fields[field]) {
+  static getQueryType(friendlyType: DRIVER_FIELDS): string {
+    switch (friendlyType) {
       case "integer":
-        type = "INT DEFAULT 0";
-        break;
+        return "INT DEFAULT 0";
       case "size":
-        type = "INTEGER";
-        break;
+        return "INTEGER";
       case "bigint":
-        type = "BIGINT";
-        break;
+        return "BIGINT";
       case "datetime":
-        type = "DATETIME DEFAULT CURRENT_TIMESTAMP";
-        break;
+        return "DATETIME DEFAULT CURRENT_TIMESTAMP";
       case "string":
-        type = "VARCHAR(255)";
-        break;
+        return "VARCHAR(255)";
       case "text":
-        type = "TEXT";
-        break;
+        return "TEXT";
       case "boolean":
-        type = "BOOLEAN";
-        break;
+        return "BOOLEAN";
       case "timestamp":
-        type = "VARCHAR(20)";
-        break;
+        return "VARCHAR(20)";
       default:
-        type = fields[field];
-        break;
+        console.warn(`SqliteDriver: Unhandled field type: ${friendlyType}`);
+        return friendlyType;
     }
-    return `${field} ${type}`;
   }
 
   async request(request: string, data: any[] | null = null) {
@@ -105,8 +94,8 @@ export default class SqliteDriver extends ADriver {
     this.break();
   }
 
-  async createColumn(table: string, column: string, type: string) {
-    await sqlite_create_column(this.connect(), table, column, type);
+  async createColumn(table: string, column: string, type: DRIVER_FIELDS) {
+    await sqlite_create_column(this.connect(), table, column, SqliteDriver.getQueryType(type));
     this.break();
   }
 

@@ -73,39 +73,28 @@ export default class MySQLDriver extends ADriver {
    * Replaces the "friendly type" with
    * the type in the SQL server
    */
-  static toQueryType(field: string, fields: { [key: string]: DRIVER_FIELDS }): string {
-    let type: string;
-
-    switch (fields[field]) {
+  static getQueryType(friendlyType: DRIVER_FIELDS): string {
+    switch (friendlyType) {
       case "integer":
-        type = "INT DEFAULT 0";
-        break;
+        return "INT DEFAULT 0";
       case "size":
-        type = "UNSIGNED INT";
-        break;
+        return "UNSIGNED INT";
       case "bigint":
-        type = "UNSIGNED BIGINT";
-        break;
+        return "UNSIGNED BIGINT";
       case "datetime":
-        type = "DATETIME DEFAULT CURRENT_TIMESTAMP";
-        break;
+        return "DATETIME DEFAULT CURRENT_TIMESTAMP";
       case "string":
-        type = "VARCHAR(255)";
-        break;
+        return "VARCHAR(255)";
       case "text":
-        type = "TEXT";
-        break;
+        return "TEXT";
       case "boolean":
-        type = "BOOLEAN";
-        break;
+        return "BOOLEAN";
       case "timestamp":
-        type = "VARCHAR(20)";
-        break;
+        return "VARCHAR(20)";
       default:
-        type = fields[field];
-        break;
+        console.warn(`MySQLDriver: Unhandled field type: ${friendlyType}`);
+        return friendlyType;
     }
-    return `${field} ${type}`;
   }
 
   async request(request: string, data: any[] | null = null): Promise<any> {
@@ -119,8 +108,8 @@ export default class MySQLDriver extends ADriver {
     this.break();
   }
 
-  async createColumn(table: string, column: string, type: string) {
-    await mysql_create_column(this.connect(), table, column, type);
+  async createColumn(table: string, column: string, type: DRIVER_FIELDS) {
+    await mysql_create_column(this.connect(), table, column, MySQLDriver.getQueryType(type));
     this.break();
   }
 

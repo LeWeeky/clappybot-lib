@@ -281,7 +281,7 @@ export default class AModel {
       query =
         query +
         "  " +
-        (this.db.constructor as typeof ADriver).toQueryType(field, this.fields);
+        (this.db.constructor as typeof ADriver).toQuery(field, this.fields);
       count++;
     }
     await this.db.create(this.table, query);
