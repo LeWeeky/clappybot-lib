@@ -23,7 +23,7 @@
  * @param {string} column
  * @returns
  */
-export default async function postgresql_delete_column(connection, table, column) {
+export default async function postgresql_drop_column(connection, table, column) {
   try {
     await connection.query(`ALTER TABLE ${table} DROP COLUMN ${column}`);
 

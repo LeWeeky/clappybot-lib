@@ -21,32 +21,26 @@
  * @param {*} connection
  * @param {string} table
  * @param {string} column
- * @param {string} type
  * @returns
  */
-export default async function sqlite_create_column(
-  connection,
-  table,
-  column,
-  type,
-) {
+export default async function sqlite_drop_column(connection, table, column) {
   try {
     const statement = connection.prepare(
-      `ALTER TABLE ${table} ADD COLUMN ${column} ${type}`,
+      `ALTER TABLE ${table} DROP COLUMN ${column}`,
     );
     statement.run();
 
     if (process.env.DEBUG_INFO == "true")
       console.info(
         "\x1b[32m%s\x1b[0m",
-        `✅ Colonne créée dans la table : ${table}`,
+        `✅ Colonne supprimée dans la table : ${table}`,
       );
     return null;
   } catch (error) {
     if (process.env.DEBUG_ERROR != "false") {
       console.error(
         "\x1b[31m%s\x1b[0m",
-        `❌ Erreur : impossible de créer une colonne dans la table ${table}`,
+        `❌ Erreur : impossible de supprimer une colonne dans la table ${table}`,
       );
       console.error(error);
     }

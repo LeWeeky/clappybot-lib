@@ -20,9 +20,9 @@ import mysql from "mysql2";
 import ADriver from "./ADriver.js";
 import mysql_request from "../sql/mysql/request.js";
 import mysql_create_table from "../sql/mysql/create.js";
-import mysql_create_column from "../sql/mysql/create_column.js";
+import mysql_add_column from "../sql/mysql/add_column.js";
 import mysql_rename_column from "../sql/mysql/rename_column.js";
-import mysql_delete_column from "../sql/mysql/delete_column.js";
+import mysql_drop_column from "../sql/mysql/drop_column.js";
 import { mysql_insert,  mysql_last_insert_id } from "../sql/mysql/insert.js";
 import mysql_update from "../sql/mysql/update.js";
 import mysql_select from "../sql/mysql/select.js";
@@ -108,8 +108,8 @@ export default class MySQLDriver extends ADriver {
     this.break();
   }
 
-  async createColumn(table: string, column: string, type: DRIVER_FIELDS) {
-    await mysql_create_column(this.connect(), table, column, MySQLDriver.getQueryType(type));
+  async addColumn(table: string, column: string, type: DRIVER_FIELDS) {
+    await mysql_add_column(this.connect(), table, column, MySQLDriver.getQueryType(type));
     this.break();
   }
 
@@ -118,8 +118,8 @@ export default class MySQLDriver extends ADriver {
     this.break();
   }
 
-  async deleteColumn(table: string, column: string) {
-    await mysql_delete_column(this.connect(), table, column);
+  async dropColumn(table: string, column: string) {
+    await mysql_drop_column(this.connect(), table, column);
     this.break();
   }
 

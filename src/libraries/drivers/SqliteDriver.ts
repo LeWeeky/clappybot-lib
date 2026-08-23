@@ -26,9 +26,9 @@ import sqlite_delete from "../sql/sqlite/delete.js";
 import sqlite_exists from "../sql/sqlite/exists.js";
 import sqlite_count from "../sql/sqlite/count.js";
 import sqlite_create_table from "../sql/sqlite/create.js";
-import sqlite_create_column from "../sql/sqlite/create_column.js";
+import sqlite_add_column from "../sql/sqlite/add_column.js";
 import sqlite_rename_column from "../sql/sqlite/rename_column.js";
-import sqlite_delete_column from "../sql/sqlite/delete_column.js";
+import sqlite_drop_column from "../sql/sqlite/drop_column.js";
 import type { DRIVER_FIELDS } from "../../types/database.types.js";
 
 export default class SqliteDriver extends ADriver {
@@ -94,8 +94,8 @@ export default class SqliteDriver extends ADriver {
     this.break();
   }
 
-  async createColumn(table: string, column: string, type: DRIVER_FIELDS) {
-    await sqlite_create_column(this.connect(), table, column, SqliteDriver.getQueryType(type));
+  async addColumn(table: string, column: string, type: DRIVER_FIELDS) {
+    await sqlite_add_column(this.connect(), table, column, SqliteDriver.getQueryType(type));
     this.break();
   }
 
@@ -104,8 +104,8 @@ export default class SqliteDriver extends ADriver {
     this.break();
   }
 
-  async deleteColumn(table: string, column: string) {
-    await sqlite_delete_column(this.connect(), table, column);
+  async dropColumn(table: string, column: string) {
+    await sqlite_drop_column(this.connect(), table, column);
     this.break();
   }
 

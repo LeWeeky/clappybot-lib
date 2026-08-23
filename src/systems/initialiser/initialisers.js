@@ -31,12 +31,12 @@ export default class Initialisers {
     const connection = clappybot.database?.connect();
     const list = [];
 
-    readdirSync("./sources/modules").forEach((module) => {
+    for (const module of readdirSync("./sources/modules")) {
       if (
         !module.startsWith(".") &&
         statSync(`./sources/modules/${module}`).isDirectory()
       ) {
-        readdirSync(`./sources/modules/${module}`).forEach(async (file) => {
+        for (const file of readdirSync(`./sources/modules/${module}`)) {
           if (file == "init.js") {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
             const initialiser = await import(
@@ -46,9 +46,9 @@ export default class Initialisers {
               list.push(initialiser.init_module(connection));
             else console.warn(file_path, "method init_module is missing");
           }
-        });
+        }
       }
-    });
+    }
 
     for (let i = 0; i < list.length; i++) await list[i];
     clappybot.database?.break();
