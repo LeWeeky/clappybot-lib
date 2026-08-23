@@ -87,13 +87,13 @@ export class AFunctionalities {
    */
   async load_dir(path) {
     const extention = this.#getExtension();
-    readdirSync(path).forEach(async (file) => {
+    for (const file of readdirSync(path)) {
       if (file.endsWith(extention)) {
         const file_path = `${path}/${file}`;
         const handler = await import(file_path);
         this.add(handler, file_path);
       }
-    });
+    }
   }
 
   /**
@@ -113,14 +113,14 @@ export class AFunctionalities {
    * Historically useful in the legacy version
    * @deprecated
    */
-  load_addon() {
+  async load_addon() {
     const addons_path = "./add-on";
 
     if (
       existsSync(addons_path) &&
       existsSync(`${addons_path}/${this._config.addons}`)
     ) {
-      readdirSync(`${addons_path}/${this._config.addons}`).forEach(async (module) => {
+      for (const module of readdirSync(`${addons_path}/${this._config.addons}`)) {
         if (module.endsWith(".js")) {
           const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}`;
           const handler = await import(file_path);
@@ -130,38 +130,38 @@ export class AFunctionalities {
             `${addons_path}${this._config.addons}/${module}`,
           ).isDirectory()
         ) {
-          readdirSync(
+          for (const file of readdirSync(
             `../../../../${addons_path}/${this._config.addons}/${module}`,
-          ).forEach(async (file) => {
+          )) {
             if (file.endsWith(".js")) {
               const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}/${file}`;
               const handler = await import(file_path);
               this.add(handler, file_path);
             }
-          });
+          }
         }
-      });
+      }
     }
   }
 
   async load() {
-    readdirSync("./sources/modules").forEach((module) => {
+    for (const module of readdirSync("./sources/modules")) {
       if (
         !module.startsWith(".") &&
         statSync(`./sources/modules/${module}`).isDirectory()
       ) {
-        readdirSync(`./sources/modules/${module}`).forEach(async (file) => {
+        for (const file of readdirSync(`./sources/modules/${module}`)) {
           if (file == this._config.folder) {
-            this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`);
+            await this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`);
           } else if (this.isDirectFile(file)) {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
             const handler = await import(file_path);
             this.add(handler, file_path);
           }
-        });
+        }
       }
-    });
-    this.load_addon();
+    };
+    await this.load_addon();
     console.log(
       `${this._list.length} "${this._config.title}" ${this._list.length === 1 ? "has" : "have"} been loaded.`,
     );

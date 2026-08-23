@@ -70,8 +70,8 @@ export class Commands extends AActions {
    *
    * @param {string} path
    */
-  #load_dir(path) {
-    readdirSync(path).forEach(async (file) => {
+  async #load_dir(path) {
+    for (const file of readdirSync(path)) {
       if (file.endsWith(".js")) {
         const file_path = `${path}/${file}`;
         const command = await import(file_path);
@@ -80,17 +80,20 @@ export class Commands extends AActions {
           this.commands_builder.add(command);
         } else console.warn(file_path, "method parse is missing");
       }
-    });
+    }
   }
 
-  load_addon() {
+  /**
+   * Historically useful in the legacy version
+   * @deprecated
+   * 
+   */
+  async load_addon() {
     if (existsSync(`./add-on/${config.addons}`)) {
-      readdirSync(`./add-on/${config.addons}`).forEach(async (module) => {
+      for (const module of readdirSync(`./add-on/${config.addons}`)) {
         if (module.endsWith(config.extension)) {
           const file_path = `${process.cwd()}/add-on/${config.addons}/${module}`;
-          const command = await import(
-            file_path
-          );
+          const command = await import(file_path);
           if (command.parse) {
             this.add(command, file_path);
             this.commands_builder.add(command);
@@ -98,34 +101,32 @@ export class Commands extends AActions {
         } else if (
           statSync(`./add-on/${config.addons}/${module}`).isDirectory()
         ) {
-          readdirSync(`./add-on/${config.addons}/${module}`).forEach(
-            async (file) => {
-              if (file.endsWith(config.extension)) {
-                const file_path = `${process.cwd()}/add-on/${config.addons}/${module}/${file}`;
-                const command = await import(
-                  file_path
-                );
-                if (command.parse) {
-                  this.add(command, file_path);
-                  this.commands_builder.add(command);
-                } else console.warn(file_path, "method parse is missing");
-              }
-            },
-          );
+          for (const file of readdirSync(
+            `./add-on/${config.addons}/${module}`,
+          )) {
+            if (file.endsWith(config.extension)) {
+              const file_path = `${process.cwd()}/add-on/${config.addons}/${module}/${file}`;
+              const command = await import(file_path);
+              if (command.parse) {
+                this.add(command, file_path);
+                this.commands_builder.add(command);
+              } else console.warn(file_path, "method parse is missing");
+            }
+          }
         }
-      });
+      }
     }
   }
 
   async load() {
-    readdirSync("./sources/modules").forEach((module) => {
+    for (const module of readdirSync("./sources/modules")) {
       if (
         !module.startsWith(".") &&
         statSync(`./sources/modules/${module}`).isDirectory()
       ) {
-        readdirSync(`./sources/modules/${module}`).forEach(async (file) => {
+        for (const file of readdirSync(`./sources/modules/${module}`)) {
           if (file == config.folder) {
-            this.#load_dir(
+            await this.#load_dir(
               `${process.cwd()}/sources/modules/${module}/${config.folder}`,
             );
           } else if (
@@ -133,19 +134,16 @@ export class Commands extends AActions {
             this.isDirectFile(file)
           ) {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const command = await import(
-              file_path
-            );
+            const command = await import(file_path);
             if (command.parse) {
               this.add(command, file_path);
               this.commands_builder.add(command);
             } else console.warn(file_path, "method parse is missing");
           }
-        });
+        }
       }
-    });
-    this.load_addon();
-    // await this.load_cmdcreator(); temporarily unavailable
+    }
+    await this.load_addon();
     console.log(`${this._list.length} commands have been loaded.`);
   }
 
@@ -155,7 +153,13 @@ export class Commands extends AActions {
     await this.load();
   }
 
+  /**
+   *
+   * @param {import("discord.js").Channel | null} channel
+   * @returns
+   */
   #isDM(channel) {
+    if (!channel) return false;
     return (
       channel.type == ChannelType.DM || channel.type == ChannelType.GroupDM
     );
@@ -182,8 +186,12 @@ export class Commands extends AActions {
    */
   #reply(interaction, content, ephemeral = false) {
     if (this.#isChatInputInteraction(interaction)) {
-      const interaction_reply = /** @type {any} */ (interaction.reply.bind(interaction));
-      return interaction_reply(ephemeral ? { content, ephemeral: true } : { content });
+      const interaction_reply = /** @type {any} */ (
+        interaction.reply.bind(interaction)
+      );
+      return interaction_reply(
+        ephemeral ? { content, ephemeral: true } : { content },
+      );
     }
 
     return interaction.reply(content);
@@ -261,7 +269,6 @@ export class Command extends AAction {
    * @type {Function[] | false | undefined}
    */
   permissions;
-
 
   /**
    *

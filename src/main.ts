@@ -124,8 +124,8 @@ class ClappyBot {
       process.exit(2);
     }
     bot.login(process.env.TOKEN);
-    readdirSync(import.meta.dirname + "/listeners").forEach(async (file) => {
-      if (!file.endsWith(".js")) return;
+    for (const file of readdirSync(import.meta.dirname + "/listeners")) {
+      if (!file.endsWith(".js")) continue;
       const event = await import(`./listeners/${file}`);
       bot.on(event.name, (...args) => {
         if (!event.listen) {
@@ -135,7 +135,7 @@ class ClappyBot {
         if (event.name == "ready") event.listen(bot);
         else event.listen(...args);
       });
-    });
+    }
   }
 
   async new(bot: DiscordClient | Client) {
