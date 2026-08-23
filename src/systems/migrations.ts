@@ -2,6 +2,7 @@ import { existsSync, readdirSync, statSync } from "fs";
 import MigrationsTable from "../models/Migrations.js";
 import type ADriver from "../libraries/drivers/ADriver.js";
 import AMigration from "../libraries/drivers/AMigration.js";
+import chalk from "chalk";
 
 export default class Migrations {
   _migrations: {
@@ -27,7 +28,6 @@ export default class Migrations {
       );
       return 0;
     }
-    console.log("Loading migrations...");
     let count = 0;
     for (const migration_file of readdirSync("./migrations").sort()) {
       if (
@@ -49,6 +49,32 @@ export default class Migrations {
       `${count} "Migration" ${count === 1 ? "has" : "have"} been loaded.`,
     );
     return count;
+  }
+
+  async checkup() {
+    let found = false;
+    console.log("Checking for pending migrations...");
+    MigrationsTable.use(this._database);
+    const last_migrations = await MigrationsTable.all();
+
+    for (const [target, migrations] of Object.entries(this._migrations)) {
+      const newest_migration = migrations[migrations.length - 1];
+      const last_migration = last_migrations.find((m) => m.target === target);
+
+      if (!last_migration) {
+        this._warn(target);
+        found = true;
+        continue;
+      }
+      if (
+        newest_migration.version > last_migration.version
+      ) {
+        this._warn(target);
+        found = true;
+        continue;
+      }
+    }
+    return found;
   }
 
   async up() {
@@ -110,5 +136,12 @@ export default class Migrations {
       }
     }
     return count;
+  }
+
+  private _warn(target: string) {
+    console.warn(
+      chalk.yellow (
+      `You have pending migrations for target ${target}`,
+    ));
   }
 }

@@ -35,6 +35,8 @@ import {
   getCacheDatabaseDriver,
   getMainDatabaseDriver,
 } from "./libraries/drivers/getDatabaseDriver.js";
+import Migrations from "./systems/migrations.js";
+import chalk from "chalk";
 
 class ClappyBot {
   /**
@@ -176,6 +178,15 @@ class ClappyBot {
       process.exit(127);
     }
 
+    const migrations = new Migrations(main_db);
+    await migrations.load();
+    if (await migrations.checkup()) {
+      this.critical(
+        "You have pending migrations. Please run 'npx clappybot migrate' to apply them.",
+      );
+      process.exit(127);
+    }
+
     this.owner_id = await getOwnerId(process.env.SERVICE_ID);
 
     this.ready = true;
@@ -185,13 +196,13 @@ class ClappyBot {
 
   warning(message: string) {
     if (process.env.DEBUG_WARNING != "false") {
-      console.warn("\x1b[31m%s\x1b[0m", "[ ! WARING ! ]:", message);
+      console.warn(chalk.yellow("[ ! WARNING ! ]:"), message);
     }
   }
 
   critical(message: string) {
     if (process.env.DEBUG_CRITICAL != "false") {
-      console.error("\x1b[31m%s\x1b[0m", "[ !!! CRITICAL !!! ]:", message);
+      console.error(chalk.red("[ !!! CRITICAL !!! ]:"), message);
     }
   }
 
