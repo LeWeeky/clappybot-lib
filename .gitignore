@@ -6,3 +6,6 @@ dist
 db
 *.tgz
 .env
+migrations
+tests
+TODO.md

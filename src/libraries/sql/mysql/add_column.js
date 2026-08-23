@@ -24,7 +24,7 @@
  * @param {string} type
  * @returns
  */
-export default async function mysql_create_column(connection, table, column, type) {
+export default async function mysql_add_column(connection, table, column, type) {
   try {
     await connection
       .promise()

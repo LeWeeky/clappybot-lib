@@ -20,9 +20,9 @@ import pg from "pg";
 import ADriver from "./ADriver.js";
 import postgresql_request from "../sql/postgresql/request.js";
 import postgresql_create_table from "../sql/postgresql/create.js";
-import postgresql_create_column from "../sql/postgresql/create_column.js";
+import postgresql_add_column from "../sql/postgresql/add_column.js";
 import postgresql_rename_column from "../sql/postgresql/rename_column.js";
-import postgresql_delete_column from "../sql/postgresql/delete_column.js";
+import postgresql_drop_column from "../sql/postgresql/drop_column.js";
 import postgresql_insert from "../sql/postgresql/insert.js";
 import postgresql_update from "../sql/postgresql/update.js";
 import postgresql_select from "../sql/postgresql/select.js";
@@ -50,29 +50,16 @@ export default class PostgreSQLDriver extends ADriver {
 
   connect() {
     super.connect();
-    if (
-      this._connection &&
-      !this._connection._connecting &&
-      !this._connection._connected
-    )
-      void this._connection.connect().catch((error) => {
-        if (process.env.DEBUG_ERROR != "false") {
-          console.error(
-            "\x1b[31m%s\x1b[0m",
-            `❌ Erreur : connexion PostgreSQL`,
-          );
-          console.error(error);
-        }
-      });
     return this._connection;
   }
 
   break() {
-    super.break();
-    if (!this._locks && this._connection) {
-      this._connection.end();
-      this._connection = null;
-    }
+    // Temporarily commented to see if this mothod is really needed
+    // super.break();
+    // if (!this._locks && this._connection) {
+    //   this._connection.end();
+    //   this._connection = null;
+    // }
   }
 
   destroy() {
@@ -125,8 +112,8 @@ export default class PostgreSQLDriver extends ADriver {
     this.break();
   }
 
-  async createColumn(table: string, column: string, type: DRIVER_FIELDS) {
-    await postgresql_create_column(this.connect(), table, column, PostgreSQLDriver.getQueryType(type));
+  async addColumn(table: string, column: string, type: DRIVER_FIELDS) {
+    await postgresql_add_column(this.connect(), table, column, PostgreSQLDriver.getQueryType(type));
     this.break();
   }
 
@@ -135,8 +122,8 @@ export default class PostgreSQLDriver extends ADriver {
     this.break();
   }
 
-  async deleteColumn(table: string, column: string) {
-    await postgresql_delete_column(this.connect(), table, column);
+  async dropColumn(table: string, column: string) {
+    await postgresql_drop_column(this.connect(), table, column);
     this.break();
   }
 

@@ -1,6 +1,6 @@
 /**
  * ClappyBot - A powerful framework for bot developers
- * Copyright (C) 2025 LeWeeky
+ * Copyright (C) 2019–2025 LeWeeky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,31 +21,25 @@
  * @param {*} connection
  * @param {string} table
  * @param {string} column
- * @param {string} type
  * @returns
  */
-export default async function postgresql_create_column(
-  connection,
-  table,
-  column,
-  type,
-) {
+export default async function mysql_drop_column(connection, table, column) {
   try {
-    await connection.query(
-      `ALTER TABLE ${table} ADD COLUMN ${column} ${type}`,
-    );
+    await connection
+      .promise()
+      .query(`ALTER TABLE ${table} DROP COLUMN ${column}`);
 
     if (process.env.DEBUG_INFO == "true")
       console.info(
         "\x1b[32m%s\x1b[0m",
-        `✅ Colonne créée dans la table : ${table}`,
+        `✅ Colonne supprimée dans la table : ${table}`,
       );
     return null;
   } catch (error) {
     if (process.env.DEBUG_ERROR != "false") {
       console.error(
         "\x1b[31m%s\x1b[0m",
-        `❌ Erreur : impossible de créer une colonne dans la table ${table}`,
+        `❌ Erreur : impossible de supprimer une colonne dans la table ${table}`,
       );
       console.error(error);
     }

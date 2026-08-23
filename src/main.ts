@@ -26,29 +26,17 @@ import DiscordClient from "./libraries/client.js";
 import { getOwnerId } from "./libraries/api/owner.js";
 import package_json from "../package.json" with { type: "json" };
 import DataBaseWrapper from "./libraries/drivers/DataBaseWrapper.js";
-import MySQLDriver from "./libraries/drivers/MySQLDriver.js";
-import SqliteDriver from "./libraries/drivers/SqliteDriver.js";
-import PostgreSQLDriver from "./libraries/drivers/PostgreSQLDriver.js";
-
 import Config from "./models/Config.js";
 import RebootMessage from "./models/RebootMessage.js";
 import type { Client } from "discord.js";
 import type ADriver from "./libraries/drivers/ADriver.js";
 import Roles from "./models/Roles.js";
-
-function showMissingParameters() {
-  function warn(parameter: string) {
-    console.warn(`${parameter} is missing`);
-  }
-
-  if (!process.env.DB_HOST) warn("DB_HOST");
-  if (!process.env.DB_USER) warn("DB_USER");
-  if (!process.env.DB_PASSWORD) warn("DB_PASSWORD");
-  if (!process.env.DB_NAME) warn("DB_NAME");
-}
+import {
+  getCacheDatabaseDriver,
+  getMainDatabaseDriver,
+} from "./libraries/drivers/getDatabaseDriver.js";
 
 class ClappyBot {
-
   /**
    * The bot instance, used to access the discord.js client
    */
@@ -57,10 +45,10 @@ class ClappyBot {
   /** Discord bot id */
   id: string;
 
-	/**
-	 * Basic bot configuration, like prefix, activity, etc.
-	 */
-	config: Config;
+  /**
+   * Basic bot configuration, like prefix, activity, etc.
+   */
+  config: Config;
 
   /**
    * Discord guild id of the main guild
@@ -129,91 +117,8 @@ class ClappyBot {
    */
   async init(bot?: DiscordClient | Client) {
     if (!bot) bot = this.bot;
-    if (!process.env.DB_FOLDER_PATH || process.env.DB_FOLDER_PATH.length == 0)
-      process.env.DB_FOLDER_PATH = "./";
-    if (!process.env.DB_FOLDER_PATH.endsWith("/"))
-      process.env.DB_FOLDER_PATH = process.env.DB_FOLDER_PATH + "/";
-
-    switch (process.env.DB_DRIVER) {
-      case "mysql":
-        if (
-          process.env.DB_HOST &&
-          process.env.DB_USER &&
-          process.env.DB_PASSWORD &&
-          process.env.DB_NAME
-        ) {
-          /**
-           * @type {MySQLDriver}
-           */
-          this.databases.add(
-            new MySQLDriver({
-              host: process.env.DB_HOST,
-              user: process.env.DB_USER,
-              password: process.env.DB_PASSWORD,
-              database: process.env.DB_NAME,
-              supportBigNumbers: true,
-              bigNumberStrings: true,
-            }),
-            "main",
-          );
-        } else {
-          this.critical("some database parameters are missing");
-          showMissingParameters();
-          process.exit(78);
-        }
-        break;
-
-      case "postgres":
-        if (
-          process.env.DB_HOST &&
-          process.env.DB_USER &&
-          process.env.DB_PASSWORD &&
-          process.env.DB_NAME
-        ) {
-          this.databases.add(
-            new PostgreSQLDriver({
-              host: process.env.DB_HOST,
-              user: process.env.DB_USER,
-              password: process.env.DB_PASSWORD,
-              database: process.env.DB_NAME,
-            }),
-            "main",
-          );
-        } else {
-          this.critical("some database parameters are missing");
-          showMissingParameters();
-          process.exit(78);
-        }
-        break;
-
-      case "sqlite":
-        if (process.env.DB_NAME) {
-          this.databases.add(
-            new SqliteDriver({
-              path: process.env.DB_FOLDER_PATH + process.env.DB_NAME,
-            }),
-            "main",
-          );
-        } else {
-          this.critical("DB_NAME is missing");
-          process.exit(78);
-        }
-        break;
-
-      default:
-        if (process.env.DB_DRIVER)
-          this.critical(
-            `${process.env.DB_DRIVER} is not a valid driver for the database!`,
-          );
-        else this.critical("DB_DRIVER not set!");
-        process.exit(78);
-    }
-    this.databases.add(
-      new SqliteDriver({
-        path: process.env.DB_FOLDER_PATH + "cache.sqlite",
-      }),
-      "cache",
-    );
+    this.databases.add(getMainDatabaseDriver(), "main");
+    this.databases.add(getCacheDatabaseDriver(), "cache");
     if (!process.env.TOKEN || process.env.TOKEN.length == 0) {
       this.critical("Token not found ...");
       process.exit(2);

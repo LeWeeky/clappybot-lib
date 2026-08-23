@@ -25,9 +25,9 @@ type DRIVER_METHODS =
   | "getAutoIncrementQuery"
   | "request"
   | "create"
-  | "createColumn"
+  | "addColumn"
   | "renameColumn"
-  | "deleteColumn"
+  | "dropColumn"
   | "insert"
   | "update"
   | "select"
@@ -67,6 +67,11 @@ export default class ADriver {
     if (this._locks) this._locks--;
   }
 
+  /**
+   * Destroys the connection to the database
+   * and releases any resources associated with it.
+   * This method should be called when the database connection is no longer needed.
+   */
   destroy() {
     this.#throw("destroy");
   }
@@ -115,16 +120,16 @@ export default class ADriver {
     this.#throw("request");
   }
 
-  async create(_table: string, _element: string, _more = null): Promise<void> {
+  async create(_table: string, _element: string, _more: string | null = null): Promise<void> {
     this.#throw("create");
   }
 
-  async createColumn(
+  async addColumn(
     _table: string,
     _column: string,
     _type: string,
   ): Promise<void> {
-    this.#throw("createColumn");
+    this.#throw("addColumn");
   }
 
   async renameColumn(
@@ -135,8 +140,8 @@ export default class ADriver {
     this.#throw("renameColumn");
   }
 
-  async deleteColumn(_table: string, _column: string): Promise<void> {
-    this.#throw("deleteColumn");
+  async dropColumn(_table: string, _column: string): Promise<void> {
+    this.#throw("dropColumn");
   }
 
   async insert(

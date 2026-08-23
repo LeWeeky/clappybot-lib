@@ -109,6 +109,10 @@ export class AFunctionalities {
     return false;
   }
 
+  /**
+   * Historically useful in the legacy version
+   * @deprecated
+   */
   load_addon() {
     const addons_path = "./add-on";
 
@@ -151,7 +155,6 @@ export class AFunctionalities {
             this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`);
           } else if (this.isDirectFile(file)) {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            console.log("file_path", file_path);
             const handler = await import(file_path);
             this.add(handler, file_path);
           }
@@ -160,7 +163,7 @@ export class AFunctionalities {
     });
     this.load_addon();
     console.log(
-      `${this._list.length} "${this._config.title}" has been loaded.`,
+      `${this._list.length} "${this._config.title}" ${this._list.length === 1 ? "has" : "have"} been loaded.`,
     );
   }
 
