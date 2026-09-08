@@ -43,7 +43,6 @@ export default class Models {
         }
       }
     }
-    this.loadBuiltIn();
     console.log(
       `${this._list.length} "Model" ${this._list.length === 1 ? "has" : "have"} been loaded.`,
     );
