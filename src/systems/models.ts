@@ -51,7 +51,8 @@ export default class Models {
   async init() {
     await Promise.all(
       this._list.map((model) => {
-        model.use(this._database);
+        if (!model.db)
+          model.use(this._database);
         return model.init();
       }),
     );
