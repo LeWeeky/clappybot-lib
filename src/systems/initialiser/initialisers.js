@@ -18,6 +18,7 @@
 
 import { readdirSync, statSync } from "fs";
 import { clappybot } from "../../main.js";
+import { importFile } from "../../libraries/import_file.js";
 
 export default class Initialisers {
   constructor() {}
@@ -39,7 +40,7 @@ export default class Initialisers {
         for (const file of readdirSync(`./sources/modules/${module}`)) {
           if (file == "init.js") {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const initialiser = await import(
+            const initialiser = await importFile(
               file_path,
             );
             if (initialiser.init_module)

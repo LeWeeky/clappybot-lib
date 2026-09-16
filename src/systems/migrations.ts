@@ -3,6 +3,7 @@ import MigrationsTable from "../models/Migrations.js";
 import type ADriver from "../libraries/drivers/ADriver.js";
 import AMigration from "../libraries/drivers/AMigration.js";
 import chalk from "chalk";
+import { importFile } from "../libraries/import_file.js";
 
 export default class Migrations {
   _migrations: {
@@ -36,7 +37,7 @@ export default class Migrations {
       ) {
         const file_path = `${process.cwd()}/migrations/${migration_file}`;
         const version = migration_file.split("_")[0];
-        const migration = (await import(file_path))
+        const migration = (await importFile(file_path))
           .default as typeof AMigration;
 
         if (!this._migrations[migration.target])

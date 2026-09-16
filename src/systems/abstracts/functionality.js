@@ -17,6 +17,7 @@
  */
 
 import { readdirSync, existsSync, statSync } from "fs";
+import { importFile } from "../../libraries/import_file.js";
 
 /**
  * @template {AFunctionality} T
@@ -90,7 +91,7 @@ export class AFunctionalities {
     for (const file of readdirSync(path)) {
       if (file.endsWith(extention)) {
         const file_path = `${path}/${file}`;
-        const handler = await import(file_path);
+        const handler = await importFile(file_path);
         this.add(handler, file_path);
       }
     }
@@ -123,7 +124,7 @@ export class AFunctionalities {
       for (const module of readdirSync(`${addons_path}/${this._config.addons}`)) {
         if (module.endsWith(".js")) {
           const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}`;
-          const handler = await import(file_path);
+          const handler = await importFile(file_path);
           this.add(handler, file_path);
         } else if (
           statSync(
@@ -135,7 +136,7 @@ export class AFunctionalities {
           )) {
             if (file.endsWith(".js")) {
               const file_path = `../../../../../${addons_path}/${this._config.addons}/${module}/${file}`;
-              const handler = await import(file_path);
+              const handler = await importFile(file_path);
               this.add(handler, file_path);
             }
           }
@@ -155,7 +156,7 @@ export class AFunctionalities {
             await this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`);
           } else if (this.isDirectFile(file)) {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const handler = await import(file_path);
+            const handler = await importFile(file_path);
             this.add(handler, file_path);
           }
         }

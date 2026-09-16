@@ -2,6 +2,7 @@ import { readdirSync, statSync } from "fs";
 import type ADriver from "../libraries/drivers/ADriver.js";
 import type AModel from "../libraries/drivers/AModel.js";
 import BuiltInModels from "../models/index.js";
+import { importFile } from "../libraries/import_file.js";
 
 export default class Models {
   _database: ADriver;
@@ -16,7 +17,7 @@ export default class Models {
     for (const file of readdirSync(path)) {
       if (file.endsWith(".js") || file.endsWith(".ts")) {
         const file_path = `${path}/${file}`;
-        const model = await import(file_path);
+        const model = await importFile(file_path);
         this._list.push(model);
       }
     }
@@ -43,6 +44,7 @@ export default class Models {
         }
       }
     }
+    this.loadBuiltIn();
     console.log(
       `${this._list.length} "Model" ${this._list.length === 1 ? "has" : "have"} been loaded.`,
     );
@@ -51,8 +53,7 @@ export default class Models {
   async init() {
     await Promise.all(
       this._list.map((model) => {
-        if (!model.db)
-          model.use(this._database);
+        model.use(this._database);
         return model.init();
       }),
     );
