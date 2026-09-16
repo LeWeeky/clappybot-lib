@@ -18,13 +18,15 @@
 
 import { readdirSync, statSync } from "fs";
 import { clappybot } from "../../main.js";
+import { importFile } from "../../libraries/import_file.js";
 
+/**
+ * @deprecated
+ * Will be removed in future versions
+ */
 export default class Initialisers {
   constructor() {}
 
-  /**
-   * Supprime toutes les commandes
-   */
   destroy() {}
 
   async load() {
@@ -39,7 +41,7 @@ export default class Initialisers {
         for (const file of readdirSync(`./sources/modules/${module}`)) {
           if (file == "init.js") {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const initialiser = await import(
+            const initialiser = await importFile(
               file_path,
             );
             if (initialiser.init_module)
@@ -53,6 +55,12 @@ export default class Initialisers {
     for (let i = 0; i < list.length; i++) await list[i];
     clappybot.database?.break();
     console.log(`${list.length} initialisers have been loaded.`);
+    if (list.length > 0) {
+      console.info(
+        "Please note that the initialisers system is deprecated and will be removed in future versions.",
+        "Models are now automatically initialised when the bot starts, so you don't need to use this system anymore."
+      );
+    }
   }
 
   async reload() {

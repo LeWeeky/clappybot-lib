@@ -20,6 +20,7 @@ import { readdirSync, existsSync, statSync } from "fs";
 import { ChannelType } from "discord.js";
 import SlashCommands from "./interactions/slashCmd.js";
 import { AAction, AActions } from "./abstracts/actions.js";
+import { importFile } from "../libraries/import_file.js";
 
 const config = {
   title: "commands",
@@ -74,7 +75,7 @@ export class Commands extends AActions {
     for (const file of readdirSync(path)) {
       if (file.endsWith(".js")) {
         const file_path = `${path}/${file}`;
-        const command = await import(file_path);
+        const command = await importFile(file_path);
         if (command.parse) {
           this.add(command, file_path);
           this.commands_builder.add(command);
@@ -93,7 +94,7 @@ export class Commands extends AActions {
       for (const module of readdirSync(`./add-on/${config.addons}`)) {
         if (module.endsWith(config.extension)) {
           const file_path = `${process.cwd()}/add-on/${config.addons}/${module}`;
-          const command = await import(file_path);
+          const command = await importFile(file_path);
           if (command.parse) {
             this.add(command, file_path);
             this.commands_builder.add(command);
@@ -106,7 +107,7 @@ export class Commands extends AActions {
           )) {
             if (file.endsWith(config.extension)) {
               const file_path = `${process.cwd()}/add-on/${config.addons}/${module}/${file}`;
-              const command = await import(file_path);
+              const command = await importFile(file_path);
               if (command.parse) {
                 this.add(command, file_path);
                 this.commands_builder.add(command);
@@ -134,7 +135,7 @@ export class Commands extends AActions {
             this.isDirectFile(file)
           ) {
             const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const command = await import(file_path);
+            const command = await importFile(file_path);
             if (command.parse) {
               this.add(command, file_path);
               this.commands_builder.add(command);

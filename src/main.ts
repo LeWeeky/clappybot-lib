@@ -37,6 +37,8 @@ import {
 } from "./libraries/drivers/getDatabaseDriver.js";
 import Migrations from "./systems/migrations.js";
 import chalk from "chalk";
+import Models from "./systems/models.js";
+import { importFile } from "./libraries/import_file.js";
 
 class ClappyBot {
   /**
@@ -128,7 +130,7 @@ class ClappyBot {
     bot.login(process.env.TOKEN);
     for (const file of readdirSync(import.meta.dirname + "/listeners")) {
       if (!file.endsWith(".js")) continue;
-      const event = await import(`./listeners/${file}`);
+      const event = await importFile(`${import.meta.dirname}/listeners/${file}`);
       bot.on(event.name, (...args) => {
         if (!event.listen) {
           this.warning(`Event ${event.name} has no listen method`);
@@ -149,9 +151,9 @@ class ClappyBot {
 
     if (main_db) {
       this.database = main_db;
-      Config.use(this.database!);
-      Roles.use(this.database!);
-      await Promise.all([Config.init(), Roles.init()]);
+      const models = new Models(this.database!);
+      await models.load();
+      await models.init();
 
       this.config =
         (await Config.first()) ??
