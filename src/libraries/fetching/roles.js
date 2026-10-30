@@ -18,6 +18,9 @@
 
 import { clappybot } from "../../main.js";
 
+/**
+ * @deprecated
+ */
 export default class Roles {
   constructor(guild = clappybot.getGuild()) {
     this.guild = /** @type {import("discord.js").Guild} */ (guild);
@@ -26,7 +29,7 @@ export default class Roles {
   /**
    * 
    * @param {string} id 
-   * @param {Array | null} mentions
+   * @param {Array<string> | null} mentions
    * @param {number} target 
    * @returns 
    */

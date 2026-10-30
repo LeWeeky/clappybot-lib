@@ -26,6 +26,9 @@ const config = {
   addons: "interactions/menus",
 };
 
+/**
+ * @extends {AInteractions<Menu, typeof Menu>}
+ */
 export class Menus extends AInteractions {
   constructor() {
     super(Menu, config);
@@ -38,7 +41,7 @@ export class Menu extends AInteraction {
    * @param {{
    * 	customId: string | undefined, conditions: Function[]
    * | undefined, permissions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined , parse: Function
+   * | undefined , any_guild: boolean | undefined, parse: (interaction: import('discord.js').Interaction) => Promise<void>
    * }} interaction Informations e la nouvelle interaction
    * @param {string} file_path
    */

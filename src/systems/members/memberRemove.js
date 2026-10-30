@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AEvents, AEvent } from "../abstracts/events.js";
 
 const config = {
@@ -33,6 +34,17 @@ const config = {
   addons: "members/leave",
 };
 
+/**
+ * @typedef {{
+ * 	conditions: Function[] | undefined, dm: boolean | undefined,
+ *  any_guild: boolean | undefined, allow_bots: true | undefined,
+ *  parse: (member: import('discord.js').GuildMember) => Promise<void>
+ * }} MemberRemoveFields
+ */
+
+/**
+ * @extends {AEvents<MemberRemoveFields, MemberRemove, typeof MemberRemove>}
+ */
 export class MembersRemove extends AEvents {
   constructor() {
     super(MemberRemove, config);
@@ -45,9 +57,8 @@ export class MembersRemove extends AEvents {
   async scan(member) {
     for (let i in this._list) {
       if (
-        this._list[i] &&
         (!member.user.bot || this._list[i].allow_bots) &&
-        (member.guild.id == globalThis.guild_id || this._list[i].any_guild)
+        (member.guild.id == clappybot.guild_id || this._list[i].any_guild)
       ) {
         this._list[i].parse(member);
       }
@@ -57,14 +68,17 @@ export class MembersRemove extends AEvents {
 
 export class MemberRemove extends AEvent {
   /**
+   * @type {boolean}
+   */
+  allow_bots;
+
+  /**
    *
-   * @param {{
-   * 	conditions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-   * }} event_handler Informations du nouveau message
+   * @param {MemberRemoveFields} event_handler
    * @param {string} file_path
    */
   constructor(event_handler, file_path) {
     super(event_handler, file_path);
+    this.allow_bots = event_handler.allow_bots || false;
   }
 }

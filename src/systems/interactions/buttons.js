@@ -26,6 +26,9 @@ const config = {
 	"addons": "interactions/buttons"
 }
 
+/**
+ * @extends {AInteractions<Button, typeof Button>}
+ */
 export class Buttons extends AInteractions
 {
 	constructor()
@@ -41,7 +44,7 @@ export class Button extends AInteraction
 	 * @param {{
 	* 	customId: string | undefined, conditions: Function[]
 	*   | undefined, permissions: Function[] | undefined, dm: boolean
-	*   | undefined , any_guild: boolean | undefined , parse: Function
+	*   | undefined , any_guild: boolean | undefined, parse: (interaction: import('discord.js').Interaction) => Promise<void>
 	* }} interaction Informations e la nouvelle interaction
 	* @param {string} file_path
 	*/

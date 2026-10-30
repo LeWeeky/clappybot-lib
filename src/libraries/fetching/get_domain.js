@@ -16,6 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * 
+ * @param {string} url 
+ * @returns 
+ */
 export default function getDomain(url) {
   try {
     const parsedUrl = new URL(url);

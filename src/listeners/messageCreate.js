@@ -30,21 +30,21 @@ export const name = "messageCreate";
 export async function listen(message) {
   const prefix = clappybot.prefix;
 
-  let cmd;
+  let command_name;
   let args = split(message.content.toLocaleLowerCase());
 
   if (message.content.startsWith(prefix) && message.content.length > 1) {
-    cmd = args[0].substring(prefix.length);
+    command_name = args[0].substring(prefix.length);
     args = args.slice(1, args.length);
   }
 
-  if (cmd) system.commands.scan(message, cmd, args);
+  if (command_name) system.commands.scan(message, command_name, args);
   system.messageCreate.scan(message);
 
   if (
     message.member &&
     message.guild &&
-    message.guild.id == globalThis.guild_id
+    message.guild.id == clappybot.guild_id
   ) {
     if (await isStaff(message.member)) {
       if (message.content == prefix + "join") {

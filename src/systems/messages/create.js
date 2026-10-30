@@ -28,6 +28,9 @@ const config = {
   addons: "messages/create",
 };
 
+/**
+ * @extends {AUniqueStateMessages<MessageCreate>}
+ */
 export class MessagesCreate extends AUniqueStateMessages {
   constructor() {
     super(MessageCreate, config);
@@ -40,7 +43,7 @@ export class MessageCreate extends AMessage {
    *
    * @param {{
    * 	conditions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: (message: import('discord.js').Message) => Promise<void>
    * }} message Informations du nouveau message
    * @param {string} file_path
    */

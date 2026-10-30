@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../main.js";
 import { AEvents, AEvent } from "./abstracts/events.js";
 
 const config = {
@@ -28,6 +29,15 @@ const config = {
   addons: "voices/update",
 };
 
+/**
+ * @typedef {{
+ * 	conditions: Function[] | undefined | undefined, dm: boolean
+ * | undefined , any_guild: boolean | undefined, parse: (old_state: import("discord.js").VoiceState, new_state: import("discord.js").VoiceState) => Promise<void>
+ * }} VoiceStateFields 
+ */
+/**
+ * @extends {AEvents<VoiceStateFields, VoiceStateUpdate, typeof VoiceStateUpdate>}
+ */
 export default class VoicesStateUpdate extends AEvents {
   constructor() {
     super(VoiceStateUpdate, config);
@@ -42,7 +52,7 @@ export default class VoicesStateUpdate extends AEvents {
     for (let i in this._list) {
       if (
         this._list[i] &&
-        (old_state.guild?.id == globalThis.guild_id || this._list[i].any_guild)
+        (old_state.guild?.id == clappybot.guild_id || this._list[i].any_guild)
       ) {
         this._list[i].parse(old_state, new_state);
       }
@@ -53,10 +63,7 @@ export default class VoicesStateUpdate extends AEvents {
 class VoiceStateUpdate extends AEvent {
   /**
    *
-   * @param {{
-   * 	conditions: Function[] | undefined | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, parse: Function
-   * }} event_handler Informations du nouveau message
+   * @param {VoiceStateFields} event_handler Informations du nouveau message
    * @param {string} file_path
    */
   constructor(event_handler, file_path) {

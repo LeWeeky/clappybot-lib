@@ -18,6 +18,11 @@
 
 import isSpace from "./is_space.js";
 
+/**
+ * 
+ * @param {string} string 
+ * @returns 
+ */
 function getLength(string) {
   let i = 0;
   let length = 0;
@@ -29,6 +34,11 @@ function getLength(string) {
   return length;
 }
 
+/**
+ * 
+ * @param {string[]} args 
+ * @returns 
+ */
 function getArgsLength(args) {
   let i = 0;
   let y = 0;

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AEvents, AEvent } from "../abstracts/events.js";
 
 const config = {
@@ -33,6 +34,16 @@ const config = {
   addons: "members/update",
 };
 
+/**
+ * @typedef {{
+ * 	conditions: Function[] | undefined, permissions: Function[] | undefined, dm: boolean
+ * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined,
+ * parse: (old_member: import('discord.js').GuildMember, new_member: import('discord.js').GuildMember) => Promise<void>
+ * }} MembersUpdateFields
+ */
+/**
+ * @extends {AEvents<MembersUpdateFields, MemberUpdate, typeof MemberUpdate>}
+ */
 export class MembersUpdate extends AEvents {
   constructor() {
     super(MemberUpdate, config);
@@ -46,9 +57,8 @@ export class MembersUpdate extends AEvents {
   async scan(old_member, new_member) {
     for (let i in this._list) {
       if (
-        this._list[i] &&
         (!new_member.user.bot || this._list[i].allow_bots) &&
-        (old_member.guild.id == globalThis.guild_id || this._list[i].any_guild)
+        (old_member.guild.id == clappybot.guild_id || this._list[i].any_guild)
       ) {
         this._list[i].parse(old_member, new_member);
       }
@@ -58,14 +68,17 @@ export class MembersUpdate extends AEvents {
 
 export class MemberUpdate extends AEvent {
   /**
+   * @type {boolean}
+   */
+  allow_bots;
+
+  /**
    *
-   * @param {{
-   * 	conditions: Function[] | undefined, permissions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-   * }} event_handler Informations du nouveau message
+   * @param {MembersUpdateFields} event_handler Informations du nouveau message
    * @param {string} file_path
    */
   constructor(event_handler, file_path) {
     super(event_handler, file_path);
+    this.allow_bots = event_handler.allow_bots || false;
   }
 }

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AEvents, AEvent } from "../abstracts/events.js";
 const config = {
 	"title": "ChannelUpdate",
@@ -27,6 +28,16 @@ const config = {
 	"addons": "channels/update"
 }
 
+/**
+ * @typedef {{
+ * 	conditions: Function[] | undefined | undefined, dm: boolean
+ * | undefined, any_guild: boolean | undefined, parse: (old_channel: import('discord.js').Channel, new_channel: import('discord.js').Channel) => Promise<void>
+ * }} ChannelFields
+ */
+
+/**
+ * @extends {AEvents<ChannelFields, ChannelUpdate, typeof ChannelUpdate>}
+ */
 export default class ChannelsUpdate extends AEvents
 {
 	constructor()
@@ -34,18 +45,17 @@ export default class ChannelsUpdate extends AEvents
 		super(ChannelUpdate, config)
 	}
 
+	/**
+	 *
+	 * @param {import("discord.js").GuildChannel} old_channel
+	 * @param {import("discord.js").GuildChannel} new_channel
+	 */
 	async scan(old_channel, new_channel)
 	{
 		for (let i in this._list)
 		{
-			if (this._list[i] &&
-				(old_channel.guild.id == globalThis.guild_id || this._list[i].any_guild))
-			{
-				if (this._list[i].parse)
-					this._list[i].parse(old_channel, new_channel)
-				else
-					console.error("Parse function is missing for channel update:", config.title)
-			}
+			if (old_channel.guild.id == clappybot.guild_id || this._list[i].any_guild)
+				this._list[i].parse(old_channel, new_channel)
 		}
 	}
 }
@@ -54,10 +64,7 @@ class ChannelUpdate extends AEvent
 {
 	/**
 	 * 
-	 * @param {{
-	 * 	conditions: Function[] | undefined | undefined, dm: boolean
-	 * | undefined , any_guild: boolean | undefined, parse: Function
-	 * }} event_handler Informations du nouveau message
+	 * @param {ChannelFields} event_handler Informations du nouveau message
 	 * @param {string} file_path
 	 */
 	constructor(event_handler, file_path)

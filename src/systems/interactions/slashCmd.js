@@ -17,14 +17,33 @@
  */
 
 export default class SlashCommands {
+  
+  /**
+   * @type {Array<Object>}
+   */
+  guild_cmds;
+
+  /**
+   * @type {Array<Object>}
+   */
+  global_cmds
+
   constructor() {
     this.guild_cmds = [];
     this.global_cmds = [];
   }
 
   /**
+ * @typedef {{
+  * name: string, alias: string[] | undefined, builder: import('discord.js').SlashCommandBuilder | undefined,
+  * permissions: Function[] | undefined, dm: boolean | undefined ,
+  * any_guild: boolean | undefined, parse: (interaction: import('discord.js').ChatInputCommandInteraction, command_name: string, args: string[]) => Promise<void>, conditions: undefined
+  * }} CommandFields
+ */
+
+  /**
    *
-   * @param {any} command commande à ajouter
+   * @param {CommandFields} command commande à ajouter
    */
   add(command) {
     if (command.builder) {

@@ -19,7 +19,7 @@
 import prepareQuery from "./prepare_query.js";
 
 /**
- *
+ * @param {*} connection
  * @param {string} table
  * @param {string | null | undefined} target
  * @param {any[]} data

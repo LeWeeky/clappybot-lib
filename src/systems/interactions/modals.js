@@ -26,6 +26,9 @@ const config = {
   addons: "interactions/modals",
 };
 
+/**
+ * @extends {AInteractions<Modal, typeof Modal>}
+ */
 export class Modals extends AInteractions {
   constructor() {
     super(Modal, config);
@@ -38,8 +41,8 @@ export class Modal extends AInteraction {
    * @param {{
    * 	customId: string | undefined, conditions: Function[] | undefined, permissions: Function[]
    * | undefined, dm: boolean | undefined , any_guild: boolean
-   * | undefined , parse: Function
-   * }} interaction Informations e la nouvelle interaction
+   * | undefined, parse: (interaction: import('discord.js').Interaction) => Promise<void>
+   * }} interaction
    * @param {string} file_path
    */
   constructor(interaction, file_path) {

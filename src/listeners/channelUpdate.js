@@ -21,8 +21,8 @@ import { system } from "../systems/system.js";
 export const name = "channelUpdate";
 /**
  * 
- * @param {import("discord.js").Channel} old_channel 
- * @param {import("discord.js").Channel} new_channel 
+ * @param {import("discord.js").GuildChannel} old_channel 
+ * @param {import("discord.js").GuildChannel} new_channel 
  */
 export async function listen(old_channel, new_channel) {
   system.channelsUpdate.scan(old_channel, new_channel);

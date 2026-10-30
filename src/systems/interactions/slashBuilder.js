@@ -38,7 +38,7 @@ async function buildGlobalCommands(rest = null) {
       /** @type {import("discord.js").RESTPutAPIApplicationGuildCommandsResult} */ (
         await rest.put(
           Routes.applicationCommands(
-            /** @type {ReadyDiscordClient} */ (clappybot.bot.user).id
+            /** @type {ReadyDiscordClient} */(clappybot.bot.user).id
           ),
           {
             body: system.commands.commands_builder.global_cmds,
@@ -59,6 +59,8 @@ async function buildGlobalCommands(rest = null) {
  * @param {REST | null} rest
  */
 async function buildGuildCommands(rest = null) {
+  if (!clappybot.guild_id)
+    return;
   if (!rest) rest = new REST().setToken(process.env.TOKEN || "");
 
   try {
@@ -70,8 +72,8 @@ async function buildGuildCommands(rest = null) {
       /** @type {import("discord.js").RESTPutAPIApplicationGuildCommandsResult} */ (
         await rest.put(
           Routes.applicationGuildCommands(
-            /** @type {ReadyDiscordClient} */ (clappybot.bot.user).id,
-            globalThis.guild_id,
+            /** @type {ReadyDiscordClient} */(clappybot.bot.user).id,
+            clappybot.guild_id,
           ),
           { body: system.commands.commands_builder.guild_cmds },
         )
@@ -87,7 +89,5 @@ export default async function build_commands() {
   const rest = new REST().setToken(process.env.TOKEN || "");
 
   buildGlobalCommands(rest);
-
-  if (!globalThis.guild_id) return;
   buildGuildCommands(rest);
 }

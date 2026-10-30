@@ -33,6 +33,15 @@ const config = {
   addons: "presences",
 };
 
+/**
+ * @typedef {{
+ * 	dm: boolean | undefined , any_guild: boolean | undefined , parse: (old_presence: import("discord.js").Presence, new_presence: import("discord.js").Presence) => Promise<void>, conditions: Function[] | undefined
+ * }} PresenceFields
+ */
+
+/**
+ * @extends {AActions<PresenceFields, PresenceUpdate, typeof PresenceUpdate>}
+ */
 export class PresencesUpdate extends AActions {
   constructor() {
     super(PresenceUpdate, config);
@@ -82,9 +91,7 @@ export class PresencesUpdate extends AActions {
 export class PresenceUpdate extends AAction {
   /**
    *
-   * @param {{
-   * 	dm: boolean | undefined , any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
-   * }} interaction Informations e la nouvelle interaction
+   * @param {PresenceFields} interaction Informations e la nouvelle interaction
    * @param { string } file_path
    */
   constructor(interaction, file_path) {

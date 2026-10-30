@@ -16,17 +16,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * 
+ * @param {string} text 
+ * @returns 
+ */
 export function isHTTPURL(text)
 {
 	const pattern = /^(http:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/i;
 	return pattern.test(text);
 }
 
+/**
+ * 
+ * @param {string} text 
+ * @returns 
+ */
 export function isHTTPSURL(text)
 {
 	const pattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/i;
 	return pattern.test(text);
 }
+
+/**
+ * 
+ * @param {string} text 
+ * @returns 
+ */
 export function isURL(text)
 {
 	return (isHTTPSURL(text) || isHTTPURL(text));

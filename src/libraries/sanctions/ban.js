@@ -20,14 +20,31 @@ import { PermissionsBitField } from "discord.js";
 import History from "./history.js";
 
 const Permissions = PermissionsBitField.Flags;
+/**
+ * 
+ * @param {import('discord.js').Guild} guild 
+ * @returns 
+ */
 export function bot_can_ban(guild) {
-  return (guild.members.me.permissions.has(Permissions.BanMembers));
+  return (guild.members.me?.permissions.has(Permissions.BanMembers));
 }
 
+/**
+ * 
+ * @param {import('discord.js').GuildMember} member 
+ * @returns 
+ */
 export function user_can_ban(member) {
   return (member.permissions.has(Permissions.BanMembers));
 }
 
+/**
+ * 
+ * @param {import('discord.js').User} user 
+ * @param {string} reason 
+ * @param {import('discord.js').User} author 
+ * @param {import('discord.js').Guild} guild 
+ */
 export async function ban(user, reason, author, guild) {
   const date = new Date();
   let day = String(date.getDate());
@@ -38,7 +55,7 @@ export async function ban(user, reason, author, guild) {
   if (month.length == 1) month = "0" + month;
 
   guild.members.ban(user.id, {
-    reason: `Modérateur: ${author.tag}, Date: ${day}/${month}/${year}, Raison: ${reason}`,
+    reason: `Moderator: ${author.globalName}, Date: ${day}/${month}/${year}, Reason: ${reason}`,
   });
-  new History(user, guild.id).add("mute", reason, author);
+  new History(user, guild.id).add("ban", reason, author);
 }

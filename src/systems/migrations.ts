@@ -141,8 +141,8 @@ export default class Migrations {
 
   private _warn(target: string) {
     console.warn(
-      chalk.yellow (
-      `You have pending migrations for target ${target}`,
-    ));
+      chalk.yellow(
+        `You have pending migrations for target ${target}`,
+      ));
   }
 }

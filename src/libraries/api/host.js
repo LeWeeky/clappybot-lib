@@ -18,6 +18,11 @@
 
 import { apiCall } from "./call_api.js";
 
+/**
+ * @deprecated
+ * @param {string} service_id 
+ * @returns 
+ */
 export async function get_host_expiration(service_id) {
   const response = await apiCall(`service/${service_id}/host`);
 
@@ -29,6 +34,11 @@ export async function get_host_expiration(service_id) {
   return new Date(json_data.expiration_date);
 }
 
+/**
+ * @deprecated
+ * @param {string} service_id 
+ * @returns 
+ */
 export async function get_host_remaining_days(service_id) {
   const expiration_date = await get_host_expiration(service_id);
   if (!expiration_date) return 0;

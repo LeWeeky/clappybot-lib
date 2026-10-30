@@ -18,6 +18,9 @@
 
 import { clappybot } from "../../main.js";
 
+/**
+ * @deprecated
+ */
 export default class User {
   /**
    * @type {import("discord.js").User | null}
@@ -71,14 +74,18 @@ export default class User {
       });
   }
 
+  /**
+   * 
+   * @param {import('discord.js').User} user 
+   * @returns 
+   */
   #set(user) {
     this.instance = user;
-    this.avatarURL = user.displayAvatarURL({ dynamic: true, size: 512 });
+    this.avatarURL = user.displayAvatarURL({ size: 512 });
     this.name = user.username;
     this.username = user.username;
     this.tag = user.tag;
     this.id = user.id;
-    this.avatarSize = user.avatarSize;
 
     return {
       id: user.id,
@@ -90,6 +97,11 @@ export default class User {
     };
   }
 
+  /**
+   * 
+   * @param {string} id 
+   * @returns 
+   */
   async #fetch(id) {
     const user = await this.bot.users.fetch(id).catch((err) => {
       console.error(err);
@@ -103,7 +115,9 @@ export default class User {
   /**
    *
    * @param {string} id
-   * @param {*} mentions
+   * @param {import('discord.js').Collection<
+   *    import('discord.js').Snowflake,
+   *    import('discord.js').User> | null} mentions
    * @param {number} target
    * @returns
    */
@@ -128,13 +142,22 @@ export default class User {
     }
 
     if (len >= 16 && len <= 20) {
-      if (this.bot.users.cache.has(id))
-        return this.#set(this.bot.users.cache.get(id));
+      if (this.bot.users.cache.has(id)) {
+        const user = this.bot.users.cache.get(id);
+        if (!user)
+          return null;
+        return this.#set(user);
+      }
       else return await this.#fetch(id);
     }
     return null;
   }
 
+  /**
+   * @deprecated
+   * @param {boolean} not_null 
+   * @returns 
+   */
   getData(not_null = false) {
     if (!this.username && not_null) {
       const user = {

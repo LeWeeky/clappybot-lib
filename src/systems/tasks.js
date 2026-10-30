@@ -28,6 +28,9 @@ const config = {
   addons: "tasks",
 };
 
+/**
+ * @extends {AFunctionalities<Task, typeof Task>}
+ */
 export class Tasks extends AFunctionalities {
   constructor() {
     super(Task, config);
@@ -54,7 +57,7 @@ export class Tasks extends AFunctionalities {
 
   /**
    *
-   * @param {*} handler commande à ajouter
+   * @param {Task} handler commande à ajouter
    * @param {string} file_path
    */
   add(handler, file_path) {

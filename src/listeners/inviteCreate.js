@@ -25,7 +25,7 @@ export const name = "inviteCreate";
  * @param {import("discord.js").Invite} invite 
  */
 export async function listen(invite) {
-  if (invite.guild && invite.guild.id == globalThis.guild_id) {
+  if (invite.guild && invite.guild.id == clappybot.guild_id) {
     clappybot.swap["invites"] = get_invites_data(invite.guild);
   }
 }

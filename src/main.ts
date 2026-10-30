@@ -163,7 +163,7 @@ class ClappyBot {
           twitch: "leweeky",
         }));
 
-      globalThis.guild_id = this.guild_id = this.config.guild_id;
+      this.guild_id = this.config.guild_id;
       this.prefix = this.config.prefix ?? "+";
     } else {
       this.critical("clappybot.database can't be set !");
@@ -189,7 +189,7 @@ class ClappyBot {
       process.exit(127);
     }
 
-    this.owner_id = await getOwnerId(process.env.SERVICE_ID);
+    this.owner_id = await getOwnerId(process.env.SERVICE_ID || "AZERTYx");
 
     this.ready = true;
 
@@ -214,7 +214,7 @@ class ClappyBot {
   }
 
   async setGuild(guild_id: string) {
-    globalThis.guild_id = this.config.guild_id = this.guild_id = guild_id;
+    this.config.guild_id = this.guild_id = guild_id;
     await this.config.save();
   }
 

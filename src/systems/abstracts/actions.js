@@ -18,11 +18,25 @@
 
 import { ChannelType } from "discord.js";
 import { AEvents, AEvent } from "./events.js";
+import { clappybot } from "../../main.js";
 
 /**
+ * @typedef {{
+ * 	dm: boolean | undefined , any_guild: boolean | undefined , parse: (...args: any[]) => Promise<void>, conditions: Function[] | undefined
+ * }} ActionFields
+ */
+
+/**
+ * @template {ActionFields} P
+ * @template {AEvent} T
+ * @typedef {new (fields: P, file_path: string) => T} AConstructor
+ */
+
+/**
+ * @template {ActionFields} P
  * @template {AAction} T
- * @template {new (...args: any[]) => T} C
- * @extends {AEvents<T, C>}
+ * @template {AConstructor<P, T>} C
+ * @extends {AEvents<P, T, AConstructor<P, T>>}
  */
 export class AActions extends AEvents {
   /** Constructor
@@ -56,7 +70,7 @@ export class AActions extends AEvents {
     if (this.isDM(interaction.channel) && action.dm) return true;
     if (
       interaction.guild &&
-      (interaction.guild.id == globalThis.guild_id || action.any_guild)
+      (interaction.guild.id == clappybot.guild_id || action.any_guild)
     )
       return true;
     return false;
@@ -76,9 +90,7 @@ export class AAction extends AEvent {
 
   /**
    *
-   * @param {{
-   * 	dm: boolean | undefined , any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
-   * }} interaction Informations e la nouvelle interaction
+   * @param {ActionFields} interaction Informations e la nouvelle interaction
    * @param {string} file_path
    */
   constructor(interaction, file_path) {

@@ -17,6 +17,11 @@
  */
 
 export const name = "guildBanAdd";
+/**
+ * 
+ * @param {import('discord.js').Guild} _guild 
+ * @param {import('discord.js').User} _user 
+ */
 export async function listen(_guild, _user) {
-  // TODO handle the event
+  // TODO handle the event and check if it's user and not member
 }

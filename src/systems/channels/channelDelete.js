@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AEvents, AEvent } from "../abstracts/events.js";
 const config = {
   title: "ChannelDelete",
@@ -27,20 +28,29 @@ const config = {
   addons: "channels/delete",
 };
 
+/**
+ * @typedef {{
+   * 	conditions: Function[] | undefined | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, parse: (interaction: import('discord.js').Channel) => Promise<void>
+   * }} ChannelFields
+ */
+
+/**
+ * @extends {AEvents<ChannelFields, ChannelDelete, typeof ChannelDelete>}
+ */
 export default class ChannelsDelete extends AEvents {
   constructor() {
     super(ChannelDelete, config);
   }
 
+  /**
+	 *
+	 * @param {import("discord.js").GuildChannel} channel
+	 */
   async scan(channel) {
     for (let i in this._list) {
-      if (
-        this._list[i] &&
-        (channel.guild.id == globalThis.guild_id || this._list[i].any_guild)
-      ) {
-        if (this._list[i].parse) this._list[i].parse(channel);
-        else console.log("Empty parse", config.title);
-      }
+      if (channel.guild.id == clappybot.guild_id || this._list[i].any_guild)
+        this._list[i].parse(channel);
     }
   }
 }
@@ -48,10 +58,7 @@ export default class ChannelsDelete extends AEvents {
 class ChannelDelete extends AEvent {
   /**
    *
-   * @param {{
-   * 	conditions: Function[] | undefined | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, parse: Function
-   * }} event_handler Informations du nouveau message
+   * @param {ChannelFields} event_handler Informations du nouveau message
    * @param {string} file_path
    */
   constructor(event_handler, file_path) {

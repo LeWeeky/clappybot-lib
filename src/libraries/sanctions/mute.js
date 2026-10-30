@@ -39,6 +39,11 @@ export async function is_mute(guild, user_id) {
   return (member && member.mute) || false;
 }
 
+/**
+ * 
+ * @param {import('discord.js').Guild} guild 
+ * @returns 
+ */
 export async function mute_role_exists(guild) {
   const mute_role_id = null;//await clappybot.roles.get("mute");
   if (mute_role_id) return guild.roles.cache.has(mute_role_id);

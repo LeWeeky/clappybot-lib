@@ -34,6 +34,10 @@ function mecanicDate(date) {
   return string_date;
 }
 
+/**
+ * 
+ * @param {import('discord.js').Client<true>} bot 
+ */
 function printReadyMessage(bot) {
   const date = new Date();
   console.log(
@@ -58,7 +62,7 @@ function printReadyMessage(bot) {
 export const name = "clientReady";
 /**
  *
- * @param {import('discord.js').Client} bot
+ * @param {import('discord.js').Client<true>} bot
  */
 export async function listen(bot) {
   await clappybot.new(bot);

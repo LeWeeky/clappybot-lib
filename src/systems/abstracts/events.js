@@ -19,15 +19,18 @@
 import { AFunctionalities, AFunctionality } from "./functionality.js";
 
 /**
+ * @template {Object} P
  * @template {AEvent} T
- * @template {new (...args: any[]) => T} C
+ * @typedef {new (fields: P, file_path: string) => T} AConstructor
+ */
+
+/**
+ * @template {Object} P
+ * @template {AEvent} T
+ * @template {AConstructor<P, T>} C
  * @extends {AFunctionalities<T, C>}
  */
 export class AEvents extends AFunctionalities {
-  /**
-   * @typedef {new (...args: any[]) => AFunctionality} AFunctionalityConstructor
-   */
-
   /** Constructor
    *  @param {C} type
    *  @param {{"title": string, "descriptior": string | undefined,
@@ -40,7 +43,7 @@ export class AEvents extends AFunctionalities {
 
   /**
    *
-   * @param  {...any} _args
+   * @param  {...unknown} _args
    * @returns {Promise<boolean | void>}
    */
   async scan(..._args) {
@@ -55,20 +58,20 @@ export class AEvent extends AFunctionality {
   any_guild;
 
   /**
-   * @type {Function}
+   * @type {(...args: any[]) => Promise<void>}
    */
   parse;
 
   /**
    *
    * @param {{
-   *	any_guild: boolean | undefined , parse: Function
-   * }} origin Données / paramètres de l'action
+   *	any_guild: boolean | undefined , parse: (...args: any[]) => Promise<void>
+   * }} fields Action methods and parameters
    * @param {string} file_path
    */
-  constructor(origin, file_path) {
+  constructor(fields, file_path) {
     super(file_path);
-    this.parse = origin.parse;
-    this.any_guild = origin.any_guild;
+    this.parse = fields.parse;
+    this.any_guild = fields.any_guild;
   }
 }

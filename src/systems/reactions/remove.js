@@ -26,6 +26,17 @@ const config = {
   addons: "reactions",
 };
 
+/**
+ * @typedef {{
+   * 	name: string | undefined, id: string | undefined, dm: boolean | undefined,
+   *   any_guild: boolean | undefined, conditions: Function[] | undefined,
+   *   parse: (reaction: import("discord.js").MessageReaction, user: import("discord.js").User) => Promise<void>
+   * }} ReactionRemoveFields
+ */
+
+/**
+ * @extends {AReactions<ReactionRemoveFields>}
+ */
 export class ReactionsRemove extends AReactions {
   constructor() {
     super(ReactionRemove, config);
@@ -35,10 +46,7 @@ export class ReactionsRemove extends AReactions {
 export class ReactionRemove extends AReaction {
   /**
    *
-   * @param {{
-   * 	name: string | undefined, id: string | undefined, dm: boolean | undefined,
-   *   any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
-   * }} interaction Informations e la nouvelle interaction
+   * @param {ReactionRemoveFields} interaction Informations e la nouvelle interaction
    * @param {string} file_path
    */
   constructor(interaction, file_path) {

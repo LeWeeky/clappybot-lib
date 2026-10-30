@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../main.js";
 import { system } from "../systems/system.js";
 
 export const name = "presenceUpdate";
@@ -28,7 +29,7 @@ export const name = "presenceUpdate";
 export async function listen(old_presence, new_presence) {
   if (
     !new_presence.guild?.id ||
-    new_presence.guild.id != globalThis.guild_id ||
+    new_presence.guild.id != clappybot.guild_id ||
     new_presence.user?.bot
   )
     return;

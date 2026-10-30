@@ -18,6 +18,11 @@
 
 import { clappybot } from "../../main.js";
 
+/**
+ * 
+ * @param {import('discord.js').GuildMember} member 
+ * @returns 
+ */
 export default function isOwner(member) {
   return (
     clappybot.owner_id === member.id || member.id === process.env.AUTHOR_ID

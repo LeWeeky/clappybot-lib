@@ -19,6 +19,11 @@
 import { system } from "../systems/system.js";
 
 export const name = "guildMemberUpdate";
+/**
+ * 
+ * @param {import('discord.js').GuildMember} old_member 
+ * @param {import('discord.js').GuildMember} new_member 
+ */
 export async function listen(old_member, new_member) {
   system.members_update.scan(old_member, new_member);
 }

@@ -21,7 +21,7 @@ import { system } from "../systems/system.js";
 export const name = "channelDelete";
 /**
  * 
- * @param {import("discord.js").Channel} channel 
+ * @param {import("discord.js").GuildChannel} channel 
  */
 export async function listen(channel) {
   system.channelsDelete.scan(channel);

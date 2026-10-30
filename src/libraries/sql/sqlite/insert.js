@@ -17,7 +17,7 @@
  */
 
 /**
- *
+ * @param {*} connection 
  * @param {string} table
  * @param {string | false} target
  * @param {any[]} data

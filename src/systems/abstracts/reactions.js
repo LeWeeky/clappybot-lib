@@ -16,13 +16,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AAction, AActions } from "./actions.js";
 
+/**
+ * @typedef {{
+  * name: string | undefined, id: string | undefined, dm: boolean | undefined , any_guild: boolean | undefined,
+  * parse: (...args: any[]) => Promise<void>, conditions: Function[] | undefined
+  * }} ReactionFields
+ */
 
+/**
+ * @template {AReaction} T
+ * @typedef {new (fields: ReactionFields, file_path: string) => T} AConstructor
+ */
+
+/**
+ * @template {AReaction} T
+ * @extends {AActions<ReactionFields, T, AConstructor<T>>}
+ */
 export class AReactions extends AActions
 {
 	/** Constructor
-	 *  @param {typeof AReaction} type
+	 *  @param {AConstructor<T>} type
 	 *  @param {{"title": string, "descriptior": undefined, "extension": string,
 	 *  "folder": string, "addons": string }} config
 	 */
@@ -60,7 +76,7 @@ export class AReactions extends AActions
 		if (this.isDM(reaction.message.channel) && action.dm)
 			return (true);
 		if (reaction.message.guild &&
-			(reaction.message.guild.id == globalThis.guild_id
+			(reaction.message.guild.id == clappybot.guild_id
 			|| action.any_guild))
 			return (true);
 		return (false);
@@ -106,9 +122,7 @@ export class AReaction extends AAction
 
 	/**
 	 * 
-	 * @param {{
-	* 	name: string | undefined, id: string | undefined, dm: boolean | undefined , any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined
-	* }} interaction Informations e la nouvelle interaction
+	 * @param {ReactionFields} interaction Informations e la nouvelle interaction
 	* @param {string} file_path
 	*/
    constructor(interaction, file_path)

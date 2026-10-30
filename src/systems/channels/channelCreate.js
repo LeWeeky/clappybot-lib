@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AEvents, AEvent } from "../abstracts/events.js";
 const config = {
   title: "ChannelCreate",
@@ -27,20 +28,28 @@ const config = {
   addons: "channels/create",
 };
 
+/**
+ * @typedef {{
+   * 	conditions: Function[] | undefined | undefined, dm: boolean
+   * | undefined , any_guild: boolean | undefined, parse: (channel: import('discord.js').GuildChannel) => Promise<void>
+   * }} ChannelFields
+ */
+/**
+ * @extends {AEvents<ChannelFields, ChannelCreate, typeof ChannelCreate>}
+ */
 export default class ChannelsCreate extends AEvents {
   constructor() {
     super(ChannelCreate, config);
   }
 
+  /**
+	 *
+	 * @param {import("discord.js").GuildChannel} channel
+	 */
   async scan(channel) {
     for (let i in this._list) {
-      if (
-        this._list[i] &&
-        (channel.guild.id == globalThis.guild_id || this._list[i].any_guild)
-      ) {
-        if (this._list[i].parse) this._list[i].parse(channel);
-        else console.error("Parse function is missing for channel create:", config.title);
-      }
+      if (channel.guild.id == clappybot.guild_id || this._list[i].any_guild)
+        this._list[i].parse(channel);
     }
   }
 }
@@ -48,10 +57,7 @@ export default class ChannelsCreate extends AEvents {
 class ChannelCreate extends AEvent {
   /**
    *
-   * @param {{
-   * 	conditions: Function[] | undefined | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, parse: Function
-   * }} event_handler Informations du nouveau message
+   * @param {ChannelFields} event_handler Informations du nouveau message
    * @param {string} file_path
    */
   constructor(event_handler, file_path) {

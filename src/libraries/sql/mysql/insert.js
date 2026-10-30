@@ -17,7 +17,7 @@
  */
 
 /**
- *
+ * @param {*} connection
  * @param {string} table
  * @param {string | false} target
  * @param {any[]} data
@@ -58,6 +58,11 @@ export async function mysql_insert(connection, table, target, data) {
   }
 }
 
+/**
+ * 
+ * @param {*} connection 
+ * @returns 
+ */
 export async function mysql_last_insert_id(connection) {
   try {
     const [row, _field] = await connection

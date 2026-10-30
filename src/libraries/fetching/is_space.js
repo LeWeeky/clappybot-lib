@@ -16,6 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * 
+ * @param {string} character 
+ * @returns 
+ */
 export default function isSpace(character) {
   if (["\n", "\t", " "].includes(character)) return true;
   return false;

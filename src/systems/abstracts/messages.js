@@ -16,14 +16,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { clappybot } from "../../main.js";
 import { AActions, AAction } from "./actions.js";
 
 /**
- * @template {any[]} TArgs
+ * @typedef {{
+ * 	conditions: Function[] | undefined, permissions?: Function[] | undefined, dm: boolean
+ * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: (...args: any[]) => Promise<void>
+ * }} MessageFields
+ */
+
+/**
+ * @template {MessageFields} P
+ * @template {AMessage} T
+ * @typedef {new (fields: P, file_path: string) => T} AConstructor
+ */
+
+/**
+ * @template {unknown[]} TArgs
+ * @template {AMessage} T
+ * @extends {AActions<MessageFields, T, AConstructor<MessageFields, T>>}
  */
 export class AMessages extends AActions {
   /** Constructor
-   * @param {typeof AMessage} type
+   * @param {AConstructor<MessageFields, T>} type
    * @param {{"title": string, "descriptior": string | undefined,
    * direct_names: string[] | undefined, shared_folder: boolean | undefined
    * "extension": string, "folder": string, "addons": string }} config
@@ -57,21 +73,30 @@ export class AMessages extends AActions {
     if (this.isDM(message.channel) && action.dm) return true;
     if (
       message.guild &&
-      (message.guild.id == globalThis.guild_id || action.any_guild)
+      (message.guild.id == clappybot.guild_id || action.any_guild)
     )
       return true;
     return false;
   }
 
   /**
-   * @param {...TArgs} _args
+   * @param {TArgs} _args
    */
   async scan(..._args) {
     console.error("abstract call to scan method");
   }
 }
 
+/**
+ * @typedef {[import("discord.js").Message]} MessageArgs
+ */
+
+/**
+ * @template {AMessage} T
+ * @extends {AMessages<MessageArgs, T>}
+ */
 export class AUniqueStateMessages extends AMessages {
+
   /**
    *
    * @param {import("discord.js").Message} message
@@ -100,10 +125,7 @@ export class AMessage extends AAction {
 
   /**
    *
-   * @param {{
-   * 	conditions: Function[] | undefined, permissions?: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
-   * }} interaction Informations du nouveau message
+   * @param {MessageFields} interaction Informations du nouveau message
    * @param {string} file_path
    */
   constructor(interaction, file_path) {

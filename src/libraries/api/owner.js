@@ -18,6 +18,11 @@
 
 import { apiCall } from "./call_api.js";
 
+/**
+ * @deprecated
+ * @param {string} service_id 
+ * @returns 
+ */
 async function getOwnerId(service_id) {
   if (!process.env.API_URI) return null;
   const response = await apiCall(`service/${service_id}/owner/`);

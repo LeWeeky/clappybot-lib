@@ -20,7 +20,7 @@ import { readdirSync, existsSync, statSync } from "fs";
 import { importFile } from "../../libraries/import_file.js";
 
 /**
- * @template {AFunctionality} T
+ * @template {AFunctionality & {parse?: (...args: unknown[]) => Promise<void>}} T
  * @template {new (...args: any[]) => T} C
  */
 export class AFunctionalities {
@@ -58,7 +58,7 @@ export class AFunctionalities {
 
   /**
    *
-   * @param {T & {parse?: () => Promise<void>}} handler
+   * @param {T} handler
    * @param {string} file_path
    */
   add(handler, file_path) {

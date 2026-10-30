@@ -28,6 +28,13 @@ const config = {
   addons: "messages/update",
 };
 
+/**
+ * @typedef {[import("discord.js").Message, import("discord.js").Message]} MessageArgs
+ */
+
+/**
+ * @extends {AMessages<MessageArgs, MessageUpdate>}
+ */
 export class MessagesUpdate extends AMessages {
   constructor() {
     super(MessageUpdate, config);
@@ -58,7 +65,7 @@ export class MessageUpdate extends AMessage {
    *
    * @param {{
    * 	conditions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: Function
+   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: (old_message: import('discord.js').Message, new_message: import('discord.js').Message) => Promise<void>
    * }} message Informations du nouveau message
    * @param {string} file_path
    */

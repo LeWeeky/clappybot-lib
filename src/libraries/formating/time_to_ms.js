@@ -18,6 +18,16 @@
 
 import { charIsNumber } from "../informations/is_number.js";
 
+/**
+ * @typedef {{ days: number, hours: number, minutes: number, seconds: number }} TimeData
+ */
+
+/**
+ * @deprecated
+ * @param {string} string_time 
+ * @param {TimeData} time_data 
+ * @returns 
+ */
 function getDays(string_time, time_data) {
   var tmp = "";
   let i = 0;
@@ -45,6 +55,13 @@ function getDays(string_time, time_data) {
   return i + 1;
 }
 
+/**
+ * @deprecated
+ * @param {string} string_time 
+ * @param {TimeData} time_data 
+ * @param {number} start 
+ * @returns 
+ */
 function getHours(string_time, time_data, start) {
   var tmp = "";
   let i = start;
@@ -68,6 +85,13 @@ function getHours(string_time, time_data, start) {
   return i + 1;
 }
 
+/**
+ * @deprecated
+ * @param {string} string_time 
+ * @param {TimeData} time_data 
+ * @param {number} start 
+ * @returns 
+ */
 function getMinutes(string_time, time_data, start) {
   var tmp = "";
   let i = start;
@@ -91,6 +115,13 @@ function getMinutes(string_time, time_data, start) {
   return i + 1;
 }
 
+/**
+ * @deprecated
+ * @param {string} string_time 
+ * @param {TimeData} time_data 
+ * @param {number} start 
+ * @returns 
+ */
 function getSeconds(string_time, time_data, start) {
   var tmp = "";
   let i = start;
@@ -114,7 +145,7 @@ function getSeconds(string_time, time_data, start) {
 }
 
 /**
- *
+ * @deprecated
  * @param {string} string_time
  * @returns
  */
@@ -128,15 +159,14 @@ export function stringTimeToTimeDate(string_time) {
   };
   let start = 0;
 
-  if (!string_time) return undefined;
-  	start = getDays(string_time, time_data);
-  if (start == -1) return undefined;
-  	start = getHours(string_time, time_data, start);
-  if (start == -1) return undefined;
-  	start = getMinutes(string_time, time_data, start);
-  if (start == -1) return undefined;
-  	start = getSeconds(string_time, time_data, start);
-  if (start == -1) return undefined;
+  if (
+    !string_time ||
+    getDays(string_time, time_data) == -1 ||
+  	getHours(string_time, time_data, start) == -1 ||
+  	getMinutes(string_time, time_data, start) == -1 ||
+  	getSeconds(string_time, time_data, start)  == -1
+  )
+    return undefined;
   return time_data;
 }
 

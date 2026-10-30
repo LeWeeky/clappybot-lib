@@ -20,15 +20,23 @@ import { MessageFlags } from "discord.js";
 import { AActions, AAction } from "./actions.js";
 
 /**
+ * @typedef {{
+  * 	customId: string | undefined, dm: boolean | undefined,
+  *   any_guild: boolean | undefined, parse: (interation: import('discord.js').Interaction) => Promise<void>, conditions: Function[] | undefined,
+  *   permissions: Function[] | undefined
+  * }} InteractionFields
+ */
+
+/**
  * @template {AInteraction} T
  * @template {new (...args: any[]) => T} C
- * @extends {AActions<T, C>}
+ * @extends {AActions<InteractionFields, T, C>}
  */
 export class AInteractions extends AActions {
   /** Constructor
    *  @param {C} type
    *  @param {{"title": string, "descriptior": string | undefined,
-   * 	direct_names: string[] | undefined,
+   * 	direct_names?: string[] | undefined,
    * 	"extension": string, "folder": string, "addons": string }} config
    */
   constructor(type, config) {
@@ -98,7 +106,7 @@ export class AInteractions extends AActions {
             try {
               this._list[i].parse(interaction);
             } catch (error) {
-              console.log(interaction.customId, error);
+              console.error(interaction.customId, error);
             }
           } else {
             interaction.reply({
@@ -126,6 +134,7 @@ export class AInteractions extends AActions {
   }
 }
 
+
 export class AInteraction extends AAction {
   /**
    * @type {string | undefined}
@@ -149,11 +158,7 @@ export class AInteraction extends AAction {
 
   /**
    *
-   * @param {{
-   * 	customId: string | undefined, dm: boolean | undefined,
-   *   any_guild: boolean | undefined , parse: Function, conditions: Function[] | undefined,
-   *   permissions: Function[] | undefined
-   * }} interaction Informations e la nouvelle interaction
+   * @param {InteractionFields} interaction
    * @param {string} file_path
    */
   constructor(interaction, file_path) {

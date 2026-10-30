@@ -21,6 +21,7 @@ import { ChannelType } from "discord.js";
 import SlashCommands from "./interactions/slashCmd.js";
 import { AAction, AActions } from "./abstracts/actions.js";
 import { importFile } from "../libraries/import_file.js";
+import { clappybot } from "../main.js";
 
 const config = {
   title: "commands",
@@ -32,6 +33,17 @@ const config = {
   addons: "commands",
 };
 
+/**
+ * @typedef {{
+  * name: string, alias: string[] | undefined, builder: import('discord.js').SlashCommandBuilder | undefined,
+  * permissions: Function[] | undefined, dm: boolean | undefined ,
+  * any_guild: boolean | undefined, parse: (interaction: import('discord.js').ChatInputCommandInteraction, command_name: string, args: string[]) => Promise<void>, conditions: undefined
+  * }} CommandFields
+ */
+
+/**
+ * @extends {AActions<CommandFields, Command, typeof Command>}
+ */
 export class Commands extends AActions {
   /** Donnée de création des slash commandes
    * @type {SlashCommands}
@@ -45,11 +57,12 @@ export class Commands extends AActions {
 
   /**
    *
-   * @param {Command} cmd commande à ajouter
+   * @param {Command} command commande à ajouter
    * @param {String} file_path chemin d'accès vers le fichier
    */
-  add(cmd, file_path) {
-    if (cmd.name) super.add(cmd, file_path);
+  add(command, file_path) {
+    if (command.name) super.add(command, file_path);
+    // TODO alert when command name is missing 
   }
 
   /**
@@ -166,8 +179,17 @@ export class Commands extends AActions {
     );
   }
 
-  #isValidExecutor(interaction, cmd) {
-    return !interaction.bot || cmd.allow_bots;
+  /**
+   * 
+   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction 
+   * @returns 
+   */
+  #isValidExecutor(interaction) {
+    return (
+      "user" in interaction ?
+        !interaction.user.bot :
+        !interaction.author.bot
+    )
   }
 
   /**
@@ -218,7 +240,7 @@ export class Commands extends AActions {
       return false;
     }
     if (
-      (interaction.guild && interaction.guild.id == globalThis.guild_id) ||
+      (interaction.guild && interaction.guild.id == clappybot.guild_id) ||
       cmd.any_guild
     )
       return true;
@@ -226,23 +248,23 @@ export class Commands extends AActions {
   }
   /**
    *
-   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction interaction ou message
-   * @param {string} cmd interaction ou format parsé du message
-   * @param {string[]} args arguments du message parsé
+   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction interaction or message
+   * @param {string} command_name the command name from the parsed message or interaction
+   * @param {string[]} args the arguments that follow the command from the parsed message
    * @return {Promise<boolean>}
    */
-  async scan(interaction, cmd, args) {
+  async scan(interaction, command_name, args) {
     const replyied = { res: false };
 
     for (let i in this._list) {
       if (
-        this.#isValidExecutor(interaction, cmd) &&
-        (this._list[i].name == cmd || this._list[i].alias.includes(cmd)) &&
+        (this._list[i].name == command_name || this._list[i].alias.includes(command_name)) &&
+        this.#isValidExecutor(interaction) &&
         this.validCommandChannel(interaction, this._list[i], replyied)
       ) {
         if (replyied.res) break;
         if (await this.has_permissions(interaction, this._list[i].permissions))
-          this._list[i].parse(interaction, cmd, args);
+          this._list[i].parse(interaction, command_name, args);
         else
           this.#reply(
             interaction,
@@ -267,25 +289,21 @@ export class Command extends AAction {
   alias = [];
 
   /**
-   * @type {Function[] | false | undefined}
+   * @type {Function[] | undefined}
    */
   permissions;
 
   /**
    *
-   * @param {{
-   * name: string, alias: string[] | undefined, builder: import('discord.js').SlashCommandBuilder | undefined,
-   * permissions: Function[] | undefined, dm: boolean | undefined ,
-   * any_guild: boolean | undefined, parse: Function, conditions: undefined
-   * }} cmd Informations de la nouvelle commande
+   * @param {CommandFields} command
    * @param {string} file_path
    */
-  constructor(cmd, file_path) {
-    super(cmd, file_path);
-    this.name = cmd.name;
-    if (cmd.alias) this.alias = cmd.alias;
-    this.permissions = cmd.permissions;
-    this.dm = cmd.dm;
-    this.any_guild = cmd.any_guild;
+  constructor(command, file_path) {
+    super(command, file_path);
+    this.name = command.name;
+    if (command.alias) this.alias = command.alias;
+    this.permissions = command.permissions;
+    this.dm = command.dm;
+    this.any_guild = command.any_guild;
   }
 }

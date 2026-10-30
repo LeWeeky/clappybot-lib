@@ -62,6 +62,9 @@ export class Messages {
 
   async all() {
     const messages = await this.channel.messages.fetch({ limit: this.length });
+    /**
+     * @type {{ [key: string]: import("discord.js").Message } }
+     */
     const return_format = {};
 
     messages.forEach(function (message) {
@@ -73,6 +76,9 @@ export class Messages {
 
   async toList() {
     const messages = await this.channel.messages.fetch({ limit: this.length });
+    /**
+     * @type {import("discord.js").Message[]}
+     */
     const return_format = [];
 
     messages.forEach(function (message) {
@@ -153,12 +159,14 @@ export function getMessageData(target_message) {
 }
 
 /**
+ * @deprecated
  * Create new message from message data
  * @param {{
  *  text?: string,
  * 	content?: string
  *	embed?: {
  *		title?: string,
+ *		author?: {name: string, icon?: string},
  *		description?: string,
  *		comment?: {text: string, iconURL?: string},
  *		icon?: string,

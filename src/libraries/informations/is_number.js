@@ -16,10 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @deprecated
+ * @param {string} char 
+ * @returns 
+ */
 export function charIsNumber(char) {
   return /^[0-9]$/.test(char);
 }
 
+/**
+ * @deprecated
+ * @param {string} string 
+ * @returns 
+ */
 export function stringIsNumber(string) {
   return /^[0-9]+$/.test(string);
 }
