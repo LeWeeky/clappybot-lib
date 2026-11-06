@@ -63,7 +63,7 @@ export class AFunctionalities {
    */
   add(handler, file_path) {
     if (handler.parse) this._list.push(new this._type(handler, file_path));
-    else console.warn(file_path, "method parse is missing");
+    else throw new Error(`${file_path} - method parse is missing`);
   }
 
   /**
@@ -86,12 +86,13 @@ export class AFunctionalities {
    *
    * @param {string} path
    */
-  async load_dir(path) {
+  async #load_dir(path) {
     const extention = this.#getExtension();
-    for (const file of readdirSync(path)) {
-      if (file.endsWith(extention)) {
-        const file_path = `${path}/${file}`;
-        const handler = await importFile(file_path);
+    for (const file_name of readdirSync(path)) {
+      if (file_name.endsWith(extention)) {
+        const file_path = `${path}/${file_name}`;
+        const file = await importFile(file_path);
+        const handler = file.default ? file.default : file;
         this.add(handler, file_path);
       }
     }
@@ -151,12 +152,13 @@ export class AFunctionalities {
         !module.startsWith(".") &&
         statSync(`./sources/modules/${module}`).isDirectory()
       ) {
-        for (const file of readdirSync(`./sources/modules/${module}`)) {
-          if (file == this._config.folder) {
-            await this.load_dir(`${process.cwd()}/sources/modules/${module}/${file}`);
-          } else if (this.isDirectFile(file)) {
-            const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const handler = await importFile(file_path);
+        for (const file_name of readdirSync(`./sources/modules/${module}`)) {
+          if (file_name == this._config.folder) {
+            await this.#load_dir(`${process.cwd()}/sources/modules/${module}/${file_name}`);
+          } else if (this.isDirectFile(file_name)) {
+            const file_path = `${process.cwd()}/sources/modules/${module}/${file_name}`;
+            const file = await importFile(file_path);
+            const handler = file.default ? file.default : file;
             this.add(handler, file_path);
           }
         }

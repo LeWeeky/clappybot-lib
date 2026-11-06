@@ -30,7 +30,7 @@ const config = {
 
 /**
  * @typedef {{
-   * 	conditions: Function[] | undefined | undefined, dm: boolean
+   * 	conditions: Function[] | undefined, dm: boolean
    * | undefined , any_guild: boolean | undefined, parse: (interaction: import('discord.js').Channel) => Promise<void>
    * }} ChannelFields
  */

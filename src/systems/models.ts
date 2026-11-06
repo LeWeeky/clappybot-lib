@@ -13,7 +13,7 @@ export default class Models {
     this._database = database;
   }
 
-  async load_dir(path: string) {
+  async #load_dir(path: string) {
     for (const file of readdirSync(path)) {
       if (file.endsWith(".js") || file.endsWith(".ts")) {
         const file_path = `${path}/${file}`;
@@ -39,7 +39,7 @@ export default class Models {
       ) {
         for (const file of readdirSync(`./sources/modules/${module}`)) {
           if (file == "models") {
-            this.load_dir(`${process.cwd()}/sources/modules/${module}/models`);
+            this.#load_dir(`${process.cwd()}/sources/modules/${module}/models`);
           }
         }
       }

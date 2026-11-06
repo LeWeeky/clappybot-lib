@@ -37,7 +37,7 @@ const config = {
  * @typedef {{
   * name: string, alias: string[] | undefined, builder: import('discord.js').SlashCommandBuilder | undefined,
   * permissions: Function[] | undefined, dm: boolean | undefined ,
-  * any_guild: boolean | undefined, parse: (interaction: import('discord.js').ChatInputCommandInteraction, command_name: string, args: string[]) => Promise<void>, conditions: undefined
+  * any_guild: boolean | undefined, parse: (interaction: import('discord.js').ChatInputCommandInteraction | import('discord.js').Message, command_name: string, args: string[]) => Promise<void>, conditions: undefined
   * }} CommandFields
  */
 
@@ -85,10 +85,12 @@ export class Commands extends AActions {
    * @param {string} path
    */
   async #load_dir(path) {
-    for (const file of readdirSync(path)) {
-      if (file.endsWith(".js")) {
-        const file_path = `${path}/${file}`;
-        const command = await importFile(file_path);
+    for (const file_name of readdirSync(path)) {
+      if (file_name.endsWith(".js")) {
+        const file_path = `${path}/${file_name}`;
+        const file = await importFile(file_path);
+        const command = file.default ? file.default : file;
+
         if (command.parse) {
           this.add(command, file_path);
           this.commands_builder.add(command);
@@ -138,17 +140,19 @@ export class Commands extends AActions {
         !module.startsWith(".") &&
         statSync(`./sources/modules/${module}`).isDirectory()
       ) {
-        for (const file of readdirSync(`./sources/modules/${module}`)) {
-          if (file == config.folder) {
+        for (const file_name of readdirSync(`./sources/modules/${module}`)) {
+          if (file_name == config.folder) {
             await this.#load_dir(
               `${process.cwd()}/sources/modules/${module}/${config.folder}`,
             );
           } else if (
-            file.endsWith(config.extension) ||
-            this.isDirectFile(file)
+            file_name.endsWith(config.extension) ||
+            this.isDirectFile(file_name)
           ) {
-            const file_path = `${process.cwd()}/sources/modules/${module}/${file}`;
-            const command = await importFile(file_path);
+            const file_path = `${process.cwd()}/sources/modules/${module}/${file_name}`;
+            const file = await importFile(file_path);
+            const command = file.default ? file.default : file;
+
             if (command.parse) {
               this.add(command, file_path);
               this.commands_builder.add(command);
