@@ -23,11 +23,19 @@ interface MessageProps {
     conditions?: Function[],
     dm?: boolean,
     any_guild?: boolean,
-    allow_bots?: true,
+    allow_bots?: boolean,
     parse: (message: Message) => Promise<void>
 }
 
-export function buildMessage(message: MessageProps) {
+interface MessageUpdateProps {
+    conditions?: Function[],
+    dm?: boolean,
+    any_guild?: boolean,
+    allow_bots?: boolean,
+    parse: (old_message: Message, new_message: Message) => Promise<void>
+}
+
+export function buildMessage(message: MessageProps | MessageUpdateProps) {
     if (!message.parse)
         MissingMethod("Message", "parse");
     return (message);

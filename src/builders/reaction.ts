@@ -24,6 +24,7 @@ interface ReactionWithNameProps {
     id?: string,
     dm?: boolean,
     any_guild?: boolean,
+    allow_bots?: boolean,
     parse: (reaction: MessageReaction, user: User) => Promise<void>
 }
 
@@ -32,6 +33,7 @@ interface ReactionWithConditionsProps {
     id?: string,
     dm?: boolean,
     any_guild?: boolean,
+    allow_bots?: boolean,
     parse: (reaction: MessageReaction, user: User) => Promise<void>
 }
 

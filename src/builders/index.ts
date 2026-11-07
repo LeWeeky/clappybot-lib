@@ -5,6 +5,7 @@ import { buildMember } from './member.js';
 import { buildMessage } from './message.js';
 import { buildChannel } from './channel.js';
 import { buildTask } from './task.js';
+import { buildPresence } from './presence.js';
 
 export {
     buildCommand,
@@ -17,5 +18,6 @@ export {
     buildReaction,
     buildMessage,
     buildChannel,
-    buildTask
+    buildTask,
+    buildPresence
 }

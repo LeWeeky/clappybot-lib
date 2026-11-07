@@ -23,11 +23,19 @@ interface MemberProps {
     conditions?: Function[],
     dm?: boolean,
     any_guild?: boolean,
-    allow_bots?: true,
+    allow_bots?: boolean,
     parse: (member: GuildMember) => Promise<void>
 }
 
-export function buildMember(member: MemberProps) {
+interface MemberUpdateProps {
+    conditions?: Function[],
+    dm?: boolean,
+    any_guild?: boolean,
+    allow_bots?: boolean,
+    parse: (old_member: GuildMember, new_member: GuildMember) => Promise<void>
+}
+
+export function buildMember(member: MemberProps | MemberUpdateProps) {
     if (!member.parse)
         MissingMethod("Member", "parse");
     return (member);

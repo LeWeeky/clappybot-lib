@@ -26,7 +26,14 @@ interface ChannelProps {
    parse: (channel: GuildChannel) => Promise<void>
 }
 
-export function buildChannel(channel: ChannelProps) {
+interface ChannelUpdateProps {
+   conditions?: Function[],
+   dm?: boolean,
+   any_guild?: boolean,
+   parse: (old_channel: GuildChannel, new_channel: GuildChannel) => Promise<void>
+}
+
+export function buildChannel(channel: ChannelProps | ChannelUpdateProps) {
     if (!channel.parse)
         MissingMethod("Channel", "parse");
     return (channel)
