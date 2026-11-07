@@ -12,7 +12,9 @@
     "outDir": "dist",
     "moduleResolution": "nodenext",
     "checkJs": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": ["src/**/*"]
 }

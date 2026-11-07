@@ -30,7 +30,6 @@ import Config from "./models/Config.js";
 import RebootMessage from "./models/RebootMessage.js";
 import type { Client } from "discord.js";
 import type ADriver from "./libraries/drivers/ADriver.js";
-import Roles from "./models/Roles.js";
 import {
   getCacheDatabaseDriver,
   getMainDatabaseDriver,

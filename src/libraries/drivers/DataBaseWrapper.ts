@@ -43,7 +43,7 @@ export default class DataBaseWrapper {
   closeAll() {
     const databases = Object.entries(this.#databases);
 
-    databases.forEach(([name, driver]) => {
+    databases.forEach(([_name, driver]) => {
       driver.destroy();
     });
   }
