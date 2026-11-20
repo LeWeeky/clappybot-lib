@@ -16,30 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { MessageFlags } from "discord.js";
+import { MessageFlags, type Interaction } from "discord.js";
 import { AActions, AAction } from "./actions.js";
+import type { InteractionProps } from "../../interfaces/interaction.interface.js";
 
-/**
- * @typedef {{
-  * 	customId: string | undefined, dm: boolean | undefined,
-  *   any_guild: boolean | undefined, parse: (interation: import('discord.js').Interaction) => Promise<void>, conditions: Function[] | undefined,
-  *   permissions: Function[] | undefined
-  * }} InteractionFields
- */
-
-/**
- * @template {AInteraction} T
- * @template {new (...args: any[]) => T} C
- * @extends {AActions<InteractionFields, T, C>}
- */
-export class AInteractions extends AActions {
+export class AInteractions<InteractionType extends Interaction, T extends AInteraction, C extends new (...args: any[]) => T> extends AActions<InteractionProps<InteractionType>, T, C> {
   /** Constructor
    *  @param {C} type
    *  @param {{"title": string, "descriptior": string | undefined,
    * 	direct_names?: string[] | undefined,
    * 	"extension": string, "folder": string, "addons": string }} config
    */
-  constructor(type, config) {
+  constructor(type: C, config) {
     super(type, config);
   }
 
@@ -164,9 +152,11 @@ export class AInteraction extends AAction {
   constructor(interaction, file_path) {
     super(interaction, file_path);
     this.parse = interaction.parse;
-    this.conditions = interaction.conditions;
+    if ("conditions" in interaction)
+      this.conditions = interaction.conditions;
+    if ("customId" in interaction)
+      this.customId = interaction.customId;
     this.dm = interaction.dm;
     this.permissions = interaction.permissions;
-    this.customId = interaction.customId;
   }
 }

@@ -16,36 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { ButtonInteraction } from "discord.js";
+import type { InteractionProps } from "../../interfaces/interaction.interface.js";
 import { AInteractions, AInteraction } from "../abstracts/interactions.js";
 
 const config = {
-  title: "menu",
-  descriptior: "ce menu",
-  extension: "mn.js",
-  folder: "menus",
-  addons: "interactions/menus",
-};
-
-/**
- * @extends {AInteractions<Menu, typeof Menu>}
- */
-export class Menus extends AInteractions {
-  constructor() {
-    super(Menu, config);
-  }
+	"title": "button",
+	"descriptior": "ce bouton",
+	"extension": "btn.js",
+	"folder": "buttons",
+	"addons": "interactions/buttons"
 }
 
-export class Menu extends AInteraction {
-  /**
-   *
-   * @param {{
-   * 	customId: string | undefined, conditions: Function[]
-   * | undefined, permissions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, parse: (interaction: import('discord.js').Interaction) => Promise<void>
-   * }} interaction Informations e la nouvelle interaction
-   * @param {string} file_path
-   */
-  constructor(interaction, file_path) {
-    super(interaction, file_path);
-  }
+export class Buttons extends AInteractions<ButtonInteraction, Button, typeof Button> {
+	constructor() {
+		super(Button, config)
+	}
+}
+
+export class Button extends AInteraction {
+	constructor(interaction: InteractionProps<ButtonInteraction>, file_path: string) {
+		super(interaction, file_path)
+	}
 }

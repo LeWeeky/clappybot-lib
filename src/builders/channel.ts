@@ -16,22 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { GuildChannel } from 'discord.js';
 import { MissingMethod } from './missing_props.js';
-
-interface ChannelProps {
-   conditions?: Function[],
-   dm?: boolean,
-   any_guild?: boolean,
-   parse: (channel: GuildChannel) => Promise<void>
-}
-
-interface ChannelUpdateProps {
-   conditions?: Function[],
-   dm?: boolean,
-   any_guild?: boolean,
-   parse: (old_channel: GuildChannel, new_channel: GuildChannel) => Promise<void>
-}
+import type { ChannelProps, ChannelUpdateProps } from '../interfaces/channel.interface.js';
 
 export function buildChannel(channel: ChannelProps | ChannelUpdateProps) {
     if (!channel.parse)

@@ -17,11 +17,12 @@
  */
 
 import { readdirSync, existsSync, statSync } from "fs";
-import { ChannelType } from "discord.js";
+import { ChannelType, ChatInputCommandInteraction, Message, type Channel } from "discord.js";
 import SlashCommands from "./interactions/slashCmd.js";
 import { AAction, AActions } from "./abstracts/actions.js";
 import { importFile } from "../libraries/import_file.js";
 import { clappybot } from "../main.js";
+import type { CommandProps } from "../interfaces/command.interface.js";
 
 const config = {
   title: "commands",
@@ -33,43 +34,20 @@ const config = {
   addons: "commands",
 };
 
-/**
- * @typedef {{
-  * name: string, alias: string[] | undefined, builder: import('discord.js').SlashCommandBuilder | undefined,
-  * permissions: Function[] | undefined, dm: boolean | undefined ,
-  * any_guild: boolean | undefined, parse: (interaction: import('discord.js').ChatInputCommandInteraction | import('discord.js').Message, command_name: string, args: string[]) => Promise<void>, conditions: undefined
-  * }} CommandFields
- */
-
-/**
- * @extends {AActions<CommandFields, Command, typeof Command>}
- */
-export class Commands extends AActions {
-  /** Donnée de création des slash commandes
-   * @type {SlashCommands}
-   */
-  commands_builder;
+export class Commands extends AActions<CommandProps, Command, typeof Command> {
+  commands_builder: SlashCommands;
 
   constructor() {
     super(Command, config);
     this.commands_builder = new SlashCommands();
   }
 
-  /**
-   *
-   * @param {Command} command commande à ajouter
-   * @param {String} file_path chemin d'accès vers le fichier
-   */
-  add(command, file_path) {
+  add(command: Command, file_path: string) {
+    // Maybe not needed anymore as know props are checked by buildCommand
     if (command.name) super.add(command, file_path);
-    // TODO alert when command name is missing 
   }
 
-  /**
-   * @param {import('discord.js').Message | import("discord.js").ChatInputCommandInteraction} interaction
-   * @param {Function[] | undefined} permissions
-   */
-  async has_permissions(interaction, permissions) {
+  async has_permissions(interaction: Message | ChatInputCommandInteraction, permissions: Function[] | undefined) {
     let i = 0;
 
     if (!permissions || permissions.length == 0) return true;
@@ -80,11 +58,7 @@ export class Commands extends AActions {
     return false;
   }
 
-  /**
-   *
-   * @param {string} path
-   */
-  async #load_dir(path) {
+  async #load_dir(path: string) {
     for (const file_name of readdirSync(path)) {
       if (file_name.endsWith(".js")) {
         const file_path = `${path}/${file_name}`;
@@ -171,24 +145,14 @@ export class Commands extends AActions {
     await this.load();
   }
 
-  /**
-   *
-   * @param {import("discord.js").Channel | null} channel
-   * @returns
-   */
-  #isDM(channel) {
+  #isDM(channel: Channel | null) {
     if (!channel) return false;
     return (
       channel.type == ChannelType.DM || channel.type == ChannelType.GroupDM
     );
   }
 
-  /**
-   * 
-   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction 
-   * @returns 
-   */
-  #isValidExecutor(interaction) {
+  #isValidExecutor(interaction: Message | ChatInputCommandInteraction) {
     return (
       "user" in interaction ?
         !interaction.user.bot :
@@ -196,22 +160,14 @@ export class Commands extends AActions {
     )
   }
 
-  /**
-   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction
-   * @returns {interaction is import('discord.js').ChatInputCommandInteraction}
-   */
-  #isChatInputInteraction(interaction) {
+  #isChatInputInteraction(interaction: Message | ChatInputCommandInteraction) {
     return "commandType" in interaction;
   }
 
   /**
    * Reply safely for both Message and ChatInputCommandInteraction.
-   *
-   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction
-   * @param {string} content
-   * @param {boolean} [ephemeral=false]
    */
-  #reply(interaction, content, ephemeral = false) {
+  #reply(interaction: Message | ChatInputCommandInteraction, content: string, ephemeral: boolean = false) {
     if (this.#isChatInputInteraction(interaction)) {
       const interaction_reply = /** @type {any} */ (
         interaction.reply.bind(interaction)
@@ -224,14 +180,7 @@ export class Commands extends AActions {
     return interaction.reply(content);
   }
 
-  /**
-   *
-   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction
-   * @param {Command} cmd
-   * @param {{res: boolean}} replyied
-   * @returns {boolean}
-   */
-  validCommandChannel(interaction, cmd, replyied) {
+  validCommandChannel(interaction: Message | ChatInputCommandInteraction, cmd: Command, replyied: {res: boolean}) {
     if (this.#isDM(interaction.channel)) {
       if (cmd.dm) return true;
       replyied.res = true;
@@ -250,14 +199,8 @@ export class Commands extends AActions {
       return true;
     return false;
   }
-  /**
-   *
-   * @param {import('discord.js').Message | import('discord.js').ChatInputCommandInteraction} interaction interaction or message
-   * @param {string} command_name the command name from the parsed message or interaction
-   * @param {string[]} args the arguments that follow the command from the parsed message
-   * @return {Promise<boolean>}
-   */
-  async scan(interaction, command_name, args) {
+
+  async scan(interaction: Message | ChatInputCommandInteraction, command_name: string, args: string[]) {
     const replyied = { res: false };
 
     for (let i in this._list) {
@@ -282,27 +225,11 @@ export class Commands extends AActions {
 }
 
 export class Command extends AAction {
-  /**
-   * @type {string}
-   */
-  name;
+  name: string;
+  alias: string[] = [];
+  permissions?: Function[];
 
-  /**
-   * @type {string[]}
-   */
-  alias = [];
-
-  /**
-   * @type {Function[] | undefined}
-   */
-  permissions;
-
-  /**
-   *
-   * @param {CommandFields} command
-   * @param {string} file_path
-   */
-  constructor(command, file_path) {
+  constructor(command: CommandProps, file_path: string) {
     super(command, file_path);
     this.name = command.name;
     if (command.alias) this.alias = command.alias;

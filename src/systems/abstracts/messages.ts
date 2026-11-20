@@ -16,43 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Message } from "discord.js";
+import type { ActionProps } from "../../interfaces/abstracts/action.interface.js";
+import type { MessageProps } from "../../interfaces/message.interface.js";
 import { clappybot } from "../../main.js";
 import { AActions, AAction } from "./actions.js";
+import type { ConfigFields } from "../../interfaces/abstracts/config.interface.js";
 
-/**
- * @typedef {{
- * 	conditions: Function[] | undefined, permissions?: Function[] | undefined, dm: boolean
- * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: (...args: any[]) => Promise<void>
- * }} MessageFields
- */
+export type AConstructor<T extends AMessage> = new (
+  fields: MessageProps,
+  file_path: string
+) => T;
 
-/**
- * @template {MessageFields} P
- * @template {AMessage} T
- * @typedef {new (fields: P, file_path: string) => T} AConstructor
- */
-
-/**
- * @template {unknown[]} TArgs
- * @template {AMessage} T
- * @extends {AActions<MessageFields, T, AConstructor<MessageFields, T>>}
- */
-export class AMessages extends AActions {
-  /** Constructor
-   * @param {AConstructor<MessageFields, T>} type
-   * @param {{"title": string, "descriptior": string | undefined,
-   * direct_names: string[] | undefined, shared_folder: boolean | undefined
-   * "extension": string, "folder": string, "addons": string }} config
-   */
-  constructor(type, config) {
+export class AMessages<T extends AMessage = AMessage> extends AActions<MessageProps, T, AConstructor<T>> {
+  constructor(type: AConstructor<T>, config: ConfigFields) {
     super(type, config);
   }
 
-  /**
-   * @param {import("discord.js").Message} message
-   * @param {Function[] | false | undefined} conditions
-   */
-  async has_conditions(message, conditions) {
+  async has_conditions(message: Message, conditions: Function[] | undefined) {
     let i = 0;
 
     if (!conditions) return true;
@@ -63,13 +44,8 @@ export class AMessages extends AActions {
     return false;
   }
 
-  /**
-   *
-   * @param {import("discord.js").Message} message
-   * @param {AAction} action
-   * @returns {boolean}
-   */
-  validChannel(message, action) {
+
+  validChannel(message: Message, action: AAction) {
     if (this.isDM(message.channel) && action.dm) return true;
     if (
       message.guild &&
@@ -79,29 +55,13 @@ export class AMessages extends AActions {
     return false;
   }
 
-  /**
-   * @param {TArgs} _args
-   */
-  async scan(..._args) {
+  async scan(..._args: unknown[]): Promise<void> {
     console.error("abstract call to scan method");
   }
 }
 
-/**
- * @typedef {[import("discord.js").Message]} MessageArgs
- */
-
-/**
- * @template {AMessage} T
- * @extends {AMessages<MessageArgs, T>}
- */
 export class AUniqueStateMessages extends AMessages {
-
-  /**
-   *
-   * @param {import("discord.js").Message} message
-   */
-  async scan(message) {
+  async scan(message: Message) {
     for (let i in this._list) {
       if (
         this._list[i] &&
@@ -117,18 +77,10 @@ export class AUniqueStateMessages extends AMessages {
   }
 }
 
-export class AMessage extends AAction {
-  /**
-   * @type boolean
-   */
-  allow_bots = false;
+export class AMessage<T extends ActionProps & { allow_bots?: boolean } = MessageProps> extends AAction {
+  allow_bots: boolean;
 
-  /**
-   *
-   * @param {MessageFields} interaction Informations du nouveau message
-   * @param {string} file_path
-   */
-  constructor(interaction, file_path) {
+  constructor(interaction: T, file_path: string) {
     super(interaction, file_path);
     this.allow_bots = interaction.allow_bots || false;
   }

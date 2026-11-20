@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Presence } from "discord.js";
+import type { PresenceProps } from "../interfaces/presence.interface.js";
 import { AActions, AAction } from "./abstracts/actions.js";
 
 const config = {
@@ -33,25 +35,12 @@ const config = {
   addons: "presences",
 };
 
-/**
- * @typedef {{
- * 	dm: boolean | undefined , any_guild: boolean | undefined , parse: (old_presence: import("discord.js").Presence, new_presence: import("discord.js").Presence) => Promise<void>, conditions: Function[] | undefined
- * }} PresenceFields
- */
-
-/**
- * @extends {AActions<PresenceFields, PresenceUpdate, typeof PresenceUpdate>}
- */
-export class PresencesUpdate extends AActions {
+export class PresencesUpdate extends AActions<PresenceProps, PresenceUpdate, typeof PresenceUpdate> {
   constructor() {
     super(PresenceUpdate, config);
   }
 
-  /**
-   * @param {[import("discord.js").Presence, import("discord.js").Presence]} data
-   * @param {Function[] | undefined} conditions
-   */
-  async has_conditions([old_presence, new_presence], conditions) {
+  async has_conditions([old_presence, new_presence]: [Presence, Presence], conditions: Function[] | undefined) {
     let i = 0;
 
     if (!conditions) return false;
@@ -62,12 +51,7 @@ export class PresencesUpdate extends AActions {
     return false;
   }
 
-  /**
-   * 
-   * @param {import("discord.js").Presence} old_presence 
-   * @param {import("discord.js").Presence} new_presence 
-   */
-  async scan(old_presence, new_presence) {
+  async scan(old_presence: Presence, new_presence: Presence) {
     for (let i in this._list) {
       {
         if (
@@ -89,12 +73,7 @@ export class PresencesUpdate extends AActions {
 }
 
 export class PresenceUpdate extends AAction {
-  /**
-   *
-   * @param {PresenceFields} interaction Informations e la nouvelle interaction
-   * @param { string } file_path
-   */
-  constructor(interaction, file_path) {
+  constructor(interaction: PresenceProps, file_path: string) {
     super(interaction, file_path);
   }
 }

@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { VoiceState } from "discord.js";
+import type { VoiceStateProps } from "../interfaces/voice_state.interface.js";
 import { clappybot } from "../main.js";
 import { AEvents, AEvent } from "./abstracts/events.js";
 
@@ -29,26 +31,12 @@ const config = {
   addons: "voices/update",
 };
 
-/**
- * @typedef {{
- * 	conditions: Function[] | undefined | undefined, dm: boolean
- * | undefined , any_guild: boolean | undefined, parse: (old_state: import("discord.js").VoiceState, new_state: import("discord.js").VoiceState) => Promise<void>
- * }} VoiceStateFields 
- */
-/**
- * @extends {AEvents<VoiceStateFields, VoiceStateUpdate, typeof VoiceStateUpdate>}
- */
-export default class VoicesStateUpdate extends AEvents {
+export default class VoicesStateUpdate extends AEvents<VoiceStateProps, VoiceStateUpdate, typeof VoiceStateUpdate> {
   constructor() {
     super(VoiceStateUpdate, config);
   }
 
-  /**
-   *
-   * @param {import("discord.js").VoiceState} old_state
-   * @param {import("discord.js").VoiceState} new_state
-   */
-  async scan(old_state, new_state) {
+  async scan(old_state: VoiceState, new_state: VoiceState) {
     for (let i in this._list) {
       if (
         this._list[i] &&
@@ -61,12 +49,7 @@ export default class VoicesStateUpdate extends AEvents {
 }
 
 class VoiceStateUpdate extends AEvent {
-  /**
-   *
-   * @param {VoiceStateFields} event_handler Informations du nouveau message
-   * @param {string} file_path
-   */
-  constructor(event_handler, file_path) {
+  constructor(event_handler: VoiceStateProps, file_path: string) {
     super(event_handler, file_path);
   }
 }

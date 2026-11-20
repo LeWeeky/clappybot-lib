@@ -33,8 +33,8 @@ import { AFunctionalities, AFunctionality } from "./functionality.js";
 export class AEvents extends AFunctionalities {
   /** Constructor
    *  @param {C} type
-   *  @param {{"title": string, "descriptior": string | undefined,
-   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   *  @param {{"title": string, "descriptior"?: string,
+   * 	direct_names?: string[], shared_folder?: boolean,
    * 	"extension": string, "folder": string, "addons": string }} config
    */
   constructor(type, config) {
@@ -65,7 +65,7 @@ export class AEvent extends AFunctionality {
   /**
    *
    * @param {{
-   *	any_guild: boolean | undefined , parse: (...args: any[]) => Promise<void>
+   *	any_guild?: boolean , parse: (...args: any[]) => Promise<void>
    * }} fields Action methods and parameters
    * @param {string} file_path
    */

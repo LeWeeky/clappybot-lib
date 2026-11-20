@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AReaction, AReactions } from "../abstracts/reactions.js";
+import { AReactions } from "../abstracts/reactions.js";
 
 const config = {
   title: "reactionAdd",
@@ -26,30 +26,8 @@ const config = {
   addons: "reactions",
 };
 
-/**
- * @typedef {{
-   * 	name: string | undefined, id: string | undefined, dm: boolean | undefined,
-   *   any_guild: boolean | undefined, conditions: Function[] | undefined,
-   *   parse: (reaction: import("discord.js").MessageReaction, user: import("discord.js").User) => Promise<void>
-   * }} ReactionAddFields
- */
-
-/**
- * @extends {AReactions<ReactionAdd>}
- */
 export class ReactionsAdd extends AReactions {
   constructor() {
-    super(ReactionAdd, config);
-  }
-}
-
-export class ReactionAdd extends AReaction {
-  /**
-   *
-   * @param {ReactionAddFields} interaction Informations e la nouvelle interaction
-   * @param {string} file_path
-   */
-  constructor(interaction, file_path) {
-    super(interaction, file_path);
+    super(config);
   }
 }

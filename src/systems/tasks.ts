@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { TaskProps } from "../interfaces/task.interface.js";
 import { AFunctionality, AFunctionalities } from "./abstracts/functionality.js";
 
 const config = {
@@ -28,10 +29,7 @@ const config = {
   addons: "tasks",
 };
 
-/**
- * @extends {AFunctionalities<Task, typeof Task>}
- */
-export class Tasks extends AFunctionalities {
+export class Tasks extends AFunctionalities<Task, typeof Task> {
   constructor() {
     super(Task, config);
   }
@@ -55,12 +53,7 @@ export class Tasks extends AFunctionalities {
     await this.load();
   }
 
-  /**
-   *
-   * @param {Task} handler commande à ajouter
-   * @param {string} file_path
-   */
-  add(handler, file_path) {
+  add(handler: Task, file_path: string) {
     if (!handler.start) {
       console.warn(file_path, "method start is missing");
       return;
@@ -74,22 +67,10 @@ export class Tasks extends AFunctionalities {
 }
 
 export class Task extends AFunctionality {
-  /**
-   * @type {Function}
-   */
-  start;
+  start: () => void;
+  stop: () => void;
 
-  /**
-   * @type {Function}
-   */
-  stop;
-
-  /**
-   *
-   * @param {{start: Function, stop: Function}} task
-   * @param {string} file_path
-   */
-  constructor(task, file_path) {
+  constructor(task: TaskProps, file_path: string) {
     super(file_path);
     this.start = task.start;
     this.stop = task.stop;

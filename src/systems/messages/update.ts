@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { Message } from "discord.js";
+import type { MessageUpdateProps } from "../../interfaces/message.interface.js";
 import { AMessages, AMessage } from "../abstracts/messages.js";
 
 const config = {
@@ -28,24 +30,12 @@ const config = {
   addons: "messages/update",
 };
 
-/**
- * @typedef {[import("discord.js").Message, import("discord.js").Message]} MessageArgs
- */
-
-/**
- * @extends {AMessages<MessageArgs, MessageUpdate>}
- */
-export class MessagesUpdate extends AMessages {
+export class MessagesUpdate extends AMessages<MessageUpdate> {
   constructor() {
     super(MessageUpdate, config);
   }
 
-  /**
-   *
-   * @param {import("discord.js").Message} old_message
-   * @param {import("discord.js").Message} new_message
-   */
-  async scan(old_message, new_message) {
+  async scan(old_message: Message, new_message: Message) {
     for (let i in this._list) {
       if (
         this._list[i] &&
@@ -60,16 +50,8 @@ export class MessagesUpdate extends AMessages {
   }
 }
 
-export class MessageUpdate extends AMessage {
-  /**
-   *
-   * @param {{
-   * 	conditions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: (old_message: import('discord.js').Message, new_message: import('discord.js').Message) => Promise<void>
-   * }} message Informations du nouveau message
-   * @param {string} file_path
-   */
-  constructor(message, file_path) {
+export class MessageUpdate extends AMessage<MessageUpdateProps> {
+  constructor(message: MessageUpdateProps, file_path: string) {
     super(message, file_path);
   }
 }

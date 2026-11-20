@@ -16,18 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Presence } from 'discord.js';
+import type { PresenceProps } from '../interfaces/presence.interface.js';
 import { MissingMethod } from './missing_props.js';
 
-interface ChannelProps {
-   conditions?: Function[],
-   dm?: boolean,
-   any_guild?: boolean,
-   allow_bots?: boolean,
-   parse: (old_presence: Presence, new_presence: Presence) => Promise<void>
-}
-
-export function buildPresence(presence: ChannelProps) {
+export function buildPresence(presence: PresenceProps) {
     if (!presence.parse)
         MissingMethod("Presence", "parse");
     return (presence)

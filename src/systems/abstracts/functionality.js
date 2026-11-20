@@ -38,16 +38,16 @@ export class AFunctionalities {
   _type;
 
   /**
-   *  @type {{"title": string, "descriptior": string | undefined,
-   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   *  @type {{"title": string, "descriptior"?: string,
+   * 	direct_names?: string[], shared_folder?: boolean,
    * 	"extension": string, "folder": string, "addons": string }} config
    */
   _config;
 
   /** Constructor
    *  @param {C} type
-   *  @param {{"title": string, "descriptior": string | undefined,
-   * 	direct_names?: string[] | undefined, shared_folder?: boolean | undefined,
+   *  @param {{"title": string, "descriptior"?: string,
+   * 	direct_names?: string[], shared_folder?: boolean,
    * 	"extension": string, "folder": string, "addons": string }} config
    */
   constructor(type, config) {

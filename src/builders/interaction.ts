@@ -18,24 +18,7 @@
 
 import type { AnySelectMenuInteraction, ButtonInteraction, ChatInputCommandInteraction, Interaction, ModalSubmitInteraction } from 'discord.js';
 import { MissingMethod } from './missing_props.js';
-
-interface InteractionWithCustomIdProps<T extends Interaction> {
-    customId: string,
-	permissions?: Function[],
-    dm?: boolean
-	any_guild?: boolean,
-    parse: (interaction: T) => Promise<void>
-}
-
-interface InteractionWithConditionsProps<T extends Interaction> {
-    conditions: Function[],
-	permissions?: Function[],
-    dm?: boolean
-	any_guild?: boolean,
-    parse: (interaction: T) => Promise<void>
-}
-
-export type InteractionProps<T extends Interaction> = InteractionWithCustomIdProps<T> | InteractionWithConditionsProps<T>;
+import type { InteractionProps, InteractionWithConditionsProps, InteractionWithCustomIdProps } from '../interfaces/interaction.interface.js';
 
 export function buildInteraction<T extends Interaction>(interaction: InteractionProps<T>) {
     if (!(interaction as InteractionWithCustomIdProps<T>).customId

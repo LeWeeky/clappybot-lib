@@ -16,24 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { Message } from "discord.js";
+import type { MessageProps, MessageUpdateProps } from "../interfaces/message.interface.js";
 import { MissingMethod } from "./missing_props.js";
-
-interface MessageProps {
-    conditions?: Function[],
-    dm?: boolean,
-    any_guild?: boolean,
-    allow_bots?: boolean,
-    parse: (message: Message) => Promise<void>
-}
-
-interface MessageUpdateProps {
-    conditions?: Function[],
-    dm?: boolean,
-    any_guild?: boolean,
-    allow_bots?: boolean,
-    parse: (old_message: Message, new_message: Message) => Promise<void>
-}
 
 export function buildMessage(message: MessageProps | MessageUpdateProps) {
     if (!message.parse)

@@ -16,36 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { AnySelectMenuInteraction } from "discord.js";
 import { AInteractions, AInteraction } from "../abstracts/interactions.js";
+import type { InteractionProps } from "../../interfaces/interaction.interface.js";
 
 const config = {
-  title: "modal",
-  descriptior: "ce formulaire",
-  extension: "modal.js",
-  folder: "modals",
-  addons: "interactions/modals",
+  title: "menu",
+  descriptior: "ce menu",
+  extension: "mn.js",
+  folder: "menus",
+  addons: "interactions/menus",
 };
 
-/**
- * @extends {AInteractions<Modal, typeof Modal>}
- */
-export class Modals extends AInteractions {
+export class Menus extends AInteractions<AnySelectMenuInteraction, Menu, typeof Menu> {
   constructor() {
-    super(Modal, config);
+    super(Menu, config);
   }
 }
 
-export class Modal extends AInteraction {
-  /**
-   *
-   * @param {{
-   * 	customId: string | undefined, conditions: Function[] | undefined, permissions: Function[]
-   * | undefined, dm: boolean | undefined , any_guild: boolean
-   * | undefined, parse: (interaction: import('discord.js').Interaction) => Promise<void>
-   * }} interaction
-   * @param {string} file_path
-   */
-  constructor(interaction, file_path) {
+export class Menu extends AInteraction {
+  constructor(interaction: InteractionProps<AnySelectMenuInteraction>, file_path: string) {
     super(interaction, file_path);
   }
 }

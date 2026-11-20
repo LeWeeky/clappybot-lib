@@ -16,28 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { MessageReaction, User } from 'discord.js';
+import type { ReactionProps, ReactionWithConditionsProps, ReactionWithNameProps } from '../interfaces/reaction.interface.js';
 import { MissingMethod } from './missing_props.js';
-
-interface ReactionWithNameProps {
-    name: string,
-    id?: string,
-    dm?: boolean,
-    any_guild?: boolean,
-    allow_bots?: boolean,
-    parse: (reaction: MessageReaction, user: User) => Promise<void>
-}
-
-interface ReactionWithConditionsProps {
-    conditions: Function[],
-    id?: string,
-    dm?: boolean,
-    any_guild?: boolean,
-    allow_bots?: boolean,
-    parse: (reaction: MessageReaction, user: User) => Promise<void>
-}
-
-type ReactionProps = ReactionWithNameProps | ReactionWithConditionsProps;
 
 export function buildReaction(reaction: ReactionProps) {
     if (!(reaction as ReactionWithNameProps).name && !(reaction as ReactionWithConditionsProps).conditions) {

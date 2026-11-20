@@ -16,24 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { GuildMember } from "discord.js";
+import type { MemberProps, MemberUpdateProps } from "../interfaces/member.interface.js";
 import { MissingMethod } from "./missing_props.js";
 
-interface MemberProps {
-    conditions?: Function[],
-    dm?: boolean,
-    any_guild?: boolean,
-    allow_bots?: boolean,
-    parse: (member: GuildMember) => Promise<void>
-}
-
-interface MemberUpdateProps {
-    conditions?: Function[],
-    dm?: boolean,
-    any_guild?: boolean,
-    allow_bots?: boolean,
-    parse: (old_member: GuildMember, new_member: GuildMember) => Promise<void>
-}
 
 export function buildMember(member: MemberProps | MemberUpdateProps) {
     if (!member.parse)

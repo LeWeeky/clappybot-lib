@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { AMessage, AUniqueStateMessages } from "../abstracts/messages.js";
+import { AUniqueStateMessages, AMessage } from "../abstracts/messages.js";
 
 const config = {
   title: "messageDelete",
@@ -28,25 +28,9 @@ const config = {
   addons: "messages/delete",
 };
 
-/**
- * @extends {AUniqueStateMessages<AMessage>}
- */
 export class MessagesDelete extends AUniqueStateMessages {
   constructor() {
-    super(MessageDelete, config);
+    super(AMessage, config);
   }
 }
 
-export class MessageDelete extends AMessage {
-  /**
-   *
-   * @param {{
-   * 	conditions: Function[] | undefined, dm: boolean
-   * | undefined , any_guild: boolean | undefined, allow_bots: true | undefined, parse: (message: import('discord.js').Message) => Promise<void>
-   * }} message Informations du nouveau message
-   * @param {string} file_path
-   */
-  constructor(message, file_path) {
-    super(message, file_path);
-  }
-}

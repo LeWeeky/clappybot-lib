@@ -6,6 +6,7 @@ import { buildMessage } from './message.js';
 import { buildChannel } from './channel.js';
 import { buildTask } from './task.js';
 import { buildPresence } from './presence.js';
+import { buildVoiceState } from './voice_state.js';
 
 export {
     buildCommand,
@@ -19,5 +20,6 @@ export {
     buildMessage,
     buildChannel,
     buildTask,
-    buildPresence
+    buildPresence,
+    buildVoiceState
 }

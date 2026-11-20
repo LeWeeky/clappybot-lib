@@ -16,40 +16,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { ModalSubmitInteraction } from "discord.js";
 import { AInteractions, AInteraction } from "../abstracts/interactions.js";
+import type { InteractionProps } from "../../interfaces/interaction.interface.js";
 
 const config = {
-	"title": "button",
-	"descriptior": "ce bouton",
-	"extension": "btn.js",
-	"folder": "buttons",
-	"addons": "interactions/buttons"
+  title: "modal",
+  descriptior: "ce formulaire",
+  extension: "modal.js",
+  folder: "modals",
+  addons: "interactions/modals",
+};
+
+export class Modals extends AInteractions<ModalSubmitInteraction, Modal, typeof Modal> {
+  constructor() {
+    super(Modal, config);
+  }
 }
 
-/**
- * @extends {AInteractions<Button, typeof Button>}
- */
-export class Buttons extends AInteractions
-{
-	constructor()
-	{
-		super(Button, config)
-	}
-}
-
-export class Button extends AInteraction
-{
-	/**
-	 * 
-	 * @param {{
-	* 	customId: string | undefined, conditions: Function[]
-	*   | undefined, permissions: Function[] | undefined, dm: boolean
-	*   | undefined , any_guild: boolean | undefined, parse: (interaction: import('discord.js').Interaction) => Promise<void>
-	* }} interaction Informations e la nouvelle interaction
-	* @param {string} file_path
-	*/
-   constructor(interaction, file_path)
-   {
-		super(interaction, file_path)
-   }
+export class Modal extends AInteraction {
+  constructor(interaction: InteractionProps<ModalSubmitInteraction>, file_path: string) {
+    super(interaction, file_path);
+  }
 }

@@ -16,12 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import type { TaskProps } from "../interfaces/task.interface.js";
 import { MissingMethod } from "./missing_props.js"
-
-interface TaskProps {
-    start: Function,
-    stop: Function
-}
 
 export function buildTask(task: TaskProps) {
     if (!task.start)
